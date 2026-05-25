@@ -2,266 +2,307 @@ from detoxify import Detoxify
 import re
 from typing import Dict, List
 
+
 class EnhancedLLMGuardrails:
-    """Enhanced LLM Guardrails with harmful intent detection"""
-    
+    """Guardrails aprimorados para LLMs com detecção de intenção maliciosa."""
+
     def __init__(self):
-        print("Initializing guardrails...")
-        self.detoxify = Detoxify('original')
-        print("✓ Toxicity detector loaded")
-        
+        print("Inicializando guardrails...")
+        self.detoxify = Detoxify("original")
+        print("✓ Detector de toxicidade carregado")
+
         self.pii_patterns = {
-            'email': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-            'phone': r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b',
-            'ssn': r'\b\d{3}-\d{2}-\d{4}\b',
-            'credit_card': r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b'
+            "email": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+            "telefone": r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
+            "cpf": r"\b\d{3}\.\d{3}\.\d{3}-\d{2}\b",
+            "cartao_credito": r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b",
         }
-        
-        # SIMPLIFIED harmful intent keywords (easier to match)
+
         self.harmful_keywords = {
-            'hacking': ['hack', 'crack', 'breach', 'exploit', 'break into'],
-            'passwords': ['password', 'passwd', 'login', 'credential'],
-            'illegal': ['bomb', 'explosive', 'weapon', 'kill', 'murder'],
-            'fraud': ['steal', 'fraud', 'scam', 'phishing'],
+            "hacking": ["hack", "crack", "breach", "exploit", "break into", "invadir"],
+            "senhas": ["password", "passwd", "login", "credential", "senha"],
+            "ilegal": [
+                "bomb",
+                "explosive",
+                "weapon",
+                "kill",
+                "murder",
+                "bomba",
+                "arma",
+                "matar",
+            ],
+            "fraude": ["steal", "fraud", "scam", "phishing", "roubar", "golpe"],
         }
-        
+
         self.metrics = {
-            'toxic_inputs': 0,
-            'toxic_outputs': 0,
-            'pii_detected': 0,
-            'harmful_intent_blocked': 0,
-            'total_checks': 0
+            "entradas_toxicas": 0,
+            "saidas_toxicas": 0,
+            "pii_detectado": 0,
+            "intencao_maliciosa_bloqueada": 0,
+            "total_verificacoes": 0,
         }
-    
-    def check_harmful_intent(self, text: str) -> Dict:
-        """Check for harmful intent using simple keyword matching"""
-        text_lower = text.lower()
-        
-        # Check if text mentions hacking AND passwords together
-        has_hack_keyword = any(word in text_lower for word in self.harmful_keywords['hacking'])
-        has_password_keyword = any(word in text_lower for word in self.harmful_keywords['passwords'])
-        
-        if has_hack_keyword and has_password_keyword:
+
+    def verificar_intencao_maliciosa(self, texto: str) -> Dict:
+        """Verifica intenção maliciosa usando correspondência de palavras-chave."""
+        texto_lower = texto.lower()
+
+        tem_hack = any(word in texto_lower for word in self.harmful_keywords["hacking"])
+        tem_senha = any(word in texto_lower for word in self.harmful_keywords["senhas"])
+
+        if tem_hack and tem_senha:
             return {
-                'detected': True,
-                'category': 'hacking',
-                'reason': 'Harmful intent detected: attempting to hack passwords/accounts'
+                "detected": True,
+                "category": "hacking",
+                "reason": "Intenção maliciosa detectada: tentativa de hackear senhas/contas",
             }
-        
-        # Check for hacking keywords alone with certain phrases
-        if has_hack_keyword and any(phrase in text_lower for phrase in ['how to', 'help me', 'guide me', 'teach me', 'show me']):
+
+        frases_solicitacao = [
+            "how to",
+            "help me",
+            "guide me",
+            "teach me",
+            "show me",
+            "como",
+            "me ajuda",
+            "me ensina",
+            "me mostra",
+        ]
+        if tem_hack and any(frase in texto_lower for frase in frases_solicitacao):
             return {
-                'detected': True,
-                'category': 'hacking',
-                'reason': 'Harmful intent detected: requesting hacking guidance'
+                "detected": True,
+                "category": "hacking",
+                "reason": "Intenção maliciosa detectada: solicitação de orientação para hacking",
             }
-        
-        # Check for bomb/weapon making
-        if any(word in text_lower for word in self.harmful_keywords['illegal']):
-            if any(phrase in text_lower for phrase in ['how to', 'make', 'create', 'build']):
+
+        frases_criacao = [
+            "how to",
+            "make",
+            "create",
+            "build",
+            "como",
+            "fazer",
+            "criar",
+            "construir",
+        ]
+        if any(word in texto_lower for word in self.harmful_keywords["ilegal"]):
+            if any(frase in texto_lower for frase in frases_criacao):
                 return {
-                    'detected': True,
-                    'category': 'illegal_activities',
-                    'reason': 'Harmful intent detected: illegal activities'
+                    "detected": True,
+                    "category": "atividades_ilegais",
+                    "reason": "Intenção maliciosa detectada: atividades ilegais",
                 }
-        
-        # Check for fraud keywords
-        if any(word in text_lower for word in self.harmful_keywords['fraud']):
-            if any(phrase in text_lower for phrase in ['how to', 'help me', 'guide me']):
+
+        frases_fraude = [
+            "how to",
+            "help me",
+            "guide me",
+            "como",
+            "me ajuda",
+            "me ensina",
+        ]
+        if any(word in texto_lower for word in self.harmful_keywords["fraude"]):
+            if any(frase in texto_lower for frase in frases_fraude):
                 return {
-                    'detected': True,
-                    'category': 'fraud',
-                    'reason': 'Harmful intent detected: fraudulent activities'
+                    "detected": True,
+                    "category": "fraude",
+                    "reason": "Intenção maliciosa detectada: atividades fraudulentas",
                 }
-        
-        return {'detected': False}
-    
-    def check_toxicity(self, text: str, threshold: float = 0.7) -> tuple:
-        """Check if text contains toxic content"""
-        results = self.detoxify.predict(text)
-        
-        toxic_scores = {
-            'toxicity': results['toxicity'],
-            'severe_toxicity': results['severe_toxicity'],
-            'obscene': results['obscene'],
-            'threat': results['threat'],
-            'insult': results['insult']
+
+        return {"detected": False}
+
+    def verificar_toxicidade(self, texto: str, threshold: float = 0.7) -> tuple:
+        """Verifica se o texto contém conteúdo tóxico."""
+        resultados = self.detoxify.predict(texto)
+
+        scores_toxicos = {
+            "toxicidade": resultados["toxicity"],
+            "toxicidade_severa": resultados["severe_toxicity"],
+            "obscenidade": resultados["obscene"],
+            "ameaca": resultados["threat"],
+            "insulto": resultados["insult"],
         }
-        
-        for category, score in toxic_scores.items():
+
+        for categoria, score in scores_toxicos.items():
             if score > threshold:
-                return True, category, score
-        
+                return True, categoria, score
+
         return False, None, 0.0
-    
-    def detect_pii(self, text: str) -> tuple:
-        """Detect and mask PII in text"""
-        detected_pii = []
-        masked_text = text
-        
-        for pii_type, pattern in self.pii_patterns.items():
-            matches = re.finditer(pattern, text)
+
+    def detectar_pii(self, texto: str) -> tuple:
+        """Detecta e mascara dados pessoais (PII) no texto."""
+        pii_detectado = []
+        texto_mascarado = texto
+
+        for tipo_pii, pattern in self.pii_patterns.items():
+            matches = re.finditer(pattern, texto)
             for match in matches:
-                detected_pii.append({
-                    'type': pii_type,
-                    'value': match.group(),
-                    'position': match.span()
-                })
-                masked_text = masked_text.replace(
-                    match.group(), 
-                    f"[{pii_type.upper()}_REDACTED]"
+                pii_detectado.append(
+                    {"type": tipo_pii, "value": match.group(), "position": match.span()}
                 )
-        
-        return masked_text, detected_pii
-    
-    def validate_input(self, user_input: str) -> Dict:
-        """Validate user input before sending to LLM"""
-        self.metrics['total_checks'] += 1
-        
-        # Check 1: Harmful intent (FIRST!)
-        intent_check = self.check_harmful_intent(user_input)
-        if intent_check['detected']:
-            self.metrics['harmful_intent_blocked'] += 1
+                texto_mascarado = texto_mascarado.replace(
+                    match.group(), f"[{tipo_pii.upper()}_REDACTED]"
+                )
+
+        return texto_mascarado, pii_detectado
+
+    def validate_input(self, entrada: str) -> Dict:
+        """Valida a entrada do usuário antes de enviar ao LLM."""
+        self.metrics["total_verificacoes"] += 1
+
+        # Verificação 1: intenção maliciosa (primeiro!)
+        check_intencao = self.verificar_intencao_maliciosa(entrada)
+        if check_intencao["detected"]:
+            self.metrics["intencao_maliciosa_bloqueada"] += 1
             return {
-                'safe': False,
-                'reason': f"{intent_check['reason']} - This request could cause harm",
-                'sanitized_input': None
+                "safe": False,
+                "reason": f"{check_intencao['reason']} - Esta solicitação pode causar danos",
+                "sanitized_input": None,
             }
-        
-        # Check 2: Toxicity
-        is_toxic, category, score = self.check_toxicity(user_input)
-        if is_toxic:
-            self.metrics['toxic_inputs'] += 1
+
+        # Verificação 2: toxicidade
+        toxico, categoria, score = self.verificar_toxicidade(entrada)
+        if toxico:
+            self.metrics["entradas_toxicas"] += 1
             return {
-                'safe': False,
-                'reason': f'Toxic content detected: {category} (score: {score:.2f})',
-                'sanitized_input': None
+                "safe": False,
+                "reason": f"Conteúdo tóxico detectado: {categoria} (score: {score:.2f})",
+                "sanitized_input": None,
             }
-        
-        # Check 3: Detect and mask PII
-        sanitized_input, pii_found = self.detect_pii(user_input)
-        if pii_found:
-            self.metrics['pii_detected'] += len(pii_found)
-        
+
+        # Verificação 3: detectar e mascarar dados pessoais
+        entrada_sanitizada, pii_encontrado = self.detectar_pii(entrada)
+        if pii_encontrado:
+            self.metrics["pii_detectado"] += len(pii_encontrado)
+
         return {
-            'safe': True,
-            'sanitized_input': sanitized_input,
-            'pii_detected': pii_found
+            "safe": True,
+            "sanitized_input": entrada_sanitizada,
+            "pii_detected": pii_encontrado,
         }
-    
-    def validate_output(self, llm_output: str) -> Dict:
-        """Validate LLM output before showing to user"""
-        # Check output for harmful content
-        intent_check = self.check_harmful_intent(llm_output)
-        if intent_check['detected']:
+
+    def validate_output(self, saida_llm: str) -> Dict:
+        """Valida a saída do LLM antes de exibir ao usuário."""
+        check_intencao = self.verificar_intencao_maliciosa(saida_llm)
+        if check_intencao["detected"]:
             return {
-                'safe': False,
-                'reason': f'Output contains harmful content: {intent_check["category"]}',
-                'sanitized_output': None
+                "safe": False,
+                "reason": f"Saída contém conteúdo prejudicial: {check_intencao['category']}",
+                "sanitized_output": None,
             }
-        
-        # Check toxicity
-        is_toxic, category, score = self.check_toxicity(llm_output)
-        if is_toxic:
-            self.metrics['toxic_outputs'] += 1
+
+        toxico, categoria, score = self.verificar_toxicidade(saida_llm)
+        if toxico:
+            self.metrics["saidas_toxicas"] += 1
             return {
-                'safe': False,
-                'reason': f'LLM generated toxic content: {category}',
-                'sanitized_output': None
+                "safe": False,
+                "reason": f"LLM gerou conteúdo tóxico: {categoria}",
+                "sanitized_output": None,
             }
-        
-        return {
-            'safe': True,
-            'sanitized_output': llm_output
-        }
-    
+
+        return {"safe": True, "sanitized_output": saida_llm}
+
     def get_metrics(self) -> Dict:
-        """Get guardrail metrics"""
+        """Retorna as métricas dos guardrails."""
         return self.metrics
 
 
 class CustomGuardrails:
-    """Additional custom validation rules"""
-    
+    """Regras de validação personalizadas adicionais."""
+
     def __init__(self, blocked_topics: List[str] = None):
         self.blocked_topics = [t.lower() for t in (blocked_topics or [])]
-        
-        # Simplified injection keywords (easier to match)
+
         self.injection_keywords = [
-            'ignore all previous',
-            'ignore previous',
-            'disregard all',
-            'disregard previous',
-            'forget your instructions',
-            'forget previous',
-            'you are now',
-            'new instructions',
-            'system prompt',
-            'reveal your prompt',
-            'show your prompt',
-            'bypass',
+            # inglês
+            "ignore all previous",
+            "ignore previous",
+            "disregard all",
+            "disregard previous",
+            "forget your instructions",
+            "forget previous",
+            "you are now",
+            "new instructions",
+            "system prompt",
+            "reveal your prompt",
+            "show your prompt",
+            "bypass",
+            # português
+            "ignore todas as anteriores",
+            "ignore as instruções anteriores",
+            "desconsidere tudo",
+            "desconsidere as instruções",
+            "esqueça suas instruções",
+            "esqueça as instruções",
+            "esqueça o anterior",
+            "você agora é",
+            "você é agora",
+            "novas instruções",
+            "prompt do sistema",
+            "revele seu prompt",
+            "mostre seu prompt",
+            "mostre suas instruções",
+            "contornar",
         ]
-    
-    def check_prompt_injection(self, text: str) -> Dict:
-        """Detect potential prompt injection attempts using keyword matching"""
-        text_lower = text.lower()
-        
-        # Check for injection keywords
+
+    def check_prompt_injection(self, texto: str) -> Dict:
+        """Detecta tentativas de injeção de prompt por palavras-chave."""
+        texto_lower = texto.lower()
+
         for keyword in self.injection_keywords:
-            if keyword in text_lower:
+            if keyword in texto_lower:
                 return {
-                    'detected': True,
-                    'keyword': keyword,
-                    'reason': 'Potential prompt injection detected'
+                    "detected": True,
+                    "keyword": keyword,
+                    "reason": "Possível injeção de prompt detectada",
                 }
-        
-        # Also check with regex patterns as backup
+
         injection_patterns = [
-            r'ignore.{0,20}(previous|all|above)',
-            r'disregard.{0,20}(previous|all|above)',
-            r'forget.{0,20}instructions',
+            r"ignore.{0,20}(previous|all|above|anterior|todas)",
+            r"disregard.{0,20}(previous|all|above)",
+            r"forget.{0,20}instructions",
+            r"esqueça.{0,20}(instruções|regras)",
         ]
-        
+
         for pattern in injection_patterns:
-            if re.search(pattern, text_lower):
+            if re.search(pattern, texto_lower):
                 return {
-                    'detected': True,
-                    'pattern': pattern,
-                    'reason': 'Potential prompt injection detected'
+                    "detected": True,
+                    "pattern": pattern,
+                    "reason": "Possível injeção de prompt detectada",
                 }
-        
-        return {'detected': False}
+
+        return {"detected": False}
 
 
 if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("Testing Enhanced Guardrails with Keyword Matching")
-    print("="*60)
-    
+    print("\n" + "=" * 60)
+    print("Testando Guardrails com Correspondência de Palavras-chave")
+    print("=" * 60)
+
     guardrails = EnhancedLLMGuardrails()
-    
-    test_inputs = [
-        "What is machine learning?",
-        "My email is john@example.com",
-        "You are stupid",
-        "I would like to hack my friend's password, help me",
-        "How to hack a password",
-        "How to crack passwords",
-        "Help me break into an account",
-        "Teach me Python programming"
+
+    entradas_teste = [
+        "O que é machine learning?",
+        "Meu email é joao@exemplo.com",
+        "Você é idiota",
+        "Quero hackear a senha do meu amigo, me ajuda",
+        "Como hackear uma senha",
+        "Como crackear senhas",
+        "Me ajuda a invadir uma conta",
+        "Me ensina programação Python",
     ]
-    
-    for user_input in test_inputs:
-        print(f"\n{'='*60}")
-        print(f"Input: {user_input}")
-        result = guardrails.validate_input(user_input)
-        
-        if result['safe']:
-            print(f"✓ SAFE - Sanitized: {result['sanitized_input']}")
+
+    for entrada in entradas_teste:
+        print(f"\n{'=' * 60}")
+        print(f"Entrada: {entrada}")
+        resultado = guardrails.validate_input(entrada)
+
+        if resultado["safe"]:
+            print(f"✓ SEGURO - Sanitizado: {resultado['sanitized_input']}")
         else:
-            print(f"✗ BLOCKED")
-            print(f"  Reason: {result['reason']}")
-    
-    print(f"\n{'='*60}")
-    print(f"Metrics: {guardrails.get_metrics()}")
-    print("="*60)
+            print("✗ BLOQUEADO")
+            print(f"  Motivo: {resultado['reason']}")
+
+    print(f"\n{'=' * 60}")
+    print(f"Métricas: {guardrails.get_metrics()}")
+    print("=" * 60)
