@@ -43,6 +43,8 @@ addopts = "-ra -q"
 
 markers = [
     "slow: marks tests that load heavy ML models (deselect with -m 'not slow')",
+    "adversarial: marks adversarial integration tests (external fixtures, full pipeline)",
+    "network: marks tests that require external API calls (Anthropic, HF datasets download)",
 ]
 
 [tool.ruff]
