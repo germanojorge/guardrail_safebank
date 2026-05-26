@@ -1,3 +1,5 @@
+"""Legacy PoC kept for reference; superseded by guardrails/ package."""
+
 from detoxify import Detoxify
 import re
 from typing import Dict, List

@@ -1,4 +1,4 @@
-from guardrails import EnhancedLLMGuardrails, CustomGuardrails
+from _poc_guardrails import EnhancedLLMGuardrails, CustomGuardrails
 
 
 def test_funcionalidade_basica():

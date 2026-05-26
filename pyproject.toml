@@ -13,7 +13,16 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pre-commit>=4.6.0",
+    "pytest>=8.0",
     "ruff>=0.15.14",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra -q"
+markers = [
+    "slow: marks tests that load heavy ML models (deselect with -m 'not slow')",
 ]
 
 [tool.ruff]

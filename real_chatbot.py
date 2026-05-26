@@ -1,4 +1,4 @@
-from guardrails import EnhancedLLMGuardrails, CustomGuardrails
+from _poc_guardrails import EnhancedLLMGuardrails, CustomGuardrails
 import anthropic
 import yaml
 import os
