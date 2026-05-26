@@ -1,5 +1,10 @@
 # LLM Guardrails Tutorial — Home
 
+> **⚠️ OUTDATED — This directory reflects the old PoC architecture.**
+> The project has since pivoted: `guardrails_legacy.py` → custom validators in `guardrails/validators/`,
+> LangGraph StateGraph orchestration, FastAPI proxy, Docker compose, and structlog JSON logs.
+> See [CLAUDE.md](../CLAUDE.md) for the current state, decisions, and architecture.
+
 > This is your home page. Everything links from here.
 
 ---

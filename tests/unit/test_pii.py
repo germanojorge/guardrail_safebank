@@ -101,7 +101,7 @@ def test_pii_detected_blocks(case_id, expected_entity, text):
 
 def _assert_no_raw_pii_in_details(original_text: str, details: dict) -> None:
     """Recursively verify that details contains no substring of original_text that is a PII match."""
-    from guardrails.validators.pii import PII_PATTERNS
+    from guardrails._pii_patterns import PII_PATTERNS
     import re
 
     for pattern_str in PII_PATTERNS.values():

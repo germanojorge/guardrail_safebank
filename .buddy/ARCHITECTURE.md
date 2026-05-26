@@ -2,6 +2,10 @@
 
 ---
 
+> **⚠️ OUTDATED — describes old PoC architecture (CLI-only, keyword-based, no LangGraph).**
+> Current architecture: LangGraph StateGraph nodes, FastAPI proxy, Docker stack, 4 validators,
+> rubric-based compliance judge. See [CLAUDE.md](../CLAUDE.md) for the ground truth.
+
 # Architecture
 
 Verified from source code. Sections marked [Inferred] are Buddy's best guesses.

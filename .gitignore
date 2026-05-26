@@ -23,3 +23,10 @@ models/
 *.ckpt
 *.onnx
 config.yaml
+
+# Cache / build artifacts
+.pytest_cache/
+.ruff_cache/
+
+# Byte-compiled (extended)
+*.pyc

@@ -9,18 +9,11 @@ PIIValidator — detects PII in PT-BR text using regex patterns.
 
 from __future__ import annotations
 
-import re
 import time
 from typing import Any, Mapping
 
-from .base import ValidatorResult
-
-PII_PATTERNS: dict[str, str] = {
-    "email": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",
-    "telefone": r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
-    "cpf": r"\b\d{3}\.\d{3}\.\d{3}-\d{2}\b",
-    "cartao": r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b",
-}
+from guardrails._pii_patterns import COMPILED_PII, PII_PATTERNS
+from guardrails.validators.base import ValidatorResult
 
 
 class PIIValidator:
@@ -30,14 +23,13 @@ class PIIValidator:
         if stage not in {"input", "output"}:
             raise ValueError(f"stage must be 'input' or 'output', got {stage!r}")
         self.stage = stage
-        self._compiled = {k: re.compile(v) for k, v in PII_PATTERNS.items()}
 
     def run(
         self, text: str, context: Mapping[str, Any] | None = None
     ) -> ValidatorResult:
         t0 = time.perf_counter()
         entities: dict[str, list[tuple[int, int]]] = {}
-        for entity_type, pattern in self._compiled.items():
+        for entity_type, pattern in COMPILED_PII.items():
             spans = [m.span() for m in pattern.finditer(text)]
             if spans:
                 entities[entity_type] = spans
