@@ -75,9 +75,7 @@ def test_upsert_empty_is_noop():
 
 def test_search_returns_searchhits_with_text():
     store = _make_qdrant_store()
-    mock_point_a = MagicMock(
-        id="a", score=0.95, payload={"text": "hit A", "source": "x"}
-    )
+    mock_point_a = MagicMock(id="a", score=0.95, payload={"text": "hit A", "source": "x"})
     mock_point_b = MagicMock(id="b", score=0.85, payload={"text": "hit B"})
     mock_result = MagicMock()
     mock_result.points = [mock_point_a, mock_point_b]

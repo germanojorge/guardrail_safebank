@@ -87,9 +87,7 @@ def test_pii_detected_blocks(case_id, expected_entity, text):
     result = validator.run(text)
     assert result.passed is False, f"Expected block for case {case_id!r}: {text!r}"
     assert result.category == "pii_input"
-    assert expected_entity in result.details["entities"], (
-        f"Expected {expected_entity!r} in entities for case {case_id!r}"
-    )
+    assert expected_entity in result.details["entities"], f"Expected {expected_entity!r} in entities for case {case_id!r}"
     # Spans must be pairs of ints
     for spans in result.details["entities"].values():
         for span in spans:
@@ -112,9 +110,7 @@ def _assert_no_raw_pii_in_details(original_text: str, details: dict) -> None:
 
 def _check_no_value_in_dict(value: str, obj) -> None:
     if isinstance(obj, str):
-        assert value not in obj, (
-            f"Raw PII value {value!r} found in details string {obj!r}"
-        )
+        assert value not in obj, f"Raw PII value {value!r} found in details string {obj!r}"
     elif isinstance(obj, dict):
         for v in obj.values():
             _check_no_value_in_dict(value, v)
@@ -167,6 +163,4 @@ def test_latency_under_target():
     text = "Qual é a taxa de juros do empréstimo pessoal? " * 25  # ~1KB
     result = PIIValidator("input").run(text)
     assert result.latency_ms is not None
-    assert result.latency_ms < 50, (
-        f"Latency {result.latency_ms:.1f}ms exceeded 50ms budget"
-    )
+    assert result.latency_ms < 50, f"Latency {result.latency_ms:.1f}ms exceeded 50ms budget"

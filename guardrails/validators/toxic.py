@@ -35,9 +35,7 @@ class ToxicValidator:
             model_name = "injected"
         self._model_name = model_name
 
-    def run(
-        self, text: str, context: Mapping[str, Any] | None = None
-    ) -> ValidatorResult:
+    def run(self, text: str, context: Mapping[str, Any] | None = None) -> ValidatorResult:
         t0 = time.perf_counter()
         scores = self._model.predict(text)
         subscores = {k: float(scores[k]) for k in self._CATEGORIES}

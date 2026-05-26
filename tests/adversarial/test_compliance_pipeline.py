@@ -48,24 +48,13 @@ def test_compliance_pipeline_verdict(
     is_blocked = result.get("blocked", False)
 
     if expected == "block":
-        assert is_blocked, (
-            f"[{sample_id}] Expected block for: {entry['text']!r}\n"
-            f"  details: {result.get('block_details', {})}"
-        )
+        assert is_blocked, f"[{sample_id}] Expected block for: {entry['text']!r}\n  details: {result.get('block_details', {})}"
         expected_rule = entry.get("expected_rule_violated")
         if expected_rule:
             block_details = result.get("block_details", {})
             actual_rule = block_details.get("rule_violated")
-            assert actual_rule == expected_rule, (
-                f"[{sample_id}] Expected rule {expected_rule}, got {actual_rule}\n"
-                f"  details: {block_details}"
-            )
+            assert actual_rule == expected_rule, f"[{sample_id}] Expected rule {expected_rule}, got {actual_rule}\n  details: {block_details}"
     else:
         if is_blocked:
-            print(
-                f"[{sample_id}] Allowed text blocked (possible false positive): "
-                f"{entry['text']!r}"
-            )
-        assert not is_blocked, (
-            f"[{sample_id}] Expected pass for benign sample: {entry['text']!r}"
-        )
+            print(f"[{sample_id}] Allowed text blocked (possible false positive): {entry['text']!r}")
+        assert not is_blocked, f"[{sample_id}] Expected pass for benign sample: {entry['text']!r}"

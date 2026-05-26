@@ -23,9 +23,7 @@ import urllib.request
 
 from detoxify import Detoxify
 
-HATEBR_URL = (
-    "https://raw.githubusercontent.com/franciellevargas/HateBR/main/dataset/HateBR.csv"
-)
+HATEBR_URL = "https://raw.githubusercontent.com/franciellevargas/HateBR/main/dataset/HateBR.csv"
 SCORE_THRESHOLD = 0.75
 CATEGORIES = ("toxicity", "severe_toxicity", "obscene", "threat", "insult")
 
@@ -62,9 +60,7 @@ def main() -> None:
         print()
 
     if len(candidates) < 3:
-        print(
-            "WARNING: fewer than 3 candidates cleared the bar — do NOT lower threshold."
-        )
+        print("WARNING: fewer than 3 candidates cleared the bar — do NOT lower threshold.")
         print("Re-check model name or dataset download.")
 
 

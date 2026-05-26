@@ -31,8 +31,7 @@ TOXIC_SAMPLES: list[tuple[str, str]] = [
     # row_id=1712 — max Detoxify score 0.9978 (insult=0.9938, toxicity=0.9978)
     (
         "1712",
-        "Este sujeito é a escória da política brasileira, se não fossem os otários da igreja dele, "
-        "que são roubados e o adoram, e",
+        "Este sujeito é a escória da política brasileira, se não fossem os otários da igreja dele, que são roubados e o adoram, e",
     ),
     # row_id=266 — max Detoxify score 0.9977 (insult=0.9915, toxicity=0.9977)
     ("266", "Bandida, safada, comunista e corrupta!!! Fora do Brasil!! Lixo!!!"),

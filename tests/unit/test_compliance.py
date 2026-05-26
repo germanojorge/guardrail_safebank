@@ -20,9 +20,7 @@ from tests.fixtures.compliance_samples import FAIL_SAMPLES, PASS_SAMPLES
 # ---------------------------------------------------------------------------
 
 
-def _make_mock_validator(
-    verdict="pass", rule_violated=None, reasoning="OK", stop_reason="tool_use"
-) -> ComplianceValidator:
+def _make_mock_validator(verdict="pass", rule_violated=None, reasoning="OK", stop_reason="tool_use") -> ComplianceValidator:
     """Return a ComplianceValidator backed by a mock Anthropic client."""
     mock_client = MagicMock()
     mock_response = MagicMock()
@@ -126,9 +124,7 @@ def test_details_always_has_required_keys():
     required_keys = {"verdict", "rule_violated", "reasoning", "model", "stop_reason"}
     v_pass = _make_mock_validator(verdict="pass")
     v_fail = _make_mock_validator(verdict="fail", rule_violated="R3")
-    v_error = ComplianceValidator(
-        client=MagicMock(messages=MagicMock(create=MagicMock(side_effect=ValueError())))
-    )
+    v_error = ComplianceValidator(client=MagicMock(messages=MagicMock(create=MagicMock(side_effect=ValueError()))))
 
     for label, v in [("pass", v_pass), ("fail", v_fail), ("error", v_error)]:
         result = v.run("Some text")
@@ -150,9 +146,7 @@ def test_beat4_r2_violation_real_api():
     v = ComplianceValidator()
     result = v.run("Pra você, o melhor é o CDB Premium")
     assert result.passed is False, f"Expected fail for Beat 4: {result}"
-    assert result.details["rule_violated"] == "R2", (
-        f"Expected R2 violation, got {result.details['rule_violated']}"
-    )
+    assert result.details["rule_violated"] == "R2", f"Expected R2 violation, got {result.details['rule_violated']}"
 
 
 @pytest.mark.slow
@@ -175,12 +169,8 @@ def test_benign_informational_passes_real_api():
 def test_all_fail_samples_real_api(case_id, expected_rule, text):
     v = ComplianceValidator()
     result = v.run(text)
-    assert result.passed is False, (
-        f"Expected fail for {case_id} (rule {expected_rule}): {result.details}"
-    )
-    assert result.details["rule_violated"] == expected_rule, (
-        f"Expected {expected_rule}, got {result.details['rule_violated']} for {case_id}"
-    )
+    assert result.passed is False, f"Expected fail for {case_id} (rule {expected_rule}): {result.details}"
+    assert result.details["rule_violated"] == expected_rule, f"Expected {expected_rule}, got {result.details['rule_violated']} for {case_id}"
 
 
 @pytest.mark.slow

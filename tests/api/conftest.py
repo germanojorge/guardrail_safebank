@@ -26,9 +26,7 @@ from guardrails.validators.base import ValidatorResult
 
 
 def _passing_result(category: str = "toxicity") -> ValidatorResult:
-    return ValidatorResult(
-        passed=True, category=category, score=None, details={}, latency_ms=1.0
-    )
+    return ValidatorResult(passed=True, category=category, score=None, details={}, latency_ms=1.0)
 
 
 def _failing_result(category: str, details: dict | None = None) -> ValidatorResult:
@@ -41,14 +39,10 @@ def _failing_result(category: str, details: dict | None = None) -> ValidatorResu
     )
 
 
-def _make_mock_validator(
-    passed: bool = True, category: str = "toxicity", details: dict | None = None
-) -> MagicMock:
+def _make_mock_validator(passed: bool = True, category: str = "toxicity", details: dict | None = None) -> MagicMock:
     v = MagicMock()
     v.name = category
-    v.run.return_value = (
-        _passing_result(category) if passed else _failing_result(category, details)
-    )
+    v.run.return_value = _passing_result(category) if passed else _failing_result(category, details)
     return v
 
 
@@ -94,17 +88,13 @@ def _build_mock_components(
     mock_toxic = _make_mock_validator(toxic_passes, "toxicity")
     mock_toxic._model = MagicMock()
 
-    mock_pii_input = _make_mock_validator(
-        pii_input_passes, "pii_input", pii_input_details
-    )
+    mock_pii_input = _make_mock_validator(pii_input_passes, "pii_input", pii_input_details)
     mock_pii_output = _make_mock_validator(pii_output_passes, "pii_output")
 
     mock_jailbreak = _make_mock_validator(jailbreak_passes, "jailbreak")
     mock_jailbreak._pipeline = MagicMock()
 
-    mock_compliance = _make_mock_validator(
-        compliance_passes, "compliance", compliance_details
-    )
+    mock_compliance = _make_mock_validator(compliance_passes, "compliance", compliance_details)
     mock_compliance.client = MagicMock()
 
     mock_llm = _make_mock_provider(llm_response)

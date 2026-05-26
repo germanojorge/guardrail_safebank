@@ -109,9 +109,7 @@ def test_toxic_input_blocks(toxic_validator, row_id, text):
     result = toxic_validator.run(text)
     assert result.passed is False, f"Expected block for row_id={row_id}: {text!r}"
     assert result.score is not None
-    assert result.score > 0.7, (
-        f"Expected score > 0.7 for row_id={row_id}, got {result.score}"
-    )
+    assert result.score > 0.7, f"Expected score > 0.7 for row_id={row_id}, got {result.score}"
     assert "top_category" in result.details
     assert "subscores" in result.details
     assert result.details["subscores"]["toxicity"] >= 0

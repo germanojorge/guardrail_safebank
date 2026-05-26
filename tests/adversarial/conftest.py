@@ -171,16 +171,9 @@ class BlockRateTracker:
         if self.total == 0:
             return
         rate = self.blocked / self.total
-        print(
-            f"\n[block-rate] {self.blocked}/{self.total} = {rate:.1%} "
-            f"(threshold: {self.min_rate:.0%})"
-        )
+        print(f"\n[block-rate] {self.blocked}/{self.total} = {rate:.1%} (threshold: {self.min_rate:.0%})")
         if rate < self.min_rate:
-            raise AssertionError(
-                f"Block rate {rate:.1%} below threshold {self.min_rate:.0%} "
-                f"({self.blocked}/{self.total} blocked). "
-                f"See building-rigorously.md §3 — investigate gaps, do NOT lower threshold."
-            )
+            raise AssertionError(f"Block rate {rate:.1%} below threshold {self.min_rate:.0%} ({self.blocked}/{self.total} blocked). See building-rigorously.md §3 — investigate gaps, do NOT lower threshold.")
 
 
 @pytest.fixture(scope="session")

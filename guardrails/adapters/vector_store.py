@@ -29,9 +29,7 @@ class SearchHit:
 class VectorStore(Protocol):
     def start_collection(self, dim: int, distance: str = "cosine") -> None: ...
 
-    def upsert(
-        self, items: list[tuple[str | int, list[float], dict[str, Any]]]
-    ) -> None: ...
+    def upsert(self, items: list[tuple[str | int, list[float], dict[str, Any]]]) -> None: ...
 
     def search(self, query_vector: list[float], top_k: int = 3) -> list[SearchHit]: ...
 
@@ -88,17 +86,12 @@ class QdrantStore:
             ),
         )
 
-    def upsert(
-        self, items: list[tuple[str | int, list[float], dict[str, Any]]]
-    ) -> None:
+    def upsert(self, items: list[tuple[str | int, list[float], dict[str, Any]]]) -> None:
         if not items:
             return
         from qdrant_client.models import PointStruct
 
-        points = [
-            PointStruct(id=item_id, vector=vector, payload=payload)
-            for item_id, vector, payload in items
-        ]
+        points = [PointStruct(id=item_id, vector=vector, payload=payload) for item_id, vector, payload in items]
         self._ensure_client().upsert(collection_name=self.collection, points=points)
 
     def search(self, query_vector: list[float], top_k: int = 3) -> list[SearchHit]:
@@ -139,9 +132,7 @@ class InMemoryVectorStore:
     def start_collection(self, dim: int, distance: str = "cosine") -> None:
         self._dim = dim
 
-    def upsert(
-        self, items: list[tuple[str | int, list[float], dict[str, Any]]]
-    ) -> None:
+    def upsert(self, items: list[tuple[str | int, list[float], dict[str, Any]]]) -> None:
         for item_id, vector, payload in items:
             self._points[item_id] = (vector, payload)
 

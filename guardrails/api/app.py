@@ -44,9 +44,7 @@ def _create_components(cfg: dict[str, Any]):
     toxic = ToxicValidator(threshold=v_cfg.get("toxicity", {}).get("threshold", 0.7))
     pii_input = PIIValidator(stage="input")
     pii_output = PIIValidator(stage="output")
-    jailbreak = JailbreakValidator(
-        threshold=v_cfg.get("jailbreak", {}).get("threshold", 0.85)
-    )
+    jailbreak = JailbreakValidator(threshold=v_cfg.get("jailbreak", {}).get("threshold", 0.85))
     compliance = ComplianceValidator(
         model=v_cfg.get("compliance", {}).get("model", "claude-haiku-4-5-20251001"),
         timeout=v_cfg.get("compliance", {}).get("timeout", 5.0),
@@ -78,9 +76,7 @@ def _create_components(cfg: dict[str, Any]):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging()
-    graph, toxic, jailbreak, compliance, llm, embedding, vector_store = (
-        _create_components(get_config())
-    )
+    graph, toxic, jailbreak, compliance, llm, embedding, vector_store = _create_components(get_config())
     app.state.graph = graph
     app.state.toxic = toxic
     app.state.jailbreak = jailbreak
@@ -107,14 +103,10 @@ def create_app() -> FastAPI:
 
     @fast_app.post("/chat", response_model=ChatResponse)
     async def chat(req: ChatRequest, request: Request) -> ChatResponse:
-        result = await request.app.state.graph.ainvoke(
-            {"message": req.message, "diagnostics": {}}
-        )
+        result = await request.app.state.graph.ainvoke({"message": req.message, "diagnostics": {}})
 
         blocked: bool = result["blocked"]
-        response_text: str = (
-            result["message"] if blocked else result.get("llm_response", "")
-        )
+        response_text: str = result["message"] if blocked else result.get("llm_response", "")
         category: str | None = result.get("block_category")
         details: dict = result.get("block_details") or {}
 

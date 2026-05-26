@@ -16,6 +16,4 @@ PII_PATTERNS: dict[str, str] = {
     "cartao": r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b",
 }
 
-COMPILED_PII: dict[str, re.Pattern] = {
-    k: re.compile(v) for k, v in PII_PATTERNS.items()
-}
+COMPILED_PII: dict[str, re.Pattern] = {k: re.compile(v) for k, v in PII_PATTERNS.items()}

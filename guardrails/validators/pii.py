@@ -24,9 +24,7 @@ class PIIValidator:
             raise ValueError(f"stage must be 'input' or 'output', got {stage!r}")
         self.stage = stage
 
-    def run(
-        self, text: str, context: Mapping[str, Any] | None = None
-    ) -> ValidatorResult:
+    def run(self, text: str, context: Mapping[str, Any] | None = None) -> ValidatorResult:
         t0 = time.perf_counter()
         entities: dict[str, list[tuple[int, int]]] = {}
         for entity_type, pattern in COMPILED_PII.items():

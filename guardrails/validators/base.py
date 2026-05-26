@@ -28,6 +28,4 @@ class ValidatorResult:
 class Validator(Protocol):
     name: str
 
-    def run(
-        self, text: str, context: Mapping[str, Any] | None = None
-    ) -> ValidatorResult: ...
+    def run(self, text: str, context: Mapping[str, Any] | None = None) -> ValidatorResult: ...

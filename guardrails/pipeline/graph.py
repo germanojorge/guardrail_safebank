@@ -40,9 +40,7 @@ def build_graph(
     if toxic is None:
         from guardrails.validators.toxic import ToxicValidator
 
-        toxic = ToxicValidator(
-            threshold=v_cfg.get("toxicity", {}).get("threshold", 0.7)
-        )
+        toxic = ToxicValidator(threshold=v_cfg.get("toxicity", {}).get("threshold", 0.7))
 
     if pii_input is None:
         from guardrails.validators.pii import PIIValidator
@@ -57,9 +55,7 @@ def build_graph(
     if jailbreak is None:
         from guardrails.validators.jailbreak import JailbreakValidator
 
-        jailbreak = JailbreakValidator(
-            threshold=v_cfg.get("jailbreak", {}).get("threshold", 0.85)
-        )
+        jailbreak = JailbreakValidator(threshold=v_cfg.get("jailbreak", {}).get("threshold", 0.85))
 
     if compliance is None:
         from guardrails.validators.compliance import ComplianceValidator
@@ -72,9 +68,7 @@ def build_graph(
     if llm_provider is None:
         from guardrails.adapters import AnthropicProvider
 
-        llm_provider = AnthropicProvider(
-            model=cfg.get("model", "claude-sonnet-4-6-20251105")
-        )
+        llm_provider = AnthropicProvider(model=cfg.get("model", "claude-sonnet-4-6-20251105"))
 
     nodes = build_nodes(
         toxic=toxic,

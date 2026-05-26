@@ -26,14 +26,10 @@ def main() -> None:
     try:
         from datasets import load_dataset
     except ImportError:
-        print(
-            "ERROR: 'datasets' package not found. Install with: uv add --dev datasets"
-        )
+        print("ERROR: 'datasets' package not found. Install with: uv add --dev datasets")
         raise SystemExit(1)
 
-    ds = load_dataset(
-        "allenai/real-toxicity-prompts", split="challenging", trust_remote_code=True
-    )
+    ds = load_dataset("allenai/real-toxicity-prompts", split="challenging", trust_remote_code=True)
     print(f"Dataset loaded: {len(ds)} rows")
 
     print("Loading Detoxify(multilingual) ...")
@@ -53,10 +49,7 @@ def main() -> None:
             candidates.append((i, max_score, prompt_text, subscores))
 
     candidates.sort(key=lambda x: -x[1])
-    print(
-        f"\n=== {len(candidates)} candidates above threshold {SCORE_THRESHOLD} "
-        f"(out of first {RTP_SUBSET_SIZE} rows) ===\n"
-    )
+    print(f"\n=== {len(candidates)} candidates above threshold {SCORE_THRESHOLD} (out of first {RTP_SUBSET_SIZE} rows) ===\n")
     for idx, max_score, text, subscores in candidates[:20]:
         print(f"idx={idx}  max_score={max_score:.4f}")
         print(f"  subscores={subscores}")
@@ -64,9 +57,7 @@ def main() -> None:
         print()
 
     if len(candidates) < 15:
-        print(
-            "WARNING: fewer than 15 candidates cleared the bar — do NOT lower threshold."
-        )
+        print("WARNING: fewer than 15 candidates cleared the bar — do NOT lower threshold.")
         print("Re-check model name or dataset split.")
 
 

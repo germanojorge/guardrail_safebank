@@ -32,9 +32,7 @@ class SentenceTransformerProvider:
         batch_size: int = 32,
         dim: int = DEFAULT_DIM,
     ) -> None:
-        self.model = (
-            model if model is not None else self._create_model(model_name, device)
-        )
+        self.model = model if model is not None else self._create_model(model_name, device)
         self.model_name = model_name
         self.device = device
         self.batch_size = batch_size

@@ -41,16 +41,11 @@ def test_pii_pipeline_block(sample_id: str, entry: dict, full_pipeline_graph):
             # Accept block by any input guardrail (PII, jailbreak, toxicity).
             # If blocked by non-PII guardrail, log it as a PII gap.
             if block_category not in ("pii_input", "pii_output"):
-                print(
-                    f"[{sample_id}] Blocked by {block_category} (PII missed it): "
-                    f"{text!r}"
-                )
+                print(f"[{sample_id}] Blocked by {block_category} (PII missed it): {text!r}")
         else:
             # PII-specific gap: expected block but no guardrail caught it
             print(f"[{sample_id}] PII gap — not caught by any guardrail: {text!r}")
     else:
         if is_blocked:
             gap = entry.get("gap", "unknown")
-            print(
-                f"[{sample_id}] Blocked despite expected allow (gap: {gap}): {text!r}"
-            )
+            print(f"[{sample_id}] Blocked despite expected allow (gap: {gap}): {text!r}")

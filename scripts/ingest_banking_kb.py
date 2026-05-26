@@ -85,10 +85,7 @@ def main() -> int:
         print(f"[ERROR] no .md files found in {corpus_dir}", file=sys.stderr)
         return 1
 
-    print(
-        f"[ingest] loaded {len(items)} chunks from "
-        f"{len(set(i['source'] for i in items))} documents"
-    )
+    print(f"[ingest] loaded {len(items)} chunks from {len(set(i['source'] for i in items))} documents")
 
     embedding = SentenceTransformerProvider(
         model_name=emb_cfg.get("model", "intfloat/multilingual-e5-small"),
@@ -107,8 +104,7 @@ def main() -> int:
     )
     if not store.is_reachable():
         print(
-            f"[ERROR] qdrant unreachable at {store.host}:{store.port}. "
-            "Start it with: docker run -d -p 6333:6333 qdrant/qdrant",
+            f"[ERROR] qdrant unreachable at {store.host}:{store.port}. Start it with: docker run -d -p 6333:6333 qdrant/qdrant",
             file=sys.stderr,
         )
         return 2

@@ -60,23 +60,12 @@ def _translate(provider, text: str) -> str:
 def _write_output(entries: list[dict]) -> None:
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     with open(OUTPUT, "w", encoding="utf-8") as f:
-        f.write(
-            "# Source: JailbreakBench v1.0 (https://github.com/JailbreakBench/jailbreakbench)\n"
-        )
+        f.write("# Source: JailbreakBench v1.0 (https://github.com/JailbreakBench/jailbreakbench)\n")
         f.write("# License: MIT\n")
         f.write("# Access date: 2026-05-26\n")
-        f.write(
-            "# Translation: Claude via AnthropicProvider, PT-BR, "
-            "preserving adversarial intent\n"
-        )
-        f.write(
-            "# Manual review checklist: verify each line preserves the original "
-            "jailbreak semantics\n"
-        )
-        f.write(
-            "#   and does not soften the adversarial request. Flag any line where "
-            "the translation\n"
-        )
+        f.write("# Translation: Claude via AnthropicProvider, PT-BR, preserving adversarial intent\n")
+        f.write("# Manual review checklist: verify each line preserves the original jailbreak semantics\n")
+        f.write("#   and does not soften the adversarial request. Flag any line where the translation\n")
         f.write("#   reduces urgency, specificity, or adversarial framing.\n")
         for entry in entries:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")

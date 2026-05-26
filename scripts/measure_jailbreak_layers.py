@@ -40,9 +40,7 @@ def load_fixtures(path: Path) -> list[dict[str, Any]]:
     return entries
 
 
-def measure(
-    validator: JailbreakValidator, entries: list[dict]
-) -> dict[str, dict[str, int]]:
+def measure(validator: JailbreakValidator, entries: list[dict]) -> dict[str, dict[str, int]]:
     """Run each sample and tally block/pass per language group.
 
     Returns::
@@ -80,21 +78,9 @@ def render_table(sub_only: dict, full: dict) -> str:
         overall_total = en_total + pt_total
         overall_blocked = en_blocked + pt_blocked
 
-        en_rate = (
-            f"{en_blocked}/{en_total} ({en_blocked / en_total:.0%})"
-            if en_total
-            else "N/A"
-        )
-        pt_rate = (
-            f"{pt_blocked}/{pt_total} ({pt_blocked / pt_total:.0%})"
-            if pt_total
-            else "N/A"
-        )
-        overall_rate = (
-            f"{overall_blocked}/{overall_total} ({overall_blocked / overall_total:.0%})"
-            if overall_total
-            else "N/A"
-        )
+        en_rate = f"{en_blocked}/{en_total} ({en_blocked / en_total:.0%})" if en_total else "N/A"
+        pt_rate = f"{pt_blocked}/{pt_total} ({pt_blocked / pt_total:.0%})" if pt_total else "N/A"
+        overall_rate = f"{overall_blocked}/{overall_total} ({overall_blocked / overall_total:.0%})" if overall_total else "N/A"
 
         lines.append(f"| {label} | {en_rate} | {pt_rate} | {overall_rate} |")
     return "\n".join(lines) + "\n"

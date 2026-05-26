@@ -116,9 +116,7 @@ def test_complete_with_tools_returns_raw_response():
 
     response = provider.complete_with_tools(
         messages=[{"role": "user", "content": "Evaluate this"}],
-        tools=[
-            {"name": "test_tool", "input_schema": {"type": "object", "properties": {}}}
-        ],
+        tools=[{"name": "test_tool", "input_schema": {"type": "object", "properties": {}}}],
         tool_choice={"type": "tool", "name": "test_tool"},
     )
     assert response is mock_response

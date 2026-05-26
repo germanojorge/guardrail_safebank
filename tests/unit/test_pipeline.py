@@ -18,9 +18,7 @@ from guardrails.validators.base import ValidatorResult
 
 
 def _passing_result(category: str = "toxicity") -> ValidatorResult:
-    return ValidatorResult(
-        passed=True, category=category, score=None, details={}, latency_ms=1.0
-    )
+    return ValidatorResult(passed=True, category=category, score=None, details={}, latency_ms=1.0)
 
 
 def _failing_result(category: str, details: dict | None = None) -> ValidatorResult:
@@ -33,9 +31,7 @@ def _failing_result(category: str, details: dict | None = None) -> ValidatorResu
     )
 
 
-def _make_mock_validator(
-    passed: bool = True, category: str = "toxicity", details: dict | None = None
-):
+def _make_mock_validator(passed: bool = True, category: str = "toxicity", details: dict | None = None):
     v = MagicMock()
     v.name = category
     if passed:
@@ -100,9 +96,7 @@ def test_happy_path_message_unchanged():
 def test_input_guard_blocks_pii():
     g = build_graph(
         toxic=_make_mock_validator(True, "toxicity"),
-        pii_input=_make_mock_validator(
-            False, "pii_input", {"entities": {"cpf": [(0, 14)]}}
-        ),
+        pii_input=_make_mock_validator(False, "pii_input", {"entities": {"cpf": [(0, 14)]}}),
         pii_output=_make_mock_validator(True, "pii_output"),
         jailbreak=_make_mock_validator(True, "jailbreak"),
         compliance=_make_mock_validator(True, "compliance"),
@@ -119,9 +113,7 @@ def test_input_guard_blocks_jailbreak():
         toxic=_make_mock_validator(True, "toxicity"),
         pii_input=_make_mock_validator(True, "pii_input"),
         pii_output=_make_mock_validator(True, "pii_output"),
-        jailbreak=_make_mock_validator(
-            False, "jailbreak", {"layer_caught": "substring"}
-        ),
+        jailbreak=_make_mock_validator(False, "jailbreak", {"layer_caught": "substring"}),
         compliance=_make_mock_validator(True, "compliance"),
         llm_provider=_make_mock_provider(),
     )
@@ -171,9 +163,7 @@ def test_output_guard_blocks_compliance():
         pii_input=_make_mock_validator(True, "pii_input"),
         pii_output=_make_mock_validator(True, "pii_output"),
         jailbreak=_make_mock_validator(True, "jailbreak"),
-        compliance=_make_mock_validator(
-            False, "compliance", {"verdict": "fail", "rule_violated": "R2"}
-        ),
+        compliance=_make_mock_validator(False, "compliance", {"verdict": "fail", "rule_violated": "R2"}),
         llm_provider=_make_mock_provider("Recomendo investir 100% em ações."),
     )
     result = g.invoke({"message": "Como devo investir?", "diagnostics": {}})
@@ -184,9 +174,7 @@ def test_output_guard_blocks_compliance():
 
 def test_output_guard_blocks_pii():
     pii_output = _make_mock_validator(True, "pii_output")
-    pii_output.run.side_effect = [
-        _failing_result("pii_output", {"entities": {"cpf": [(5, 19)]}})
-    ]
+    pii_output.run.side_effect = [_failing_result("pii_output", {"entities": {"cpf": [(5, 19)]}})]
     g = build_graph(
         toxic=_make_mock_validator(True, "toxicity"),
         pii_input=_make_mock_validator(True, "pii_input"),

@@ -25,9 +25,7 @@ pytestmark = pytest.mark.adversarial
     "sample_id,entry",
     jsonl_parametrize("jailbreak_external.jsonl"),
 )
-def test_jailbreak_pipeline_block(
-    sample_id: str, entry: dict, full_pipeline_graph, block_rate_tracker
-):
+def test_jailbreak_pipeline_block(sample_id: str, entry: dict, full_pipeline_graph, block_rate_tracker):
     """Track block/pass for aggregate rate check — no individual assertion."""
     result = full_pipeline_graph.invoke(
         {

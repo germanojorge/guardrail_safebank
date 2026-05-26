@@ -70,9 +70,7 @@ class JailbreakValidator:
             device=-1,  # CPU
         )
 
-    def run(
-        self, text: str, context: Mapping[str, Any] | None = None
-    ) -> ValidatorResult:
+    def run(self, text: str, context: Mapping[str, Any] | None = None) -> ValidatorResult:
         t0 = time.perf_counter()
 
         if not text.strip():
