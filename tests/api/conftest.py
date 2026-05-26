@@ -59,6 +59,27 @@ def _make_mock_provider(response: str = "Olá! Como posso ajudar?") -> MagicMock
     return p
 
 
+def _make_mock_embedding(dim: int = 384) -> MagicMock:
+    e = MagicMock()
+    e.dim = dim
+    e.model = MagicMock()
+    e.embed_queries.side_effect = lambda texts: [[0.0] * dim for _ in texts]
+    e.embed_passages.side_effect = lambda texts: [[0.0] * dim for _ in texts]
+    return e
+
+
+def _make_mock_vector_store(reachable: bool = True) -> MagicMock:
+    from guardrails.adapters import SearchHit
+
+    s = MagicMock()
+    s.is_reachable.return_value = reachable
+    s.search.return_value = [
+        SearchHit(id="m1", score=0.9, text="mock chunk 1", metadata={}),
+        SearchHit(id="m2", score=0.8, text="mock chunk 2", metadata={}),
+    ]
+    return s
+
+
 def _build_mock_components(
     *,
     toxic_passes: bool = True,
@@ -87,6 +108,8 @@ def _build_mock_components(
     mock_compliance.client = MagicMock()
 
     mock_llm = _make_mock_provider(llm_response)
+    mock_embedding = _make_mock_embedding()
+    mock_vector_store = _make_mock_vector_store()
 
     graph = build_graph(
         toxic=mock_toxic,
@@ -95,8 +118,18 @@ def _build_mock_components(
         jailbreak=mock_jailbreak,
         compliance=mock_compliance,
         llm_provider=mock_llm,
+        embedding=mock_embedding,
+        vector_store=mock_vector_store,
     )
-    return graph, mock_toxic, mock_jailbreak, mock_compliance, mock_llm
+    return (
+        graph,
+        mock_toxic,
+        mock_jailbreak,
+        mock_compliance,
+        mock_llm,
+        mock_embedding,
+        mock_vector_store,
+    )
 
 
 # ---------------------------------------------------------------------------

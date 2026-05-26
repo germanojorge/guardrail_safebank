@@ -22,14 +22,20 @@ from guardrails.pipeline.state import SEVERITY_MAP
 
 
 def _create_components(cfg: dict[str, Any]):
-    """Construct all validators, LLM provider, and compiled graph.
+    """Construct all validators, LLM provider, RAG adapters, and compiled graph.
 
     Separated from the lifespan so tests can patch this single call
     instead of every individual validator constructor.
     """
     v_cfg = cfg.get("validators", {})
+    emb_cfg = cfg.get("embedding", {})
+    qd_cfg = cfg.get("qdrant", {})
 
-    from guardrails.adapters import AnthropicProvider
+    from guardrails.adapters import (
+        AnthropicProvider,
+        QdrantStore,
+        SentenceTransformerProvider,
+    )
     from guardrails.validators.compliance import ComplianceValidator
     from guardrails.validators.jailbreak import JailbreakValidator
     from guardrails.validators.pii import PIIValidator
@@ -46,6 +52,15 @@ def _create_components(cfg: dict[str, Any]):
         timeout=v_cfg.get("compliance", {}).get("timeout", 5.0),
     )
     llm = AnthropicProvider(model=cfg.get("model", "claude-sonnet-4-6-20251105"))
+    embedding = SentenceTransformerProvider(
+        model_name=emb_cfg.get("model", "intfloat/multilingual-e5-small"),
+        device=emb_cfg.get("device", "cpu"),
+    )
+    vector_store = QdrantStore(
+        host=qd_cfg.get("host", "localhost"),
+        port=qd_cfg.get("port", 6333),
+        collection=qd_cfg.get("collection", "banking_kb"),
+    )
 
     graph = build_graph(
         toxic=toxic,
@@ -54,19 +69,25 @@ def _create_components(cfg: dict[str, Any]):
         jailbreak=jailbreak,
         compliance=compliance,
         llm_provider=llm,
+        embedding=embedding,
+        vector_store=vector_store,
     )
-    return graph, toxic, jailbreak, compliance, llm
+    return graph, toxic, jailbreak, compliance, llm, embedding, vector_store
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging()
-    graph, toxic, jailbreak, compliance, llm = _create_components(get_config())
+    graph, toxic, jailbreak, compliance, llm, embedding, vector_store = (
+        _create_components(get_config())
+    )
     app.state.graph = graph
     app.state.toxic = toxic
     app.state.jailbreak = jailbreak
     app.state.compliance = compliance
     app.state.llm = llm
+    app.state.embedding = embedding
+    app.state.vector_store = vector_store
     yield
 
 
@@ -142,6 +163,8 @@ def create_app() -> FastAPI:
                 deberta=request.app.state.jailbreak._pipeline is not None,
                 anthropic_judge=request.app.state.compliance.client is not None,
                 anthropic_chat=request.app.state.llm.client is not None,
+                embedding=request.app.state.embedding.model is not None,
+                qdrant_reachable=request.app.state.vector_store.is_reachable(),
             ),
         )
 

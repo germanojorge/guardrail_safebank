@@ -24,6 +24,8 @@ def test_health_returns_validators_loaded(client: TestClient):
         "deberta",
         "anthropic_judge",
         "anthropic_chat",
+        "embedding",
+        "qdrant_reachable",
     }
     for v in ml.values():
         assert isinstance(v, bool)
@@ -41,6 +43,8 @@ def test_health_models_loaded_reflects_state(make_client):
     assert ml["deberta"] is True
     assert ml["anthropic_judge"] is True
     assert ml["anthropic_chat"] is True
+    assert ml["embedding"] is True
+    assert ml["qdrant_reachable"] is True
 
 
 def test_health_models_loaded_false_when_none(make_client, monkeypatch):
@@ -50,14 +54,16 @@ def test_health_models_loaded_false_when_none(make_client, monkeypatch):
     from tests.api.conftest import _build_mock_components
 
     components = list(_build_mock_components())
-    graph, toxic, jailbreak, compliance, llm = components
+    graph, toxic, jailbreak, compliance, llm, embedding, vector_store = components
     toxic._model = None
     jailbreak._pipeline = None
+    embedding.model = None
+    vector_store.is_reachable.return_value = False
 
     monkeypatch.setattr(
         sys.modules["guardrails.api.app"],
         "_create_components",
-        lambda cfg: (graph, toxic, jailbreak, compliance, llm),
+        lambda cfg: (graph, toxic, jailbreak, compliance, llm, embedding, vector_store),
     )
     import guardrails.config
 
@@ -74,3 +80,5 @@ def test_health_models_loaded_false_when_none(make_client, monkeypatch):
     assert ml["deberta"] is False
     assert ml["anthropic_judge"] is True
     assert ml["anthropic_chat"] is True
+    assert ml["embedding"] is False
+    assert ml["qdrant_reachable"] is False

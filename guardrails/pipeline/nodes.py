@@ -25,11 +25,7 @@ Se não souber a resposta, diga que não tem essa informação e sugira falar co
 
 FALLBACK_RESPONSE = "Sua mensagem não pôde ser processada porque viola nossas políticas de segurança. Por favor, reformule sua pergunta."
 
-_MOCK_CHUNKS = [
-    "Cartão Gold do Banco Seguro: limite de R$ 5.000, cashback 1,5%, sem anuidade no primeiro ano.",
-    "Investimentos: CDB com rendimento de 110% do CDI, liquidez diária disponível.",
-    "Atendimento disponível 24h pelo canal digital. Agências abertas de seg-sex das 9h às 16h.",
-]
+RETRIEVE_TOP_K = 3
 
 
 def build_nodes(
@@ -39,6 +35,8 @@ def build_nodes(
     jailbreak: Any,
     compliance: Any,
     llm: Any,
+    embedding: Any = None,
+    vector_store: Any = None,
 ) -> dict[str, Callable[[GraphState], dict]]:
     """Return a dict of node functions with injected validator/provider instances."""
 
@@ -89,13 +87,32 @@ def build_nodes(
 
     def retrieve(state: GraphState) -> dict:
         t0 = time.perf_counter()
-        chunks = list(_MOCK_CHUNKS)
+        chunks: list[str] = []
+        embed_ms: float = 0.0
+        search_ms: float = 0.0
+
+        if embedding is not None and vector_store is not None:
+            t_embed = time.perf_counter()
+            try:
+                query_vec = embedding.embed_queries([state["message"]])[0]
+            except Exception:
+                query_vec = None
+            embed_ms = (time.perf_counter() - t_embed) * 1000
+
+            if query_vec is not None:
+                t_search = time.perf_counter()
+                hits = vector_store.search(query_vec, top_k=RETRIEVE_TOP_K)
+                search_ms = (time.perf_counter() - t_search) * 1000
+                chunks = [h.text for h in hits if h.text]
+
         elapsed = (time.perf_counter() - t0) * 1000
         return {
             "retrieved_chunks": chunks,
             "diagnostics": {
                 **state.get("diagnostics", {}),
                 "retrieve_ms": elapsed,
+                "retrieve_embed_ms": embed_ms,
+                "retrieve_search_ms": search_ms,
             },
         }
 

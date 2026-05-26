@@ -16,7 +16,8 @@ venv/
 .DS_Store
 
 # Data / models (examples)
-data/
+data/*
+!data/banking_kb/
 models/
 *.pt
 *.bin

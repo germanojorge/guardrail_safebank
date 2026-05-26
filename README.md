@@ -102,7 +102,9 @@ guardrails/
 tests/
 ├── unit/           # test_toxic.py · test_pii.py · test_jailbreak.py · test_compliance.py
 ├── fixtures/       # adversarial samples (pii, jailbreak, compliance, hatebr)
-scripts/            # ingestion, utilities
+data/
+└── banking_kb/     # 8 PT-BR markdown docs ingested into Qdrant
+scripts/            # ingest_banking_kb.py · utilities
 config.yaml         # runtime config (gitignored)
 ```
 
@@ -113,12 +115,22 @@ config.yaml         # runtime config (gitignored)
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 
-# Start with auto-reload
+# 1. Start Qdrant (RAG vector store)
+docker run -d -p 6333:6333 qdrant/qdrant
+
+# 2. Ingest the banking knowledge base (idempotent — safe to re-run)
+uv run python scripts/ingest_banking_kb.py
+
+# 3. Start with auto-reload
 uv run uvicorn guardrails.api.app:app --reload
 
 # Or via entrypoint (after `uv pip install -e .`)
 uv run guardrails-api
 ```
+
+If Qdrant is unreachable, the API still boots — `/health` reports
+`qdrant_reachable=false` and `/chat` falls back to empty retrieval so the
+guardrails still work, only RAG is degraded.
 
 ### Smoke test
 

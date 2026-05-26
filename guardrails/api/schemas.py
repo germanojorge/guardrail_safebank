@@ -40,6 +40,8 @@ class ModelsLoaded(BaseModel):
     deberta: bool
     anthropic_judge: bool
     anthropic_chat: bool
+    embedding: bool
+    qdrant_reachable: bool
 
 
 class HealthResponse(BaseModel):

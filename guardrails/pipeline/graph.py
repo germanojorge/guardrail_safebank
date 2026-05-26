@@ -25,6 +25,8 @@ def build_graph(
     jailbreak: Any = None,
     compliance: Any = None,
     llm_provider: Any = None,
+    embedding: Any = None,
+    vector_store: Any = None,
     config: dict | None = None,
 ):
     """Build and compile the guardrail StateGraph.
@@ -81,6 +83,8 @@ def build_graph(
         jailbreak=jailbreak,
         compliance=compliance,
         llm=llm_provider,
+        embedding=embedding,
+        vector_store=vector_store,
     )
 
     graph = StateGraph(GraphState)
