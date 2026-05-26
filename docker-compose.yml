@@ -1,0 +1,43 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports: ["6333:6333"]
+    volumes: ["qdrant_data:/qdrant/storage"]
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    ports: ["8000:8000"]
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - QDRANT_HOST=qdrant
+    depends_on:
+      qdrant:
+        condition: service_started
+
+  ingest:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    entrypoint: ["uv", "run", "python", "scripts/ingest_banking_kb.py"]
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - QDRANT_HOST=qdrant
+    depends_on:
+      qdrant:
+        condition: service_started
+    profiles: ["ingest"]
+
+  ui:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ui
+    ports: ["8501:8501"]
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      - api
+
+volumes:
+  qdrant_data:

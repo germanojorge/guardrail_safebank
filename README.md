@@ -64,25 +64,39 @@ Intercepts every customer message (input) and every LLM-generated response (outp
 ### Prerequisites
 
 - Docker Engine ≥ 24 with `docker compose` v2
-- Anthropic API key
+- Anthropic API key (`export ANTHROPIC_API_KEY=sk-ant-...`)
 
-### Setup
+### One-command demo
 
 ```bash
-# 1. Configure
-cp config.yaml.example config.yaml
-# Edit config.yaml — set anthropic_api_key
+# 1. Export your API key
+export ANTHROPIC_API_KEY=sk-ant-...
 
-# 2. Boot the stack
+# 2. Boot everything (API, Qdrant, Streamlit UI)
 docker compose up -d
 
 # 3. Seed the knowledge base
-docker compose exec api python -m scripts.ingest
+docker compose run --rm ingest
 
-# 4. Test
-curl -s http://localhost:8000/chat \
-  -H 'Content-Type: application/json' \
-  -d '{"message": "Como aumento o limite do meu cartão?"}' | jq
+# 4. Open the UI
+open http://localhost:8501
+```
+
+The Streamlit UI at http://localhost:8501 provides a chat interface with
+color-coded diagnostics for blocked vs. allowed messages.
+
+### Alternative: curl against the API
+
+```bash
+# Happy path — banking question
+curl -X POST http://localhost:8000/chat \
+  -H 'content-type: application/json' \
+  -d '{"message": "Como funciona o cartão Gold?"}' | jq
+
+# Blocked — CPF in message (PII guardrail)
+curl -X POST http://localhost:8000/chat \
+  -H 'content-type: application/json' \
+  -d '{"message": "Meu CPF é 123.456.789-09"}' | jq
 ```
 
 ### Services
@@ -90,8 +104,8 @@ curl -s http://localhost:8000/chat \
 | Service | URL | Purpose |
 |---|---|---|
 | API (FastAPI) | http://localhost:8000 | Guardrail proxy |
-| Client (Streamlit) | http://localhost:8501 | Sample chat UI with diagnostics |
-| Qdrant | http://localhost:6333/dashboard | Vector store |
+| Client (Streamlit) | http://localhost:8501 | Chat UI with color-coded diagnostics |
+| Qdrant | http://localhost:6333/dashboard | Vector store dashboard |
 
 ## Project Layout
 

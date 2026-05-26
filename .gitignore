@@ -25,6 +25,9 @@ models/
 *.onnx
 config.yaml
 
+# Streamlit
+.streamlit/
+
 # Cache / build artifacts
 .pytest_cache/
 .ruff_cache/
