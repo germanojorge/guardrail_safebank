@@ -49,7 +49,9 @@ markers = [
 ]
 
 [tool.ruff]
+line-length = 220
 exclude = [
     ".claude/skills",
+    ".claude/hooks",
     ".buddy",
 ]

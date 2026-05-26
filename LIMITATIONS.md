@@ -6,6 +6,22 @@ Each section is owned by the validator that introduces it; future validators app
 
 ---
 
+## Toxicity Validator (`guardrails/validators/toxic.py`)
+
+### What it does
+
+Uses `detoxify` with the `multilingual` XLM-RoBERTa model to classify text as toxic. Applied to both input and output. Threshold is tuned for banking chatbot tolerance (mild profanity may pass, hate speech is blocked).
+
+### Confirmed gaps
+
+| Gap | Impact |
+|-----|--------|
+| **False positives on banking jargon** | Phrases like "morrer de rir" (laugh to death) or "matar a curiosidade" (kill the curiosity) can trigger toxicity flags due to literal keyword matches in an English-centric model. |
+| **PT-BR data sparsity in detoxify training** | The `multilingual` model is trained primarily on English toxicity datasets with limited PT-BR coverage. Sarcasm, regional slurs, and cultural context are poorly captured. |
+| **English-centric bias** | The model may under-detect PT-BR toxic content while over-detecting benign PT-BR colloquialisms that happen to contain English-toxic substrings. |
+
+---
+
 ## PII Validator (`guardrails/validators/pii.py`)
 
 ### What it does
@@ -69,6 +85,7 @@ or `"deberta"` for attribution.
 ### Layered-defense comparison (JailbreakBench external fixtures)
 
 <!-- BEGIN: jailbreak-layer-metrics -->
+<!-- Measured: 2026-05-25 -->
 | Layer | EN block rate | PT-BR block rate | Overall |
 |-------|---------------|------------------|---------|
 | Substring only | 7/10 (70%) | 3/12 (25%) | 10/22 (45%) |
@@ -98,9 +115,16 @@ LLM-as-Judge using Claude Haiku 4.5 with `tool_use` for structured verdict outpu
 | **Sem annotator independente** | Fixtures hand-crafted pelo mesmo autor da rubrica — risco de seleção viesada para casos que o judge acerta. |
 | **Sensibilidade a rephrasings** | Beat 4 testado em 1 fraseamento. Variações ("Qual o melhor CDB pra mim?", "Me recomende um investimento") não medidas no MVP. |
 | **Sem histórico de conversa** | Judge vê só última resposta — perde correlações temporais (ex.: pressão progressiva sobre o chatbot). |
-| **Custo por chamada** | ~$0.0001/req em Haiku. Prompt caching reduz, mas não zera. Sem rate limiting no MVP. |
-| **Sem reask em fail** | Bloqueio direto reduz UX (sem auto-correção). Reask é Extras. |
-| **Reasoning pode vazar PII** | Reasoning truncado em 200 chars reduz blast radius, mas observabilidade tem limitação aceita no MVP. |
+
+### Accepted Risks
+
+These are deliberate trade-offs, not unknown gaps:
+
+| Risk | Rationale |
+|------|-----------|
+| **Custo por chamada (~$0.0001/req)** | Haiku is the cheapest Claude model. Prompt caching reduces cost further. Rate limiting is deferred to Extras. |
+| **Sem reask em fail** | Bloqueio direto maximiza previsibilidade na demo. Reask 1x com auto-correção é Extras. |
+| **Reasoning truncado em 200 chars** | Reduces PII blast radius in observability logs. Full reasoning available in Anthropic dashboard for debugging. |
 
 ### Fixture closed-loop caveat
 
@@ -142,3 +166,23 @@ the gap — do not lower the threshold.
 |--------|-------|--------|
 | `adversarial and not network` | Jailbreak, Toxic, PII (no API calls) | Yes |
 | `adversarial and network` | Compliance (requires Anthropic API key) | Manual only |
+
+---
+
+## Infrastructure & Scaling
+
+### What it is
+
+The MVP is designed for local Docker demonstration, not production deployment.
+
+### Confirmed gaps
+
+| Gap | Impact |
+|-----|--------|
+| **Single uvicorn worker** | ~1.5GB of model weights (DeBERTa + detoxify + sentence-transformers) are loaded into memory. Multiple workers would duplicate this footprint. Single worker means no request-level parallelism within the process. |
+| **No authentication** | Anyone with network access to `localhost:8000` can query the API and consume Anthropic quota. |
+| **No rate limiting** | A misconfigured client or malicious script can exhaust API keys or degrade the single worker. |
+| **No horizontal scaling** | No load balancer, no auto-scaling, no health-based traffic shifting. Docker Compose is single-node by design. |
+| **No HTTPS / TLS termination** | All traffic is plain HTTP. In production this must terminate at a reverse proxy (nginx, Traefik, AWS ALB). |
+| **No persistent block log storage** | Block events are JSON-structured stdout only. No database, no SIEM integration, no retention policy. |
+| **No secret management** | `ANTHROPIC_API_KEY` is passed via environment variable. No Vault, no AWS Secrets Manager, no key rotation. |
