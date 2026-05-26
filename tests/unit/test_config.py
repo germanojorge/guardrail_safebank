@@ -8,8 +8,10 @@ import yaml
 from guardrails.config import load_config
 
 
-def test_load_config_returns_dict():
-    cfg = load_config()
+def test_load_config_returns_dict(tmp_path):
+    cfg_file = tmp_path / "config.yaml"
+    cfg_file.write_text("validators:\n  toxicity:\n    enabled: true\n")
+    cfg = load_config(path=str(cfg_file))
     assert isinstance(cfg, dict)
     assert "validators" in cfg
 
