@@ -16,6 +16,11 @@ dev = [
     "ruff>=0.15.14",
 ]
 
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (model load or real API calls)",
+]
+
 [tool.ruff]
 exclude = [
     ".claude/skills",
