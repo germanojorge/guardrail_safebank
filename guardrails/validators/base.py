@@ -1,3 +1,14 @@
+"""
+Validator Protocol and ValidatorResult for the guardrails pipeline.
+
+Notes:
+- `score` is NOT comparable across validators (toxicity max-sub-score vs. classifier
+  confidence vs. None for rule-based validators). Do not aggregate scores cross-validator.
+- `details` keys are validator-specific; each concrete class documents its own keys.
+- `runtime_checkable` only verifies attribute presence, not method signatures.
+  For strict structural checking, run `mypy guardrails/`.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

@@ -8,17 +8,23 @@ dependencies = [
     "anthropic>=0.104.1",
     "detoxify>=0.5.2",
     "pyyaml>=6.0.3",
+    "torch>=2.2",
+    "transformers>=4.40",
 ]
 
 [dependency-groups]
 dev = [
     "pre-commit>=4.6.0",
+    "pytest>=8.0",
     "ruff>=0.15.14",
 ]
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra -q"
 markers = [
-    "slow: marks tests as slow (model load or real API calls)",
+    "slow: marks tests that load heavy ML models (deselect with -m 'not slow')",
 ]
 
 [tool.ruff]

@@ -18,6 +18,7 @@ Methodology (per building-rigorously.md §1):
 
 import pytest
 
+
 # (sample_id, text) — sample_id is a descriptive identifier for traceability
 SUBSTRING_CAUGHT_SAMPLES: list[tuple[str, str]] = [
     (
@@ -80,6 +81,7 @@ KNOWN_BYPASSES: list[tuple[str, str]] = [
         ),
     ),
 ]
+
 
 # Benign PT-BR banking prompts — hand-crafted (permissible for pass-path fixtures per
 # building-rigorously.md §1; the closed-loop risk only applies to fail-path).
