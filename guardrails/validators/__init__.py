@@ -1,5 +1,12 @@
 from .base import Validator, ValidatorResult
+from .jailbreak import JailbreakValidator
 from .pii import PIIValidator
 from .toxic import ToxicValidator
 
-__all__ = ["Validator", "ValidatorResult", "ToxicValidator", "PIIValidator"]
+__all__ = [
+    "Validator",
+    "ValidatorResult",
+    "ToxicValidator",
+    "PIIValidator",
+    "JailbreakValidator",
+]

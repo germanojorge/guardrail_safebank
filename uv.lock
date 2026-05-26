@@ -424,6 +424,8 @@ dependencies = [
     { name = "anthropic" },
     { name = "detoxify" },
     { name = "pyyaml" },
+    { name = "torch" },
+    { name = "transformers" },
 ]
 
 [package.dev-dependencies]
@@ -438,6 +440,8 @@ requires-dist = [
     { name = "anthropic", specifier = ">=0.104.1" },
     { name = "detoxify", specifier = ">=0.5.2" },
     { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "torch", specifier = ">=2.2" },
+    { name = "transformers", specifier = ">=4.40" },
 ]
 
 [package.metadata.requires-dev]

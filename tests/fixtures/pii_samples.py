@@ -34,4 +34,22 @@ PII_SAMPLES: list[tuple[str, str, str]] = [
             reason="11-digit mobile numbers without formatting miss the 10-digit phone regex; see LIMITATIONS.md"
         ),
     ),
+    # 9-digit local numbers also miss the phone regex.
+    pytest.param(
+        "phone_9digit_local",
+        "telefone",
+        "Meu telefone é 912345678",
+        marks=pytest.mark.xfail(
+            reason="9-digit local numbers miss the 10-digit phone regex; see LIMITATIONS.md"
+        ),
+    ),
+    # CPF without dots/dash (plain 11 digits) misses the CPF regex.
+    pytest.param(
+        "cpf_unformatted",
+        "cpf",
+        "Meu CPF é 12345678909",
+        marks=pytest.mark.xfail(
+            reason="CPF without formatting (plain 11 digits) misses the CPF regex; see LIMITATIONS.md"
+        ),
+    ),
 ]
