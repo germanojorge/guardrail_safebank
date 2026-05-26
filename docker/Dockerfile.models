@@ -1,0 +1,23 @@
+# Pre-built image with all ML model weights.
+# Build once, cache forever. The API Dockerfile copies /root/.cache from this image.
+# Tag and push to registry to avoid re-downloading ~1.5GB of Hugging Face weights.
+#
+# Usage:
+#   docker build -f docker/Dockerfile.models -t llm-guardrails-tutorial-models:latest .
+#   docker push <registry>/llm-guardrails-tutorial-models:latest
+
+FROM python:3.12-slim
+WORKDIR /models
+
+# Install base ML stack
+RUN pip install --no-cache-dir sentence-transformers transformers torch --quiet
+
+# Pre-download embedding model
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
+
+# Pre-download jailbreak classifier
+RUN python -c "from transformers import pipeline; pipeline('text-classification', model='protectai/deberta-v3-base-prompt-injection-v2')"
+
+# Pre-install + download detoxify multilingual model
+RUN pip install --no-cache-dir detoxify --quiet
+RUN python -c "from detoxify import Detoxify; Detoxify('multilingual')"
