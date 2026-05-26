@@ -50,7 +50,8 @@ def main() -> None:
         subscores = {k: float(scores[k]) for k in CATEGORIES}
         max_score = max(subscores.values())
         if max_score > SCORE_THRESHOLD:
-            candidates.append((i, max_score, text, subscores))
+            row_id = row.get("id", "").strip() or str(i)
+            candidates.append((row_id, max_score, text, subscores))
 
     candidates.sort(key=lambda x: -x[1])
     print(f"\n=== {len(candidates)} candidates above threshold {SCORE_THRESHOLD} ===\n")

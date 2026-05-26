@@ -30,8 +30,10 @@ class ToxicValidator:
         model: Detoxify | None = None,
     ) -> None:
         self.threshold = threshold
-        self._model_name = model_name
         self._model = model if model is not None else Detoxify(model_name)
+        if model is not None and model_name == "multilingual":
+            model_name = "injected"
+        self._model_name = model_name
 
     def run(
         self, text: str, context: Mapping[str, Any] | None = None
