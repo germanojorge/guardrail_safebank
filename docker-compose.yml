@@ -8,8 +8,6 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.api
-      args:
-        MODELS_IMAGE: ${MODELS_IMAGE:-llm-guardrails-tutorial-models:latest}
     ports: ["8000:8000"]
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
@@ -22,8 +20,6 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.api
-      args:
-        MODELS_IMAGE: ${MODELS_IMAGE:-llm-guardrails-tutorial-models:latest}
     entrypoint: ["uv", "run", "python", "scripts/ingest_banking_kb.py"]
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}

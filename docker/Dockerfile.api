@@ -1,8 +1,16 @@
-# Use a pre-built models image to avoid re-downloading ~1.5GB of HF weights on every build.
-# Build the models image separately:
-#   docker build -f docker/Dockerfile.models -t llm-guardrails-tutorial-models:latest .
-ARG MODELS_IMAGE=llm-guardrails-tutorial-models:latest
-FROM ${MODELS_IMAGE} AS model-download
+# Multi-stage build:
+# Stage 1 downloads ML model weights (~1.5GB).
+# Stage 2 is the lean runtime image.
+#
+# For CI cache efficiency, the model-download stage is cached via GHA
+# (type=gha,mode=max) so model weights don't re-download on every commit.
+# For local pre-build, use docker/Dockerfile.models separately.
+
+FROM python:3.12-slim AS model-download
+WORKDIR /models
+RUN pip install sentence-transformers transformers torch --quiet
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
+RUN python -c "from transformers import pipeline; pipeline('text-classification', model='protectai/deberta-v3-base-prompt-injection-v2')"
 
 FROM python:3.12-slim
 WORKDIR /app
