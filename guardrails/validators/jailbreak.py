@@ -54,8 +54,10 @@ class JailbreakValidator:
         self,
         threshold: float = 0.85,
         pipeline=None,
+        use_deberta: bool = True,
     ) -> None:
         self.threshold = threshold
+        self.use_deberta = use_deberta
         self._pipeline = pipeline if pipeline is not None else self._load_pipeline()
 
     @staticmethod
@@ -106,7 +108,23 @@ class JailbreakValidator:
                 latency_ms=(time.perf_counter() - t0) * 1000,
             )
 
-        # Layer 2 — DeBERTa classifier
+        # Layer 2 — DeBERTa classifier (skipped when use_deberta=False)
+        if not self.use_deberta:
+            return ValidatorResult(
+                passed=True,
+                category="jailbreak",
+                score=None,
+                details={
+                    "layer_caught": None,
+                    "substring_match_count": 0,
+                    "deberta_score": None,
+                    "threshold": self.threshold,
+                    "substring_keywords_checked": len(self._JAILBREAK_KEYWORDS),
+                    "use_deberta": False,
+                },
+                latency_ms=(time.perf_counter() - t0) * 1000,
+            )
+
         result = self._pipeline(text)[0]
         label: str = result["label"]
         score: float = result["score"]

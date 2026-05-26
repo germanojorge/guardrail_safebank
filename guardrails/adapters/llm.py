@@ -21,6 +21,7 @@ class LLMProvider(Protocol):
         self,
         messages: list[dict[str, Any]],
         model: str | None = None,
+        system: str | None = None,
         temperature: float = 0.3,
         max_tokens: int = 1024,
     ) -> str: ...
@@ -58,17 +59,27 @@ class AnthropicProvider:
         self,
         messages: list[dict[str, Any]],
         model: str | None = None,
+        system: str | None = None,
         temperature: float = 0.3,
         max_tokens: int = 1024,
     ) -> str:
         try:
-            response = self.client.messages.create(
-                model=model or self.model,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                messages=messages,
-                timeout=self.timeout,
-            )
+            kwargs: dict[str, Any] = {
+                "model": model or self.model,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "messages": messages,
+                "timeout": self.timeout,
+            }
+            if system is not None:
+                kwargs["system"] = [
+                    {
+                        "type": "text",
+                        "text": system,
+                        "cache_control": {"type": "ephemeral"},
+                    }
+                ]
+            response = self.client.messages.create(**kwargs)
             return response.content[0].text
         except Exception:
             return ""

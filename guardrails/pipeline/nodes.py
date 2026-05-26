@@ -126,12 +126,11 @@ def build_nodes(
                 "content": f"Documentos:\n{context_block}\n\nPergunta: {state['message']}",
             },
         ]
-        system_msg = CHATBOT_SYSTEM_PROMPT
         response = llm.complete(
             messages=messages,
             model=None,
+            system=CHATBOT_SYSTEM_PROMPT,
         )
-        _ = system_msg  # system prompt used via provider default setup
         elapsed = (time.perf_counter() - t0) * 1000
         return {
             "llm_response": response,
