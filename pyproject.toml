@@ -29,6 +29,9 @@ dev = [
     "ruff>=0.15.14",
 ]
 
+[project.scripts]
+guardrails-api = "guardrails.api.app:run"
+
 [project.optional-dependencies]
 streamlit = ["streamlit>=1.41"]
 datasets = ["datasets>=3.0"]

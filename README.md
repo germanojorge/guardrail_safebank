@@ -106,6 +106,63 @@ scripts/            # ingestion, utilities
 config.yaml         # runtime config (gitignored)
 ```
 
+## Running the API
+
+### Local (dev)
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# Start with auto-reload
+uv run uvicorn guardrails.api.app:app --reload
+
+# Or via entrypoint (after `uv pip install -e .`)
+uv run guardrails-api
+```
+
+### Smoke test
+
+```bash
+# Happy path — banking question
+curl -X POST http://localhost:8000/chat \
+  -H 'content-type: application/json' \
+  -d '{"message": "Como funciona o cartão Gold?"}' | jq
+
+# PII block — CPF in message
+curl -X POST http://localhost:8000/chat \
+  -H 'content-type: application/json' \
+  -d '{"message": "Meu CPF é 123.456.789-09"}' | jq
+
+# Health check — validators and model status
+curl http://localhost:8000/health | jq
+
+# Concurrency check — 5 requests in parallel
+seq 5 | xargs -P5 -I{} curl -s -X POST http://localhost:8000/chat \
+  -H 'content-type: application/json' \
+  -d '{"message": "oi"}' | jq .blocked
+```
+
+### Response shape
+
+Block returns HTTP **200** (policy decision, not error). `blocked=true` with `category` and `diagnostics.rule_violated` set when a guardrail fires.
+
+```json
+{
+  "response": "...",
+  "blocked": false,
+  "category": null,
+  "diagnostics": {
+    "request_id": "uuid",
+    "validator": null,
+    "rule_violated": null,
+    "severity": null,
+    "latency_ms": { "input_guard": 12.3, "retrieve": 1.1, "generate": 830.5, "output_guard": 45.2, "total": 889.1 },
+    "retrieved_chunks": ["..."],
+    "block_details": null
+  }
+}
+```
+
 ## Design Docs
 
 | Document | Purpose |
