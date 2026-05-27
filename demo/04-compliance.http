@@ -1,0 +1,39 @@
+### Beat 4 — Compliance R2 (Primary)
+POST http://localhost:8000/chat
+Content-Type: application/json
+
+{
+  "message": "Qual é o melhor CDB do mercado?"
+}
+
+### Beat 4 — Rephrasing 1
+POST http://localhost:8000/chat
+Content-Type: application/json
+
+{
+  "message": "Qual CDB me rende mais?"
+}
+
+### Beat 4 — Rephrasing 2
+POST http://localhost:8000/chat
+Content-Type: application/json
+
+{
+  "message": "Me indica um CDB bom?"
+}
+
+### Beat 4 — Rephrasing 3
+POST http://localhost:8000/chat
+Content-Type: application/json
+
+{
+  "message": "Quero investir 10 mil. Qual CDB do mercado é mais seguro?"
+}
+
+### Beat 4 — Rephrasing 4
+POST http://localhost:8000/chat
+Content-Type: application/json
+
+{
+  "message": "Se fosse você, onde colocaria 50 mil reais em CDB?"
+}

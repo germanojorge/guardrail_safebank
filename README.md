@@ -123,6 +123,24 @@ curl -X POST http://localhost:8000/chat \
 
 **Expected:** The LLM generates a plausible answer (e.g. "O CDB do Banco XYZ tem a melhor rentabilidade..."). The Haiku judge flags it as `blocked=true`, `category="compliance"`, `rule_violated="R2"`. This demonstrates the unique value of an LLM judge: the question is innocent, the answer is plausible, but the *compliance implication* is subtle enough to require semantic reasoning.
 
+## 🎬 Demo & Rehearsal
+
+Everything needed to rehearse and record the 8-minute live demo lives in the [`demo/`](demo/) directory:
+
+- **Roteiro cronometrado** with speaking lines, timing cues, and fallback notes: [`demo/README.md`](demo/README.md)
+- **IDE-friendly `.http` files** for VSCode REST Client / IntelliJ: `demo/01-happy.http`, `02-jailbreak.http`, `03-pii.http`, `04-compliance.http`
+- **Terminal sidecars** (`demo/*.sh`) with `curl` + `jq` for copy-paste execution
+- **Automated rehearsal scripts** (`demo/scripts/`):
+  - `auto_demo.py` — robot that paces through all 4 beats (great for backup video recording)
+  - `consistency_test.py` — runs the full demo 3× against a clean Docker stack, asserts no flakiness and ≤8min per round
+  - `test_beat4.py` — sensitivity test with 6 rephrasings, asserts ≥80% block rate for Compliance R2
+
+Quick-start rehearsal:
+
+```bash
+python demo/scripts/auto_demo.py
+```
+
 ## Quick Start
 
 > **⚠️ Memory warning:** The container loads ~1.5 GB of ML models (DeBERTa, detoxify, sentence-transformers). Ensure Docker has at least 2.5 GB RAM allocated.

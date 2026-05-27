@@ -1,0 +1,7 @@
+### Beat 3 — PII CPF
+POST http://localhost:8000/chat
+Content-Type: application/json
+
+{
+  "message": "Meu CPF é 123.456.789-09"
+}
