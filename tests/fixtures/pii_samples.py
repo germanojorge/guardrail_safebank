@@ -24,26 +24,16 @@ PII_SAMPLES: list[tuple[str, str, str]] = [
     ("card_spaced", "cartao", "Cartão 4111 1111 1111 1111"),
     ("email_simple", "email", "Mande para joao.silva@example.com.br"),
     ("phone_dashed", "telefone", "Liga no 011-912-3456"),
-    # 11-digit mobile numbers without formatting miss the 10-digit phone regex.
+    # 11-digit mobile numbers without formatting now match the phone regex (DDD + 9 + 8 digits).
+    ("phone_plain", "telefone", "Meu fone é 11912345678"),
+    # 9-digit local numbers still miss the phone regex.
     # Documented in LIMITATIONS.md; kept here as an explicit known gap.
-    pytest.param(
-        "phone_plain",
-        "telefone",
-        "Meu fone é 11912345678",
-        marks=pytest.mark.xfail(reason="11-digit mobile numbers without formatting miss the 10-digit phone regex; see LIMITATIONS.md"),
-    ),
-    # 9-digit local numbers also miss the phone regex.
     pytest.param(
         "phone_9digit_local",
         "telefone",
         "Meu telefone é 912345678",
         marks=pytest.mark.xfail(reason="9-digit local numbers miss the 10-digit phone regex; see LIMITATIONS.md"),
     ),
-    # CPF without dots/dash (plain 11 digits) misses the CPF regex.
-    pytest.param(
-        "cpf_unformatted",
-        "cpf",
-        "Meu CPF é 12345678909",
-        marks=pytest.mark.xfail(reason="CPF without formatting (plain 11 digits) misses the CPF regex; see LIMITATIONS.md"),
-    ),
+    # CPF without dots/dash (plain 11 digits) now matches the cpf_raw regex + checksum.
+    ("cpf_unformatted", "cpf", "Meu CPF é 12345678909"),
 ]

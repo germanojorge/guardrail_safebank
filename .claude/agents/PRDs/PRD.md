@@ -205,7 +205,7 @@ Pipeline orquestrado em LangGraph, exposto via FastAPI, demonstrado em Streamlit
 ### Estrutura de Diretórios
 
 ```
-LLM-Guardrails-Tutorial/
+guardrail-safebank/
 ├── guardrails/
 │   ├── validators/
 │   │   ├── base.py          # ValidatorResult dataclass + Validator protocol
@@ -692,7 +692,7 @@ Ordenado por probabilidade de cobrir requisito da vaga / esforço:
 - `~/.claude/rules/building-rigorously.md` — princípios de validação
 - `adr/00*` — decisões críticas
 - `LIMITATIONS.md` — gaps confirmados
-- Memory: `~/.claude/projects/-home-germano-Projects-LLM-Guardrails-Tutorial/memory/project_deadline_and_pivot.md` — deadline 2026-05-27 e abandono de guardrails-ai (parcialmente obsoleta após v2.0 do PRD, atualizar nota sobre Compliance Judge se necessário)
+- Memory: `~/.claude/projects/-home-germano-Projects-guardrail-safebank/memory/project_deadline_and_pivot.md` — deadline 2026-05-27 e abandono de guardrails-ai (parcialmente obsoleta após v2.0 do PRD, atualizar nota sobre Compliance Judge se necessário)
 
 ### Dependências externas
 - Anthropic API — https://docs.anthropic.com

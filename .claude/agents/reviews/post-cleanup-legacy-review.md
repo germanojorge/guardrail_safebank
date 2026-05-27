@@ -41,7 +41,7 @@ The file has sections for `validators.toxicity`, `validators.pii`, `validators.j
 
 ---
 
-**M2 — `main.py` is a dead stub** (3 lines, prints "Hello from llm-guardrails-tutorial!")
+**M2 — `main.py` is a dead stub** (3 lines, prints "Hello from guardrail-safebank!")
 No `[project.scripts]` entry point references it. No module imports it. It's scaffolding from `uv init`.
 
 **Fix**: Delete `main.py`.

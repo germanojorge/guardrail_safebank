@@ -27,7 +27,7 @@ services:
         condition: service_healthy
 
   ingest:
-    image: llm-guardrails-tutorial-api:latest
+    image: guardrail-safebank-api:latest
     entrypoint: ["uv", "run", "--no-dev", "python", "scripts/ingest_banking_kb.py"]
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}

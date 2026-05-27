@@ -54,7 +54,7 @@ def test_health_models_loaded_false_when_none(make_client, monkeypatch):
     from tests.api.conftest import _build_mock_components
 
     components = list(_build_mock_components())
-    graph, toxic, jailbreak, compliance, llm, embedding, vector_store = components
+    graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store = components
     toxic._model = None
     jailbreak._pipeline = None
     embedding.model = None
@@ -63,7 +63,7 @@ def test_health_models_loaded_false_when_none(make_client, monkeypatch):
     monkeypatch.setattr(
         sys.modules["guardrails.api.app"],
         "_create_components",
-        lambda cfg: (graph, toxic, jailbreak, compliance, llm, embedding, vector_store),
+        lambda cfg: (graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store),
     )
     import guardrails.config
 

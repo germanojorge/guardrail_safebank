@@ -114,6 +114,7 @@ def _build_mock_components(
     return (
         graph,
         mock_toxic,
+        mock_pii_input,
         mock_jailbreak,
         mock_compliance,
         mock_llm,

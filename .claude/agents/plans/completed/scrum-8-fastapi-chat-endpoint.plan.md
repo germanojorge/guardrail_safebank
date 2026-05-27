@@ -130,7 +130,7 @@ def setup_logging() -> None:
 ```toml
 # SOURCE: pyproject.toml (current state — no [project.scripts] yet)
 [project]
-name = "llm-guardrails-tutorial"
+name = "guardrail-safebank"
 dependencies = ["fastapi>=0.115", "uvicorn[standard]>=0.34", ...]
 ```
 

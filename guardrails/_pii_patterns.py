@@ -33,14 +33,17 @@ PII_PATTERNS: dict[str, str] = {
     #      PT-BR always starts with 9). The (?<!\d)/(?!\d) guards prevent matching
     #      inside longer digit sequences (e.g. a CPF where digit[2]≠9).
     # PT-BR phone — two sub-patterns joined with |:
-    #   1. Formatted: (11) 91234-5678 | 11 91234-5678 | +55 11 91234-5678
+    #   1. Formatted: (11) 91234-5678 | 11 91234-5678 | +55 11 91234-5678 | 011-912-3456
     #      (?<!\d) ensures DDD is not embedded inside a longer digit sequence
     #      (prevents matching substrings of CPF, card, or loyalty codes).
+    #      0? allows optional leading zero before DDD (e.g. 011 for São Paulo).
+    #      The prefix after DDD is 3–5 digits to cover both old 4-digit local
+    #      numbers and newer 5-digit mobile prefixes.
     #   2. Unformatted mobile: 11912345678 — DDD(2) + 9 + 8 digits; the leading
     #      9 distinguishes celular from fixed lines and prevents matching CPF
     #      sequences where digit[2] is never 9 for common test CPFs.
     "telefone": (
-        r"(?<!\d)(?:\+55[\s\-]?)?(?:\(\d{2}\)[\s\-]?|\d{2}[\s\-])\d{4,5}[\s\-]?\d{4}(?!\d)"
+        r"(?<!\d)(?:\+55[\s\-]?)?(?:\(\d{2}\)[\s\-]?|0?\d{2}[\s\-])\d{3,5}[\s\-]?\d{4}(?!\d)"
         r"|(?<!\d)\d{2}9\d{8}(?!\d)"
     ),
     # CPF formatted: 000.000.000-00

@@ -8,7 +8,7 @@
 # Full rebuild from scratch (if base image is gone):
 #   Restore the model-download stage from git history and rebuild.
 
-FROM llm-guardrails-tutorial-api:latest
+FROM guardrail-safebank-api:latest
 WORKDIR /app
 
 # Sync new deps only (uv detects what's already installed; only installs delta)

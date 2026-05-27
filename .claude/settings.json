@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd /home/germano/Projects/LLM-Guardrails-Tutorial && uv run python .claude/hooks/check_commit.py",
+            "command": "cd /home/germano/Projects/guardrail-safebank && uv run python .claude/hooks/check_commit.py",
             "timeout": 10
           }
         ]

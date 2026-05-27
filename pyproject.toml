@@ -1,5 +1,5 @@
 [project]
-name = "llm-guardrails-tutorial"
+name = "guardrail-safebank"
 version = "0.1.0"
 description = "Bidirectional LLM guardrail proxy for B2C banking chatbots"
 requires-python = ">=3.12"

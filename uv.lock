@@ -767,6 +767,76 @@ wheels = [
 ]
 
 [[package]]
+name = "guardrail-safebank"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "anthropic" },
+    { name = "detoxify" },
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "langgraph" },
+    { name = "presidio-analyzer" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "pyyaml" },
+    { name = "qdrant-client" },
+    { name = "sentence-transformers" },
+    { name = "spacy" },
+    { name = "structlog" },
+    { name = "torch" },
+    { name = "transformers" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.optional-dependencies]
+datasets = [
+    { name = "datasets" },
+]
+streamlit = [
+    { name = "streamlit" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pre-commit" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", specifier = ">=0.104.1" },
+    { name = "datasets", marker = "extra == 'datasets'", specifier = ">=3.0" },
+    { name = "detoxify", specifier = ">=0.5.2" },
+    { name = "fastapi", specifier = ">=0.115" },
+    { name = "httpx", specifier = ">=0.27" },
+    { name = "langgraph", specifier = ">=0.4" },
+    { name = "presidio-analyzer", specifier = ">=2.2" },
+    { name = "pydantic", specifier = ">=2.10" },
+    { name = "pydantic-settings", specifier = ">=2.7" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "qdrant-client", specifier = ">=1.13" },
+    { name = "sentence-transformers", specifier = ">=3.0" },
+    { name = "spacy", specifier = ">=3.7" },
+    { name = "streamlit", marker = "extra == 'streamlit'", specifier = ">=1.41" },
+    { name = "structlog", specifier = ">=25.1" },
+    { name = "torch", specifier = ">=2.2" },
+    { name = "transformers", specifier = ">=4.40" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.34" },
+]
+provides-extras = ["streamlit", "datasets"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pre-commit", specifier = ">=4.6.0" },
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "pytest-asyncio", specifier = ">=0.25" },
+    { name = "ruff", specifier = ">=0.15.14" },
+]
+
+[[package]]
 name = "h11"
 version = "0.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1210,76 +1280,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/17/eb/8883d1158c743d0aac350f09df7880714d27283497e8c80bb9fe3480f165/langsmith-0.8.5.tar.gz", hash = "sha256:3615243d99c12f4047f13042bdc05a373dce232d106a6511b3ca7b48c5af1c2c", size = 4462348, upload-time = "2026-05-15T21:31:41.093Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/23/85/968c88a63e32a59b3e5c68afd2fe114ce0708a125db0be1a85efc25fb2ea/langsmith-0.8.5-py3-none-any.whl", hash = "sha256:efc779f9d450dcaf9d97bc8894f4926276509d6e730e05289af9a64debce06ae", size = 399564, upload-time = "2026-05-15T21:31:39.046Z" },
-]
-
-[[package]]
-name = "llm-guardrails-tutorial"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "anthropic" },
-    { name = "detoxify" },
-    { name = "fastapi" },
-    { name = "httpx" },
-    { name = "langgraph" },
-    { name = "presidio-analyzer" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "pyyaml" },
-    { name = "qdrant-client" },
-    { name = "sentence-transformers" },
-    { name = "spacy" },
-    { name = "structlog" },
-    { name = "torch" },
-    { name = "transformers" },
-    { name = "uvicorn", extra = ["standard"] },
-]
-
-[package.optional-dependencies]
-datasets = [
-    { name = "datasets" },
-]
-streamlit = [
-    { name = "streamlit" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pre-commit" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "anthropic", specifier = ">=0.104.1" },
-    { name = "datasets", marker = "extra == 'datasets'", specifier = ">=3.0" },
-    { name = "detoxify", specifier = ">=0.5.2" },
-    { name = "fastapi", specifier = ">=0.115" },
-    { name = "httpx", specifier = ">=0.27" },
-    { name = "langgraph", specifier = ">=0.4" },
-    { name = "presidio-analyzer", specifier = ">=2.2" },
-    { name = "pydantic", specifier = ">=2.10" },
-    { name = "pydantic-settings", specifier = ">=2.7" },
-    { name = "pyyaml", specifier = ">=6.0.3" },
-    { name = "qdrant-client", specifier = ">=1.13" },
-    { name = "sentence-transformers", specifier = ">=3.0" },
-    { name = "spacy", specifier = ">=3.7" },
-    { name = "streamlit", marker = "extra == 'streamlit'", specifier = ">=1.41" },
-    { name = "structlog", specifier = ">=25.1" },
-    { name = "torch", specifier = ">=2.2" },
-    { name = "transformers", specifier = ">=4.40" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.34" },
-]
-provides-extras = ["streamlit", "datasets"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pre-commit", specifier = ">=4.6.0" },
-    { name = "pytest", specifier = ">=8.0" },
-    { name = "pytest-asyncio", specifier = ">=0.25" },
-    { name = "ruff", specifier = ">=0.15.14" },
 ]
 
 [[package]]

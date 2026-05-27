@@ -3,8 +3,8 @@
 # Tag and push to registry to avoid re-downloading ~1.5GB of Hugging Face weights.
 #
 # Usage:
-#   docker build -f docker/Dockerfile.models -t llm-guardrails-tutorial-models:latest .
-#   docker push <registry>/llm-guardrails-tutorial-models:latest
+#   docker build -f docker/Dockerfile.models -t guardrail-safebank-models:latest .
+#   docker push <registry>/guardrail-safebank-models:latest
 
 FROM python:3.12-slim
 WORKDIR /models

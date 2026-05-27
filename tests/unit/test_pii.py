@@ -164,3 +164,59 @@ def test_latency_under_target():
     result = PIIValidator("input").run(text)
     assert result.latency_ms is not None
     assert result.latency_ms < 50, f"Latency {result.latency_ms:.1f}ms exceeded 50ms budget"
+
+
+# ---------------------------------------------------------------------------
+# Presidio NER layer guards
+# ---------------------------------------------------------------------------
+
+
+def _make_presidio_result(entity_type: str, start: int, end: int, score: float):
+    """Return a minimal mock of a Presidio RecognizerResult."""
+    from unittest.mock import MagicMock
+
+    r = MagicMock()
+    r.entity_type = entity_type
+    r.start = start
+    r.end = end
+    r.score = score
+    return r
+
+
+def test_presidio_low_score_is_ignored():
+    """Presidio results with score < 0.85 must not trigger a block."""
+    from unittest.mock import MagicMock
+
+    mock_engine = MagicMock()
+    mock_engine.analyze.return_value = [
+        _make_presidio_result("PERSON", 0, 4, 0.50),
+    ]
+    validator = PIIValidator(stage="input", presidio_engine=mock_engine)
+    result = validator.run("João")
+    assert result.passed is True
+    assert result.details["entities"] == {}
+
+
+def test_presidio_denylist_term_is_ignored():
+    """Presidio results containing a deny-listed token must not trigger a block."""
+    from unittest.mock import MagicMock
+
+    mock_engine = MagicMock()
+    mock_engine.analyze.return_value = [
+        _make_presidio_result("LOCATION", 0, 10, 0.95),  # "Cartão Gold"
+    ]
+    validator = PIIValidator(stage="input", presidio_engine=mock_engine)
+    result = validator.run("Cartão Gold")
+    assert result.passed is True
+    assert result.details["entities"] == {}
+
+
+def test_output_stage_skips_presidio_even_when_engine_present():
+    """Output validator must NOT call Presidio even if an engine is passed."""
+    from unittest.mock import MagicMock
+
+    mock_engine = MagicMock()
+    validator = PIIValidator(stage="output", presidio_engine=mock_engine)
+    result = validator.run("Maria Silva")
+    assert result.passed is True
+    mock_engine.analyze.assert_not_called()
