@@ -96,7 +96,22 @@ class ComplianceValidator:
                 timeout=self.timeout,
             )
 
-            tool_block = next(b for b in response.content if b.type == "tool_use")
+            tool_block = next((b for b in response.content if b.type == "tool_use"), None)
+            if tool_block is None:
+                return ValidatorResult(
+                    passed=False,
+                    category="compliance",
+                    score=1.0,
+                    details={
+                        "verdict": "fail",
+                        "rule_violated": None,
+                        "reasoning": "",
+                        "model": self.model,
+                        "stop_reason": getattr(response, "stop_reason", None),
+                        "error": "judge_no_tool_use",
+                    },
+                    latency_ms=(time.perf_counter() - t0) * 1000,
+                )
             parsed = tool_block.input
             passed = parsed["verdict"] == "pass"
             score = None if passed else 1.0

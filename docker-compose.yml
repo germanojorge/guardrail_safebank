@@ -3,6 +3,12 @@ services:
     image: qdrant/qdrant:latest
     ports: ["6333:6333"]
     volumes: ["qdrant_data:/qdrant/storage"]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/6333"]
+      interval: 5s
+      timeout: 5s
+      retries: 8
+      start_period: 15s
 
   api:
     build:
@@ -12,18 +18,23 @@ services:
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - QDRANT_HOST=qdrant
+    volumes:
+      - /home/germano/.cache/torch:/root/.cache/torch:ro
+      - ./config.yaml:/app/config.yaml:ro
+      - ./guardrails:/app/guardrails:ro
     depends_on:
       qdrant:
-        condition: service_started
+        condition: service_healthy
 
   ingest:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.api
-    entrypoint: ["uv", "run", "python", "scripts/ingest_banking_kb.py"]
+    image: llm-guardrails-tutorial-api:latest
+    entrypoint: ["uv", "run", "--no-dev", "python", "scripts/ingest_banking_kb.py"]
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - QDRANT_HOST=qdrant
+    volumes:
+      - ./data:/app/data:ro
+      - ./config.yaml:/app/config.yaml:ro
     depends_on:
       qdrant:
         condition: service_started

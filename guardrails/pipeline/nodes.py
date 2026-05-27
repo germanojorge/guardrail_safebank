@@ -101,7 +101,10 @@ def build_nodes(
 
             if query_vec is not None:
                 t_search = time.perf_counter()
-                hits = vector_store.search(query_vec, top_k=RETRIEVE_TOP_K)
+                try:
+                    hits = vector_store.search(query_vec, top_k=RETRIEVE_TOP_K)
+                except Exception:
+                    hits = []
                 search_ms = (time.perf_counter() - t_search) * 1000
                 chunks = [h.text for h in hits if h.text]
 

@@ -37,7 +37,19 @@ class ToxicValidator:
 
     def run(self, text: str, context: Mapping[str, Any] | None = None) -> ValidatorResult:
         t0 = time.perf_counter()
-        scores = self._model.predict(text)
+        try:
+            scores = self._model.predict(text)
+        except Exception:
+            return ValidatorResult(
+                passed=False,
+                category="toxicity",
+                score=1.0,
+                details={
+                    "error": "model_predict_failed",
+                    "stage": "toxic_predict",
+                },
+                latency_ms=(time.perf_counter() - t0) * 1000,
+            )
         subscores = {k: float(scores[k]) for k in self._CATEGORIES}
         top_category, top_score = max(subscores.items(), key=lambda kv: kv[1])
         passed = top_score < self.threshold

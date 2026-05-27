@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from contextlib import asynccontextmanager
 from typing import Any
 from uuid import uuid4
@@ -49,13 +50,14 @@ def _create_components(cfg: dict[str, Any]):
         model=v_cfg.get("compliance", {}).get("model", "claude-haiku-4-5-20251001"),
         timeout=v_cfg.get("compliance", {}).get("timeout", 5.0),
     )
-    llm = AnthropicProvider(model=cfg.get("model", "claude-sonnet-4-6-20251105"))
+    llm = AnthropicProvider(model=cfg.get("model", "claude-sonnet-4-6"))
     embedding = SentenceTransformerProvider(
         model_name=emb_cfg.get("model", "intfloat/multilingual-e5-small"),
         device=emb_cfg.get("device", "cpu"),
+        batch_size=emb_cfg.get("batch_size", 32),
     )
     vector_store = QdrantStore(
-        host=qd_cfg.get("host", "localhost"),
+        host=qd_cfg.get("host", os.environ.get("QDRANT_HOST", "localhost")),
         port=qd_cfg.get("port", 6333),
         collection=qd_cfg.get("collection", "banking_kb"),
     )
@@ -103,6 +105,12 @@ def create_app() -> FastAPI:
 
     @fast_app.post("/chat", response_model=ChatResponse)
     async def chat(req: ChatRequest, request: Request) -> ChatResponse:
+        """Proxy chatbot endpoint with bidirectional guardrails.
+
+        HTTP 200 always — policy blocks are signaled via ``blocked`` field
+        in the JSON body (not HTTP status). Check ``response.blocked`` to
+        distinguish allowed replies from blocked policy violations.
+        """
         result = await request.app.state.graph.ainvoke({"message": req.message, "diagnostics": {}})
 
         blocked: bool = result["blocked"]

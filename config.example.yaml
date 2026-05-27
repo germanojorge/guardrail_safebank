@@ -1,0 +1,35 @@
+anthropic_api_key: "${ANTHROPIC_API_KEY}"
+model: "claude-sonnet-4-6"
+
+validators:
+  toxicity:
+    enabled: true
+    threshold: 0.7
+    model: "multilingual"
+    applies_to: [input, output]
+  pii:
+    enabled: true
+    applies_to: [input, output]
+  jailbreak:
+    enabled: true
+    threshold: 0.85
+    applies_to: [input]
+  compliance:
+    enabled: true
+    model: "claude-haiku-4-5-20251001"
+    timeout: 5.0
+    applies_to: [output]
+
+qdrant:
+  host: "${QDRANT_HOST}"
+  port: 6333
+  collection: "banking_kb"
+
+embedding:
+  model: "intfloat/multilingual-e5-small"
+  device: "cpu"
+  batch_size: 32
+
+logging:
+  format: "json"
+  level: "INFO"

@@ -97,6 +97,7 @@ class JailbreakValidator:
                 category="jailbreak",
                 score=1.0,
                 details={
+                    "rule_violated": "jailbreak",
                     "layer_caught": "substring",
                     "substring_match_count": match_count,
                     "deberta_score": None,
@@ -123,7 +124,20 @@ class JailbreakValidator:
                 latency_ms=(time.perf_counter() - t0) * 1000,
             )
 
-        result = self._pipeline(text)[0]
+        try:
+            result = self._pipeline(text)[0]
+        except Exception:
+            return ValidatorResult(
+                passed=False,
+                category="jailbreak",
+                score=1.0,
+                details={
+                    "error": "deberta_pipeline_failed",
+                    "stage": "jailbreak_deberta",
+                    "substring_match_count": 0,
+                },
+                latency_ms=(time.perf_counter() - t0) * 1000,
+            )
         label: str = result["label"]
         score: float = result["score"]
 
@@ -133,6 +147,7 @@ class JailbreakValidator:
                 category="jailbreak",
                 score=score,
                 details={
+                    "rule_violated": "jailbreak",
                     "layer_caught": "deberta",
                     "substring_match_count": 0,
                     "deberta_score": score,

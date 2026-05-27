@@ -16,6 +16,13 @@ DEFAULT_DIM = 384
 
 @runtime_checkable
 class EmbeddingProvider(Protocol):
+    """Embedding provider.
+
+    E5-based models require ``"query: "`` / ``"passage: "`` prefixes on
+    inputs — recall drops ~20-30% without them. Implementations must apply
+    prefixes internally so callers stay model-agnostic.
+    """
+
     dim: int
 
     def embed_queries(self, texts: list[str]) -> list[list[float]]: ...

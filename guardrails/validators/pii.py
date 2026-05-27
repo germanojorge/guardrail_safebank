@@ -32,11 +32,13 @@ class PIIValidator:
             if spans:
                 entities[entity_type] = spans
         passed = not entities
+        first_entity = next(iter(entities), None) if entities else None
         return ValidatorResult(
             passed=passed,
             category=f"pii_{self.stage}",
             score=None,
             details={
+                "rule_violated": first_entity,
                 "entities": entities,
                 "stage": self.stage,
                 "patterns_checked": list(PII_PATTERNS.keys()),

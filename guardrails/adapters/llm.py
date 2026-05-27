@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
 
-DEFAULT_MODEL = "claude-sonnet-4-6-20251105"
+DEFAULT_MODEL = "claude-sonnet-4-6"
 JUDGE_MODEL = "claude-haiku-4-5-20251001"
 
 
@@ -81,7 +81,10 @@ class AnthropicProvider:
                 ]
             response = self.client.messages.create(**kwargs)
             return response.content[0].text
-        except Exception:
+        except Exception as e:
+            import structlog
+
+            structlog.get_logger().error("llm.complete_failed", error=type(e).__name__, detail=str(e)[:200])
             return ""
 
     def complete_with_tools(

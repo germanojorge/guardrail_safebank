@@ -11,12 +11,14 @@ WORKDIR /models
 RUN pip install sentence-transformers transformers torch --quiet
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
 RUN python -c "from transformers import pipeline; pipeline('text-classification', model='protectai/deberta-v3-base-prompt-injection-v2')"
+RUN pip install detoxify --quiet && python -c "from detoxify import Detoxify; Detoxify('multilingual')"
 
 FROM python:3.12-slim
 WORKDIR /app
 COPY --from=model-download /root/.cache /root/.cache
 COPY pyproject.toml uv.lock ./
 COPY guardrails/ guardrails/
+COPY scripts/ scripts/
 RUN pip install uv && uv sync --no-dev --frozen
 EXPOSE 8000
-CMD ["uv", "run", "guardrails-api"]
+CMD ["uv", "run", "--no-dev", "guardrails-api"]
