@@ -1,0 +1,7 @@
+### Beat 1 — Happy Path (Cartão Gold)
+POST http://localhost:8000/chat
+Content-Type: application/json
+
+{
+  "message": "Como funciona o cartão Gold?"
+}

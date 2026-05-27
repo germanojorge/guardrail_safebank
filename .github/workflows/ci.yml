@@ -5,6 +5,13 @@ on:
     branches: [main, feature/*]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_demo_smoke:
+        description: "Run demo-smoke job (requires ANTHROPIC_API_KEY)"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   lint:
@@ -67,3 +74,42 @@ jobs:
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  demo-smoke:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_demo_smoke == 'true'
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --group dev
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.api
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.ui
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - run: docker compose up -d
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - run: |
+          set -e
+          python demo/scripts/auto_demo.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - run: docker compose down -v
+        if: always()
