@@ -33,4 +33,4 @@ config.yaml
 .ruff_cache/
 
 # Byte-compiled (extended)
-*.pyc
+*.pyc.cache/

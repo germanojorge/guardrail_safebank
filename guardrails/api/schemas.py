@@ -48,3 +48,16 @@ class HealthResponse(BaseModel):
     status: Literal["ok"]
     validators_loaded: list[str]
     models_loaded: ModelsLoaded
+
+
+class OutputGuardRequest(BaseModel):
+    response: str = Field(min_length=1, max_length=8000)
+
+
+class OutputGuardResponse(BaseModel):
+    blocked: bool
+    category: str | None
+    rule_violated: str | None
+    reasoning: str | None
+    latency_ms: float
+    details: dict[str, Any] | None

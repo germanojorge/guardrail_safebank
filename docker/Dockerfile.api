@@ -1,24 +1,26 @@
-# Multi-stage build:
-# Stage 1 downloads ML model weights (~1.5GB).
-# Stage 2 is the lean runtime image.
+# Incremental build on top of the existing full image.
+# Adds presidio-analyzer + spacy + pt_core_news_sm to the already-built stack.
 #
-# For CI cache efficiency, the model-download stage is cached via GHA
-# (type=gha,mode=max) so model weights don't re-download on every commit.
-# For local pre-build, use docker/Dockerfile.models separately.
+# Fast rebuild workflow (code already live via volume mount):
+#   docker compose build api   # only downloads presidio+spacy (~60MB)
+#   docker compose up -d api
+#
+# Full rebuild from scratch (if base image is gone):
+#   Restore the model-download stage from git history and rebuild.
 
-FROM python:3.12-slim AS model-download
-WORKDIR /models
-RUN pip install sentence-transformers transformers torch --quiet
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
-RUN python -c "from transformers import pipeline; pipeline('text-classification', model='protectai/deberta-v3-base-prompt-injection-v2')"
-RUN pip install detoxify --quiet && python -c "from detoxify import Detoxify; Detoxify('multilingual')"
-
-FROM python:3.12-slim
+FROM llm-guardrails-tutorial-api:latest
 WORKDIR /app
-COPY --from=model-download /root/.cache /root/.cache
+
+# Sync new deps only (uv detects what's already installed; only installs delta)
 COPY pyproject.toml uv.lock ./
+RUN uv sync --no-dev --frozen
+
+# PT-BR NER model for Presidio (~12MB)
+RUN uv run --no-dev python -m spacy download pt_core_news_sm
+
+# Bake latest code (volume mount handles this at runtime, but baked for portability)
 COPY guardrails/ guardrails/
 COPY scripts/ scripts/
-RUN pip install uv && uv sync --no-dev --frozen
+
 EXPOSE 8000
 CMD ["uv", "run", "--no-dev", "guardrails-api"]

@@ -21,3 +21,7 @@ RUN python -c "from transformers import pipeline; pipeline('text-classification'
 # Pre-install + download detoxify multilingual model
 RUN pip install --no-cache-dir detoxify --quiet
 RUN python -c "from detoxify import Detoxify; Detoxify('multilingual')"
+
+# Presidio + spaCy PT-BR NER model (PERSON, LOCATION detection)
+RUN pip install --no-cache-dir presidio-analyzer spacy --quiet
+RUN python -m spacy download pt_core_news_sm

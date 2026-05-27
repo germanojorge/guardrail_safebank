@@ -15,6 +15,8 @@ from guardrails.api.schemas import (
     HealthResponse,
     LatencyBreakdown,
     ModelsLoaded,
+    OutputGuardRequest,
+    OutputGuardResponse,
 )
 from guardrails.config import get_config
 from guardrails.observability.logger import setup_logging
@@ -42,9 +44,13 @@ def _create_components(cfg: dict[str, Any]):
     from guardrails.validators.pii import PIIValidator
     from guardrails.validators.toxic import ToxicValidator
 
+    from guardrails.validators.pii import _build_presidio_engine
+
+    presidio_engine = _build_presidio_engine()
+
     toxic = ToxicValidator(threshold=v_cfg.get("toxicity", {}).get("threshold", 0.7))
-    pii_input = PIIValidator(stage="input")
-    pii_output = PIIValidator(stage="output")
+    pii_input = PIIValidator(stage="input", presidio_engine=presidio_engine)
+    pii_output = PIIValidator(stage="output", presidio_engine=presidio_engine)
     jailbreak = JailbreakValidator(threshold=v_cfg.get("jailbreak", {}).get("threshold", 0.85))
     compliance = ComplianceValidator(
         model=v_cfg.get("compliance", {}).get("model", "claude-haiku-4-5-20251001"),
@@ -72,15 +78,16 @@ def _create_components(cfg: dict[str, Any]):
         embedding=embedding,
         vector_store=vector_store,
     )
-    return graph, toxic, jailbreak, compliance, llm, embedding, vector_store
+    return graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging()
-    graph, toxic, jailbreak, compliance, llm, embedding, vector_store = _create_components(get_config())
+    graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store = _create_components(get_config())
     app.state.graph = graph
     app.state.toxic = toxic
+    app.state.pii_input = pii_input
     app.state.jailbreak = jailbreak
     app.state.compliance = compliance
     app.state.llm = llm
@@ -145,6 +152,55 @@ def create_app() -> FastAPI:
                 retrieved_chunks=retrieved_chunks,
                 block_details=details if details else None,
             ),
+        )
+
+    @fast_app.post("/debug/output-guard", response_model=OutputGuardResponse)
+    def debug_output_guard(req: OutputGuardRequest, request: Request) -> OutputGuardResponse:
+        """Run only the output guard on an arbitrary text.
+
+        Useful for testing whether a given LLM response would be blocked
+        without going through the full input → RAG → generate pipeline.
+        Always returns HTTP 200; check ``blocked`` to see the verdict.
+        """
+        import time
+
+        from guardrails.pipeline.state import (
+            CATEGORY_COMPLIANCE,
+            CATEGORY_PII_OUTPUT,
+            CATEGORY_TOXICITY,
+        )
+        from guardrails.validators.pii import PIIValidator
+
+        toxic = request.app.state.toxic
+        pii_output = PIIValidator(stage="output", presidio_engine=request.app.state.pii_input._presidio)
+        compliance = request.app.state.compliance
+
+        validators = [
+            (toxic, CATEGORY_TOXICITY),
+            (pii_output, CATEGORY_PII_OUTPUT),
+            (compliance, CATEGORY_COMPLIANCE),
+        ]
+
+        t0 = time.perf_counter()
+        for validator, category in validators:
+            result = validator.run(req.response)
+            if not result.passed:
+                return OutputGuardResponse(
+                    blocked=True,
+                    category=category,
+                    rule_violated=result.details.get("rule_violated"),
+                    reasoning=result.details.get("reasoning"),
+                    latency_ms=(time.perf_counter() - t0) * 1000,
+                    details=result.details or None,
+                )
+
+        return OutputGuardResponse(
+            blocked=False,
+            category=None,
+            rule_violated=None,
+            reasoning=None,
+            latency_ms=(time.perf_counter() - t0) * 1000,
+            details=None,
         )
 
     @fast_app.get("/health", response_model=HealthResponse)
