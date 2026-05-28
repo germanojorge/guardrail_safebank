@@ -30,7 +30,7 @@
 | **Vector store: Qdrant via Docker** | Definido (2026-05-23) — open-source, filtros nativos por metadado, encaixa em docker-compose, API simples atrás do adapter |
 | **Embeddings: `sentence-transformers/intfloat/multilingual-e5-small` local** | Definido (2026-05-25) — Voyage AI abandonado nesta sprint pra remover dependência de API/quota do caminho crítico da demo. ~120MB, CPU. Voyage vira Extras com ADR explicando trade-off (qualidade PT-BR superior) |
 | **PII: regex puro PT-BR** (email, telefone, CPF formatado, cartão 16 dígitos) | Definido (2026-05-25) — Presidio abandonado nesta sprint. Limitações declaradas em `LIMITATIONS.md`: CPF sem checksum, cartão sem Luhn, sem CNPJ, sem conta bancária, sem detecção de nome/endereço. Presidio + CPF/CNPJ/Luhn checksums viram Extras |
-| **Jailbreak em camadas (layered defense)** — substring fast-path (do PoC) + DeBERTa HF (`protectai/deberta-v3-base-prompt-injection-v2`) | Definido (2026-05-25) — substring sozinho falha em >80% do JailbreakBench (paraphrased), por isso building-rigorously.md §6 ("substring matching is almost never a guardrail"). Layered defense narrada: tabela com taxa de bloqueio substring-only vs substring+DeBERTa em `LIMITATIONS.md` |
+| **Jailbreak em camadas (layered defense)** — substring fast-path (do PoC) + Prompt-Guard-2 HF (`meta-llama/Llama-Prompt-Guard-2-86M`, multilíngue) | Definido (2026-05-25; **modelo trocado 2026-05-27**) — substring sozinho falha em >80% do JailbreakBench (paraphrased), por isso building-rigorously.md §6 ("substring matching is almost never a guardrail"). O DeBERTa anterior (`protectai/...-prompt-injection-v2`) era inglês-cêntrico e dava FP ~1.0 em PT-BR benigno ("qual meu saldo") → trocado pelo Prompt-Guard-2 multilíngue (repo **gated**, exige token HF). Layered defense narrada em `LIMITATIONS.md` |
 | **AI-as-a-Judge: 1 judge sync (Claude Haiku) para Compliance Bancário** | **Re-confirmado (2026-05-25)** — corte anterior revertido após grilling: implementação é ~2-3h, é o diferencial central da vaga, único validator que justifica LLM. Rubrica de 5 regras (R1-R5) + 2 few-shots por regra; tool use pra structured output (`verdict, rule_violated, reasoning`); bloqueio direto (reask = Extras). Detalhes em `guardrails/compliance/rubric.py` e PRD §7 F-4 |
 | **Security Agent: reframe arquitetural** — o próprio pipeline de guardrails é o Security Agent, com block_log node persistindo bloqueios em JSON estruturado | Definido (2026-05-23, observabilidade atualizada 2026-05-25) — evita over-scope; cada guardrail = sub-agente especializado; agente analítico autônomo de detecção de padrões fica em Extras |
 | **Divisão de responsabilidades**: LangGraph **orquestra**, validators custom Python **validam**, Compliance é **node próprio** chamando Claude Haiku via Anthropic SDK direto | Definido (2026-05-23, simplificado 2026-05-25) — sem herança de `Validator` do guardrails-ai (biblioteca abandonada); cada validator é função `(text) -> ValidatorResult`. Reask 1x vira Extras (no MVP é bloqueio direto pra previsibilidade e <2h de implementação a menos) |
@@ -122,3 +122,14 @@ Mapeamento (atualizado 2026-05-25):
 | Security Agents | Pipeline de guardrails enquadrado como security agents (cada validator = sub-agente) |
 | CI/CD | GitHub Actions com lint ruff + pytest + adversarial smoke + docker build |
 | Banking compliance / regulatório | Rubrica R1-R5 do Compliance Judge cobre BACEN/CVM (promessa de rendimento, recomendação específica, ação não-executável, vazamento de instruções, fora do escopo) |
+
+## Git Workflow
+
+Ao fazer mudanças no código, siga este fluxo de commit/push:
+
+1. **Faça mudanças em lotes lógicos** — cada commit deve representar uma unidade coesa (feature, fix, refactor).
+2. **Commit automático ao finalizar cada etapa** — após completar uma tarefa ou milestone, faça commit com mensagem clara e concisa em português (ex: `feat: adiciona validator de jailbreak`, `fix: corrige timeout no compliance judge`).
+3. **Convenção de mensagens**: use [Conventional Commits](https://www.conventionalcommits.org/) — `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`.
+4. **Push ao final de cada sessão de trabalho** — faça `git push` após commits quando a sessão estiver concluindo ou o usuário indicar que terminou.
+5. **Nunca faça force-push**, nunca pule hooks (`--no-verify`), e nunca faça amend em commits já pushados.
+6. Antes de commitar, verifique com `git status` e `git diff --stat` se apenas os arquivos intencionados estão no stage.
