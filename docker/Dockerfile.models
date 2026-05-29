@@ -2,8 +2,11 @@
 # Build once, cache forever. The API Dockerfile copies /root/.cache from this image.
 # Tag and push to registry to avoid re-downloading ~1.5GB of Hugging Face weights.
 #
-# Usage:
-#   docker build -f docker/Dockerfile.models -t guardrail-safebank-models:latest .
+# Usage (the jailbreak model is a gated Meta repo — pass your HF token as a
+# BuildKit secret so it is NOT baked into image layers):
+#   export HF_TOKEN=hf_xxx   # token with access to meta-llama/Llama-Prompt-Guard-2-86M
+#   DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.models \
+#     --secret id=hf_token,env=HF_TOKEN -t guardrail-safebank-models:latest .
 #   docker push <registry>/guardrail-safebank-models:latest
 
 FROM python:3.12-slim
@@ -15,13 +18,26 @@ RUN pip install --no-cache-dir sentence-transformers transformers torch --quiet
 # Pre-download embedding model
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
 
-# Pre-download jailbreak classifier
-RUN python -c "from transformers import pipeline; pipeline('text-classification', model='protectai/deberta-v3-base-prompt-injection-v2')"
+# Pre-download jailbreak classifier (gated Meta repo — multilingual, incl. PT-BR).
+# HF token read from BuildKit secret; never persisted in a layer.
+RUN --mount=type=secret,id=hf_token \
+    HF_TOKEN="$(cat /run/secrets/hf_token)" \
+    python -c "from transformers import pipeline; pipeline('text-classification', model='meta-llama/Llama-Prompt-Guard-2-86M')"
 
 # Pre-install + download detoxify multilingual model
 RUN pip install --no-cache-dir detoxify --quiet
 RUN python -c "from detoxify import Detoxify; Detoxify('multilingual')"
 
+# Pre-download spaCy PT-BR large model (word vectors for POS tagger similarity)
+RUN pip install --no-cache-dir spacy --quiet
+RUN python -m spacy download pt_core_news_lg
+
+# Pre-download POS tagger (Emanuel/porttagger-news-base, ~440MB)
+RUN python -c "from transformers import AutoModelForTokenClassification, AutoTokenizer; AutoTokenizer.from_pretrained('Emanuel/porttagger-news-base'); AutoModelForTokenClassification.from_pretrained('Emanuel/porttagger-news-base')"
+
+# Pre-download MiniLM (used by semantic index + out-of-scope validator)
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')"
+
 # Presidio + spaCy PT-BR NER model (PERSON, LOCATION detection)
-RUN pip install --no-cache-dir presidio-analyzer spacy --quiet
+RUN pip install --no-cache-dir presidio-analyzer --quiet
 RUN python -m spacy download pt_core_news_sm

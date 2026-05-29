@@ -41,6 +41,7 @@ def _create_components(cfg: dict[str, Any]):
     )
     from guardrails.validators.compliance import ComplianceValidator
     from guardrails.validators.jailbreak import JailbreakValidator
+    from guardrails.validators.out_of_scope import OutOfScopeValidator
     from guardrails.validators.pii import PIIValidator
     from guardrails.validators.toxic import ToxicValidator
 
@@ -52,6 +53,12 @@ def _create_components(cfg: dict[str, Any]):
     pii_input = PIIValidator(stage="input", presidio_engine=presidio_engine)
     pii_output = PIIValidator(stage="output", presidio_engine=presidio_engine)
     jailbreak = JailbreakValidator(threshold=v_cfg.get("jailbreak", {}).get("threshold", 0.85))
+    out_of_scope = OutOfScopeValidator(
+        threshold_in=v_cfg.get("out_of_scope", {}).get("threshold_in", 0.40),
+        threshold_out=v_cfg.get("out_of_scope", {}).get("threshold_out", 0.50),
+        margin=v_cfg.get("out_of_scope", {}).get("margin", 0.15),
+        seeds_path=v_cfg.get("out_of_scope", {}).get("seeds_path", "data/out_of_scope_seeds.json"),
+    )
     compliance = ComplianceValidator(
         model=v_cfg.get("compliance", {}).get("model", "claude-haiku-4-5-20251001"),
         timeout=v_cfg.get("compliance", {}).get("timeout", 5.0),
@@ -74,22 +81,24 @@ def _create_components(cfg: dict[str, Any]):
         pii_output=pii_output,
         jailbreak=jailbreak,
         compliance=compliance,
+        out_of_scope=out_of_scope,
         llm_provider=llm,
         embedding=embedding,
         vector_store=vector_store,
     )
-    return graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store
+    return graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store, out_of_scope
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging()
-    graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store = _create_components(get_config())
+    graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store, out_of_scope = _create_components(get_config())
     app.state.graph = graph
     app.state.toxic = toxic
     app.state.pii_input = pii_input
     app.state.jailbreak = jailbreak
     app.state.compliance = compliance
+    app.state.out_of_scope = out_of_scope
     app.state.llm = llm
     app.state.embedding = embedding
     app.state.vector_store = vector_store
@@ -212,6 +221,7 @@ def create_app() -> FastAPI:
                 "pii_input",
                 "pii_output",
                 "jailbreak",
+                "out_of_scope",
                 "compliance",
             ],
             models_loaded=ModelsLoaded(

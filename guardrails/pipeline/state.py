@@ -18,6 +18,7 @@ CATEGORY_PII_INPUT = "pii_input"
 CATEGORY_PII_OUTPUT = "pii_output"
 CATEGORY_JAILBREAK = "jailbreak"
 CATEGORY_COMPLIANCE = "compliance"
+CATEGORY_OUT_OF_SCOPE = "out_of_scope"
 
 DIRECTION_INPUT = "input"
 DIRECTION_OUTPUT = "output"
@@ -28,4 +29,5 @@ SEVERITY_MAP: dict[str, str] = {
     CATEGORY_PII_INPUT: "high",
     CATEGORY_PII_OUTPUT: "high",
     CATEGORY_TOXICITY: "medium",
+    CATEGORY_OUT_OF_SCOPE: "low",
 }

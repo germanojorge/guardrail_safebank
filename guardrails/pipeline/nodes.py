@@ -9,6 +9,7 @@ from guardrails.observability import log_blocked_event, log_passed_event
 from guardrails.pipeline.state import (
     CATEGORY_COMPLIANCE,
     CATEGORY_JAILBREAK,
+    CATEGORY_OUT_OF_SCOPE,
     CATEGORY_PII_INPUT,
     CATEGORY_PII_OUTPUT,
     CATEGORY_TOXICITY,
@@ -37,6 +38,7 @@ def build_nodes(
     llm: Any,
     embedding: Any = None,
     vector_store: Any = None,
+    out_of_scope: Any = None,
 ) -> dict[str, Callable[[GraphState], dict]]:
     """Return a dict of node functions with injected validator/provider instances."""
 
@@ -48,6 +50,8 @@ def build_nodes(
             (pii_input, CATEGORY_PII_INPUT),
             (jailbreak, CATEGORY_JAILBREAK),
         ]
+        if out_of_scope is not None:
+            validators.append((out_of_scope, CATEGORY_OUT_OF_SCOPE))
         for validator, category in validators:
             result = validator.run(text)
             if not result.passed:

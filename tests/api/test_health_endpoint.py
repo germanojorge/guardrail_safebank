@@ -14,8 +14,8 @@ def test_health_returns_validators_loaded(client: TestClient):
 
     validators = body["validators_loaded"]
     assert isinstance(validators, list)
-    assert len(validators) == 5
-    for name in ("toxic", "pii_input", "pii_output", "jailbreak", "compliance"):
+    assert len(validators) == 6
+    for name in ("toxic", "pii_input", "pii_output", "jailbreak", "out_of_scope", "compliance"):
         assert name in validators
 
     ml = body["models_loaded"]
@@ -54,7 +54,7 @@ def test_health_models_loaded_false_when_none(make_client, monkeypatch):
     from tests.api.conftest import _build_mock_components
 
     components = list(_build_mock_components())
-    graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store = components
+    graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store, out_of_scope = components
     toxic._model = None
     jailbreak._pipeline = None
     embedding.model = None
@@ -63,7 +63,7 @@ def test_health_models_loaded_false_when_none(make_client, monkeypatch):
     monkeypatch.setattr(
         sys.modules["guardrails.api.app"],
         "_create_components",
-        lambda cfg: (graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store),
+        lambda cfg: (graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store, out_of_scope),
     )
     import guardrails.config
 
