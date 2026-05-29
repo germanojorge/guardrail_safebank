@@ -22,7 +22,7 @@ Built as a technical interview project to demonstrate: RAG, multi-agent guardrai
 | Embeddings | `intfloat/multilingual-e5-small` | Local, offline-capable |
 | UI | Streamlit | Chat interface with diagnostics |
 | Toxicity | `detoxify` (XLM-RoBERTa) | Multilingual toxicity detection |
-| Jailbreak | `protectai/deberta-v3-base-prompt-injection-v2` | Layered defense |
+| Jailbreak | `meta-llama/Llama-Prompt-Guard-2-86M` | Layered defense |
 
 ## Architecture
 
@@ -64,7 +64,7 @@ Built as a technical interview project to demonstrate: RAG, multi-agent guardrai
 |---|---|---|
 | **Input** | Toxic (detoxify) | `multilingual` XLM-RoBERTa, PT-BR support |
 | | PII (regex) | 4 patterns: email, phone, CPF, credit card |
-| | Jailbreak | Layered: substring fast-path + `protectai/deberta-v3-base-prompt-injection-v2` |
+| | Jailbreak | Layered: substring fast-path + `meta-llama/Llama-Prompt-Guard-2-86M` |
 | **Output** | Toxic (detoxify) | Same model as input |
 | | PII (regex) | Same patterns — catch LLM leaks |
 | | Compliance (LLM Judge) | Claude Haiku 4.5 + rubric R1-R5 + tool_use |

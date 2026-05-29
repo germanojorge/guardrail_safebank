@@ -65,23 +65,35 @@ Per CLAUDE.md Extras table:
 
 ### What it does
 
-Two-layer prompt injection detector: a substring fast-path (<5ms) checks for ~20
-known jailbreak keywords in PT-BR and English; paraphrased attacks that bypass the
-keyword list fall through to a DeBERTa classifier
-(`protectai/deberta-v3-base-prompt-injection-v2`, <300ms CPU). Either layer
-blocking produces `passed=False` with `details["layer_caught"]` set to `"substring"`
-or `"deberta"` for attribution.
+Four-layer prompt injection detector with early-exit, ordered from cheapest to most expensive:
+
+| Layer | Name | Tech | Latency | What it catches |
+|-------|------|------|---------|-----------------|
+| L1a | Regex Fast-Path Gate | Named regex rules (PT-BR/EN) | <1ms | Bigram patterns: "aja como", "DAN mode", "ignore instructions", "jailbreak", etc. |
+| L1b | POS Tagger | `Emanuel/porttagger-news-base` + spaCy `pt_core_news_lg` word vectors | ~20-40ms CPU | Imperative VERB patterns with cosine similarity to reference centroids |
+| L1c | Semantic Index | `paraphrase-multilingual-MiniLM-L12-v2` + pre-computed Necent embeddings | ~10ms CPU | Paraphrased jailbreak prompts that evade deterministic layers |
+| L2 | Prompt-Guard-2 | `meta-llama/Llama-Prompt-Guard-2-86M` (multilingual, incl. PT-BR) | <300ms CPU | Anything that survived L1a–L1c |
+
+Either layer blocking produces `passed=False` with `details["layer_caught"]` set to `"regex"`, `"pos_tagger"`, `"semantic"`, or `"prompt_guard"` for attribution.
+
+> **2026-05-27 model change:** the previous `protectai/deberta-v3-base-prompt-injection-v2`
+> was English-centric and classified benign PT-BR banking phrases as INJECTION with ~1.0
+> confidence. Replaced with Meta Prompt-Guard-2 (multilingual, gated repo — needs HF token).
+>
+> **2026-05-28 architecture upgrade:** expanded from 2 to 4 layers. POS tagger (L1b) catches
+> PT-BR imperatives with morphosyntactic precision. Semantic index (L1c) catches paraphrased
+> social-engineering attacks. Both layers are fail-open (errors fall through to next layer).
 
 ### Confirmed gaps
 
 | Gap | Impact |
 |-----|--------|
-| **Substring list is finite and public** | Any attacker who reads the source code (or this doc) can craft prompts that bypass Layer 1 by avoiding all listed keywords |
-| **DeBERTa trained on English-dominant data** | PT-BR paraphrasing with no English keywords may have lower recall; not measured at MVP scope |
-| **No multilingual DeBERTa available for injection** | `protectai/deberta-v3-base-prompt-injection-v2` is English-trained; PT-BR bypass rate unknown until SCRUM-11 adversarial suite runs |
-| **Encoding bypasses (base64, leetspeak, unicode lookalikes)** | Neither layer catches encoded attacks; marked as xfail in `KNOWN_BYPASSES` fixtures |
-| **Context-smuggling (code block, JSON fields)** | Jailbreak embedded in code blocks or structured fields bypasses both layers; marked as xfail |
-| **False positive: "ja" substring** | Words like `"finja"`, `"aja"` contain the substring `"ja"` — not a keyword, but similar PT-BR false-positive patterns may exist |
+| **POS tagger depends on spaCy pt_core_news_lg** | ~500MB model loaded at startup. Word vectors cover ~500k forms but may miss neologisms, slang, or domain-specific verbs. Adds ~20-40ms latency to path that regex misses. |
+| **Semantic index depends on dataset gated `Necent`** | Maximum quality requires HuggingFace access. Fallback index from open-source datasets has lower recall. Threshold 0.80 may let through paraphrases very distant from the index. |
+| **Substring/Regex list is finite and public** | Any attacker who reads the source code (or this doc) can craft prompts that bypass Layer 1a by avoiding all listed keywords |
+| **PT-BR recall not exhaustively measured** | Prompt-Guard-2 is multilingual and fixed the EN-centric false positives, but PT-BR *recall* on paraphrased attacks is only spot-checked, not yet run against a full adversarial suite |
+| **Encoding bypasses (base64, leetspeak, unicode lookalikes)** | No layer catches encoded attacks; marked as xfail in `KNOWN_BYPASSES` fixtures |
+| **Context-smuggling (code block, JSON fields)** | Jailbreak embedded in code blocks or structured fields bypasses all layers; marked as xfail |
 
 ### Layered-defense comparison (JailbreakBench external fixtures)
 
@@ -96,12 +108,40 @@ or `"deberta"` for attribution.
 
 > Table populated by `scripts/measure_jailbreak_layers.py` (SCRUM-10). Metrics
 > measured against `tests/adversarial/fixtures/jailbreak_external.jsonl` sourced
-> from JailbreakBench v1.0 (MIT). Run `uv run python scripts/measure_jailbreak_layers.py`
-> to refresh after fixture changes.
+> from JailbreakBench v1.0 (MIT). Updated measurements with POS + Semantic layers
+> pending SCRUM-11 adversarial suite rerun.
 
 
 ---
+## Out-of-Scope Validator (`guardrails/validators/out_of_scope.py`)
 
+### What it does
+
+Blocks non-banking queries using seed-based cosine similarity. Embeds the input text
+with `paraphrase-multilingual-MiniLM-L12-v2` and compares against:
+
+- **In-scope seeds** (~30 banking questions from Itaú FAQ + hand-crafted)
+- **Out-of-scope seeds** (~30 generic non-banking topics)
+
+Blocks if: `max_in < threshold_in (0.40) AND max_out > threshold_out (0.50)`,
+OR `max_out > max_in + margin (0.15)`. The second condition handles ambiguous
+queries where both similarities are moderate but out-of-scope wins.
+
+Applied last in `input_guard` (after jailbreak) — scope is not a security threat,
+so higher-priority validators check first.
+
+### Confirmed gaps
+
+| Gap | Impact |
+|-----|--------|
+| **Zero-shot similarity, not fine-tuned** | Model was never trained on banking vs non-banking classification. Seed-based cosine similarity is a heuristic, not a classifier. |
+| **Seed coverage is limited** | 30 in-scope seeds can't cover all possible banking queries. Creative rephrasings may have low in-scope similarity and trigger false positives. |
+| **Out-of-scope seeds are hand-crafted** | The 30 out-of-scope topics are not comprehensive. Novel non-banking topics (e.g., niche hobbies) may not match any seed and pass through. |
+| **No learning from blocks** | Each request is independent; no feedback loop to improve seed coverage over time. |
+| **False positives for borderline queries** | Mixed questions (e.g., "posso pagar boleto do restaurante pelo app?") may be incorrectly blocked if out-of-scope similarity dominates. |
+
+
+---
 ## Compliance Judge (`guardrails/validators/compliance.py`)
 
 ### What it does
