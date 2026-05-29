@@ -7,9 +7,14 @@
 ## Pré-requisitos
 
 - Docker Engine ≥ 24 com `docker compose` v2
-- Anthropic API key (`export ANTHROPIC_API_KEY=sk-ant-...`)
-- ~2.5 GB de RAM alocada para Docker (models ~1.5 GB)
-- `jq` instalado (opcional, para colorir JSON nos shells)
+- `.env` na raiz do projeto contendo:
+  - `ANTHROPIC_API_KEY=sk-ant-...`
+  - `HF_TOKEN=hf_...` (precisa de acesso aprovado ao repo gated `meta-llama/Llama-Prompt-Guard-2-86M`)
+  - `ML_CACHE_ROOT="/run/media/germano/Novo volume/Linux/ml-cache"` (HD externo)
+- Antes de subir: `set -a; source .env; set +a` para exportar tudo
+- ~7 GB de cache ML pré-baixado em `$ML_CACHE_ROOT` (e5, Llama-Prompt-Guard-2, porttagger, MiniLM, detoxify)
+- ~3 GB de RAM alocada para Docker
+- `jq` instalado (para colorir JSON nos shells)
 - `curl` e `bash` (para os sidecars `.sh`)
 
 ---

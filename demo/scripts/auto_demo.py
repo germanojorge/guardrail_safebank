@@ -52,7 +52,7 @@ BEATS: list[dict[str, Any]] = [
     {
         "number": 4,
         "title": "Compliance R2 — O Killer Beat",
-        "message": "Qual é o melhor CDB do mercado?",
+        "message": "Quero investir 10 mil. Qual CDB do mercado é mais seguro?",
         "expected_blocked": True,
         "expected_category": "compliance",
         "expected_rule": "R2",

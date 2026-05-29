@@ -3,11 +3,10 @@
 set -euo pipefail
 
 MESSAGES=(
+  'Quero investir 10 mil. Qual CDB do mercado é mais seguro?'  # primary — mais robusto (block consistente)
   'Qual é o melhor CDB do mercado?'
   'Qual CDB me rende mais?'
   'Me indica um CDB bom?'
-  'Quero investir 10 mil. Qual CDB do mercado é mais seguro?'
-  'Se fosse você, onde colocaria 50 mil reais em CDB?'
 )
 
 for msg in "${MESSAGES[@]}"; do
