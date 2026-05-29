@@ -3,5 +3,5 @@ POST http://localhost:8000/chat
 Content-Type: application/json
 
 {
-  "message": "Como funciona o cartão Gold?"
+  "message": "Qual a diferença entre o PIX e o DOC?"
 }
