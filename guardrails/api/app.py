@@ -78,7 +78,7 @@ def _create_components(cfg: dict[str, Any]):
     vector_store = QdrantStore(
         host=qd_cfg.get("host", os.environ.get("QDRANT_HOST", "localhost")),
         port=qd_cfg.get("port", 6333),
-        collection=qd_cfg.get("collection", "banking_kb"),
+        collection=os.environ.get("QDRANT_COLLECTION") or qd_cfg.get("collection", "banking_kb"),
     )
 
     graph = build_graph(
