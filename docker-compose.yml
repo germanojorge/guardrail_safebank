@@ -21,6 +21,7 @@ services:
       - HF_HUB_OFFLINE=1
       - TRANSFORMERS_OFFLINE=1
       - QDRANT_HOST=qdrant
+      - LLM_PROVIDER=${LLM_PROVIDER:-anthropic}
     volumes:
       - ${ML_CACHE_ROOT:-/run/media/germano/Novo volume/Linux/ml-cache}/torch:/root/.cache/torch:ro
       - ${ML_CACHE_ROOT:-/run/media/germano/Novo volume/Linux/ml-cache}/huggingface:/root/.cache/huggingface:ro

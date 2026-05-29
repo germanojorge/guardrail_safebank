@@ -59,10 +59,16 @@ def _create_components(cfg: dict[str, Any]):
         margin=v_cfg.get("out_of_scope", {}).get("margin", 0.15),
         seeds_path=v_cfg.get("out_of_scope", {}).get("seeds_path", "data/out_of_scope_seeds.json"),
     )
-    compliance = ComplianceValidator(
-        model=v_cfg.get("compliance", {}).get("model", "claude-haiku-4-5-20251001"),
-        timeout=v_cfg.get("compliance", {}).get("timeout", 5.0),
-    )
+    provider = os.getenv("LLM_PROVIDER", "anthropic").lower()
+    if provider == "mock":
+        from guardrails.validators.compliance_rules import RuleBasedComplianceValidator
+
+        compliance = RuleBasedComplianceValidator()
+    else:
+        compliance = ComplianceValidator(
+            model=v_cfg.get("compliance", {}).get("model", "claude-haiku-4-5-20251001"),
+            timeout=v_cfg.get("compliance", {}).get("timeout", 5.0),
+        )
     llm = AnthropicProvider(model=cfg.get("model", "claude-sonnet-4-6"))
     embedding = SentenceTransformerProvider(
         model_name=emb_cfg.get("model", "intfloat/multilingual-e5-small"),
@@ -227,7 +233,7 @@ def create_app() -> FastAPI:
             models_loaded=ModelsLoaded(
                 detoxify=request.app.state.toxic._model is not None,
                 deberta=request.app.state.jailbreak._pipeline is not None,
-                anthropic_judge=request.app.state.compliance.client is not None,
+                anthropic_judge=getattr(request.app.state.compliance, "client", None) is not None,
                 anthropic_chat=request.app.state.llm.client is not None,
                 embedding=request.app.state.embedding.model is not None,
                 qdrant_reachable=request.app.state.vector_store.is_reachable(),
