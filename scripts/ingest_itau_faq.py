@@ -39,8 +39,8 @@ def _load_dataset() -> list[dict]:
     items = []
     for idx, row in enumerate(ds):
         # Tenta campos comuns do dataset; ajusta se necessário
-        question = row.get("question") or row.get("pergunta") or row.get("input") or ""
-        answer = row.get("answer") or row.get("resposta") or row.get("output") or ""
+        question = row.get("questions") or row.get("question") or row.get("pergunta") or row.get("input") or ""
+        answer = row.get("answers") or row.get("answer") or row.get("resposta") or row.get("output") or ""
         text = f"Pergunta: {question}\nResposta: {answer}".strip()
         if not text:
             continue
