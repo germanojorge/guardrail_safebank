@@ -17,9 +17,13 @@ services:
     ports: ["8000:8000"]
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_HUB_OFFLINE=1
+      - TRANSFORMERS_OFFLINE=1
       - QDRANT_HOST=qdrant
     volumes:
-      - /home/germano/.cache/torch:/root/.cache/torch:ro
+      - ${ML_CACHE_ROOT:-/run/media/germano/Novo volume/Linux/ml-cache}/torch:/root/.cache/torch:ro
+      - ${ML_CACHE_ROOT:-/run/media/germano/Novo volume/Linux/ml-cache}/huggingface:/root/.cache/huggingface:ro
       - ./config.yaml:/app/config.yaml:ro
       - ./guardrails:/app/guardrails:ro
     depends_on:
