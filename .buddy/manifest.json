@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "last_indexed_commit": "189773c4ac77625fa422965eb42abbfccd7a3eaa",
+  "last_run_timestamp": "2026-05-29T13:45:00Z",
+  "files_scanned_count": 42,
+  "key_outputs_updated": [
+    "README_FOR_HUMANS.md",
+    "GETTING_STARTED.md",
+    "ARCHITECTURE.md",
+    "TECH_STACK.md",
+    "INTEGRATIONS.md",
+    "CHANGELOG_SUMMARY.md",
+    "STARTER_TASKS.md",
+    "LINKS.md",
+    "MAP/repo_map.md",
+    "MAP/entry_points.md",
+    "MAP/data_flow.md",
+    "NOTES/open_questions.md",
+    "NOTES/assumptions.md"
+  ],
+  "last_link_update_timestamp": null,
+  "branch_at_last_run": "feature/scrum-17-jailbreak-v3-pos-semantic-out-of-scope"
+}
