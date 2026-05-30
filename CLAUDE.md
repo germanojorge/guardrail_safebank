@@ -125,11 +125,15 @@ Mapeamento (atualizado 2026-05-25):
 
 ## Git Workflow
 
+> **Atualizado 2026-05-30** — o usuário prefere, **por enquanto**, trabalhar **direto na `main`** (projeto solo, manter o heatmap do GitHub aceso: commits só contam na default branch). Isso substitui o fluxo anterior de feature branches.
+
 Ao fazer mudanças no código, siga este fluxo de commit/push:
 
-1. **Faça mudanças em lotes lógicos** — cada commit deve representar uma unidade coesa (feature, fix, refactor).
-2. **Commit automático ao finalizar cada etapa** — após completar uma tarefa ou milestone, faça commit com mensagem clara e concisa em português (ex: `feat: adiciona validator de jailbreak`, `fix: corrige timeout no compliance judge`).
-3. **Convenção de mensagens**: use [Conventional Commits](https://www.conventionalcommits.org/) — `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`.
-4. **Push ao final de cada sessão de trabalho** — faça `git push` após commits quando a sessão estiver concluindo ou o usuário indicar que terminou.
-5. **Nunca faça force-push**, nunca pule hooks (`--no-verify`), e nunca faça amend em commits já pushados.
-6. Antes de commitar, verifique com `git status` e `git diff --stat` se apenas os arquivos intencionados estão no stage.
+1. **Trabalhe direto na `main`** — por enquanto, sem feature branches. Um hook `UserPromptSubmit` (`.claude/hooks/ensure_main.py`) avisa quando a branch atual não é `main`.
+2. **Faça mudanças em lotes lógicos** — cada commit deve representar uma unidade coesa (feature, fix, refactor).
+3. **Pergunte antes de commitar** — ao finalizar uma etapa coesa, **proponha** uma mensagem e pergunte ao usuário se ele quer commitar; só commite após confirmação. Um hook `Stop` (`.claude/hooks/check_commit.py`) re-engaja o Claude pra isso ao fim de cada turno com mudanças pendentes.
+4. **Convenção de mensagens**: use [Conventional Commits](https://www.conventionalcommits.org/) — `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:` — em português.
+5. **Push ao final de cada sessão de trabalho** — faça `git push` após commits quando a sessão estiver concluindo ou o usuário indicar que terminou.
+6. **Se for trazer uma branch**, use `git merge --no-ff` (**nunca squash**) — preserva os commits individuais e suas datas de autoria no heatmap.
+7. **Nunca faça force-push**, nunca pule hooks (`--no-verify`), e nunca faça amend em commits já pushados.
+8. Antes de commitar, verifique com `git status` se apenas os arquivos intencionados estão no stage.
