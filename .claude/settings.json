@@ -10,6 +10,17 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /home/germano/Projects/guardrail-safebank && uv run python .claude/hooks/ensure_main.py",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }
