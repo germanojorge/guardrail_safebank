@@ -5,7 +5,7 @@ Layer 1 — Regex + checksum (fast, deterministic)
     CPF (formatted + raw, Módulo 11), CNPJ (checksum), cartão (Luhn),
     telefone (PT-BR DDD formats), email.
 
-Layer 2 — Presidio + spaCy pt_core_news_sm (NER, ~50ms extra)
+Layer 2 — Presidio + spaCy pt_core_news_lg (NER, ~50ms extra)
     PERSON (person names), LOCATION (addresses, cities).
     Only runs when Layer 1 passes to avoid wasted latency on already-blocked inputs.
     Gracefully disabled if presidio-analyzer or the spaCy model is not installed.
@@ -32,15 +32,9 @@ _ALIAS: dict[str, str] = {"cpf_raw": "cpf"}
 # Presidio entity types we care about (NER-only — everything else is handled by regex)
 _PRESIDIO_ENTITIES = ["PERSON", "LOCATION"]
 _PRESIDIO_LANG = "pt"
-_PRESIDIO_MIN_SCORE = 0.85  # spaCy pt_core_news_sm returns ~0.85 for everything
+_PRESIDIO_MIN_SCORE = 0.85  # spaCy pt_core_news_lg returns ~0.85 for everything
 
-# spaCy pt_core_news_sm is notoriously noisy with false positives on common words.
-# We maintain a deny-list of lower-cased tokens that should NEVER be treated as PII,
-# even if Presidio tags them as PERSON or LOCATION.
-# spaCy pt_core_news_sm has ~40% false-positive rate on PT-BR text.
-# We maintain a comprehensive deny-list of tokens that must NEVER be
-# treated as PII. This covers common words, banking terms, and frequent
-# false positives observed in production.
+
 _PRESIDIO_DENYLIST = {
     # ── banking / product terms ──
     "cartão",
@@ -393,7 +387,7 @@ logger = logging.getLogger(__name__)
 def _build_presidio_engine():
     """Build a Presidio AnalyzerEngine configured for PT-BR with spaCy.
 
-    Returns None (with a warning) if presidio-analyzer or pt_core_news_sm is missing.
+    Returns None (with a warning) if presidio-analyzer or pt_core_news_lg is missing.
     """
     try:
         from presidio_analyzer import AnalyzerEngine
@@ -405,7 +399,7 @@ def _build_presidio_engine():
     try:
         config = {
             "nlp_engine_name": "spacy",
-            "models": [{"lang_code": _PRESIDIO_LANG, "model_name": "pt_core_news_sm"}],
+            "models": [{"lang_code": _PRESIDIO_LANG, "model_name": "pt_core_news_lg"}],
         }
         provider = NlpEngineProvider(nlp_configuration=config)
         engine = AnalyzerEngine(
@@ -414,7 +408,7 @@ def _build_presidio_engine():
         )
         return engine
     except OSError:
-        logger.warning("spaCy model 'pt_core_news_sm' not found — run: python -m spacy download pt_core_news_sm. NER-based PII detection (PERSON, LOCATION) disabled.")
+        logger.warning("spaCy model 'pt_core_news_lg' not found — run: python -m spacy download pt_core_news_lg. NER-based PII detection (PERSON, LOCATION) disabled.")
         return None
 
 
@@ -461,7 +455,7 @@ class PIIValidator:
         # ── Layer 2: Presidio NER (PERSON, LOCATION) ──────────────────────
         # Only run on INPUT. Output guard uses regex only (Layer 1) because:
         #   - Regex catches the critical PII (CPF, card, email, phone)
-        #   - spaCy pt_core_news_sm is EXTREMELY noisy on LLM-generated text
+        #   - spaCy pt_core_news_lg is EXTREMELY noisy on LLM-generated text
         #   - Names/addresses in user input ARE sensitive and must be caught
         if self.stage == "input" and self._presidio and not entities:
             # Only run if Layer 1 found nothing — avoids latency on already-blocked inputs

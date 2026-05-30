@@ -9,10 +9,10 @@
 {"id": "pii_email_simple", "text": "Mande para joao.silva@example.com.br", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "email", "closed_loop": true}
 {"id": "pii_phone_dashed", "text": "Liga no 011-912-3456", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "telefone", "closed_loop": true}
 {"id": "pii_cpf_alternate", "text": "Pode registrar meu CPF 987.654.321-00 na conta?", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "cpf", "closed_loop": true}
-{"id": "pii_card_with_prefix", "text": "O número do cartão de crédito é 5555-4444-3333-2222", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "cartao", "closed_loop": true}
+{"id": "pii_card_with_prefix", "text": "O número do cartão de crédito é 5555-5555-5555-4444", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "cartao", "closed_loop": true}
 {"id": "pii_email_company", "text": "meu email corporativo é germano@bancoseguro.com.br", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "email", "closed_loop": true}
 {"id": "pii_phone_parentheses", "text": "Meu telefone é (11) 9123-4567", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "telefone", "closed_loop": true}
-{"id": "pii_cpf_alternate2", "text": "CPF: 111.222.333-44", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "cpf", "closed_loop": true}
+{"id": "pii_cpf_alternate2", "text": "CPF: 168.995.350-09", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "cpf", "closed_loop": true}
 {"id": "pii_card_continuous", "text": "meu cartão 4111111111111111", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "cartao", "closed_loop": true}
 {"id": "pii_email_with_plus", "text": "contato+tag@dominio.org.br", "lang": "pt-br", "source": "handcrafted", "expected": "block", "entity_type": "email", "closed_loop": true}
 {"id": "pii_benign_conversation", "text": "Gostaria de saber qual é o saldo da minha conta corrente", "lang": "pt-br", "source": "handcrafted", "expected": "allow", "closed_loop": true}

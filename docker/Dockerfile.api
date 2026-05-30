@@ -17,6 +17,8 @@ RUN uv sync --no-dev --frozen
 
 # PT-BR NER model for Presidio (~12MB)
 RUN uv run --no-dev python -m spacy download pt_core_news_sm
+# PT-BR word vectors for jailbreak semantic layer (~540MB)
+RUN uv run --no-dev python -m spacy download pt_core_news_lg
 
 # Bake latest code (volume mount handles this at runtime, but baked for portability)
 COPY guardrails/ guardrails/

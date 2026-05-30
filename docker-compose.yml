@@ -17,9 +17,15 @@ services:
     ports: ["8000:8000"]
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_HUB_OFFLINE=1
+      - TRANSFORMERS_OFFLINE=1
       - QDRANT_HOST=qdrant
+      - QDRANT_COLLECTION=${QDRANT_COLLECTION:-itau_faq}
+      - LLM_PROVIDER=${LLM_PROVIDER:-anthropic}
     volumes:
-      - /home/germano/.cache/torch:/root/.cache/torch:ro
+      - ${ML_CACHE_ROOT:-/run/media/germano/Novo volume/Linux/ml-cache}/torch:/root/.cache/torch:rw
+      - ${ML_CACHE_ROOT:-/run/media/germano/Novo volume/Linux/ml-cache}/huggingface:/root/.cache/huggingface:ro
       - ./config.yaml:/app/config.yaml:ro
       - ./guardrails:/app/guardrails:ro
     depends_on:
@@ -35,6 +41,21 @@ services:
     volumes:
       - ./data:/app/data:ro
       - ./config.yaml:/app/config.yaml:ro
+    depends_on:
+      qdrant:
+        condition: service_started
+    profiles: ["ingest"]
+
+  ingest_itau:
+    image: guardrail-safebank-api:latest
+    entrypoint: ["uv", "run", "--no-dev", "--with", "datasets", "python", "scripts/ingest_itau_faq.py"]
+    environment:
+      - QDRANT_HOST=qdrant
+      - HF_TOKEN=${HF_TOKEN}
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - ./config.yaml:/app/config.yaml:ro
+      - ${ML_CACHE_ROOT:-/run/media/germano/Novo volume/Linux/ml-cache}/huggingface:/root/.cache/huggingface:rw
     depends_on:
       qdrant:
         condition: service_started

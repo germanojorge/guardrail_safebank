@@ -24,6 +24,7 @@ def build_graph(
     pii_output: Any = None,
     jailbreak: Any = None,
     compliance: Any = None,
+    out_of_scope: Any = None,
     llm_provider: Any = None,
     embedding: Any = None,
     vector_store: Any = None,
@@ -79,6 +80,7 @@ def build_graph(
         llm=llm_provider,
         embedding=embedding,
         vector_store=vector_store,
+        out_of_scope=out_of_scope,
     )
 
     graph = StateGraph(GraphState)

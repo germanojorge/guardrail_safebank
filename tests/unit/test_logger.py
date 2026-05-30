@@ -197,11 +197,11 @@ def test_blocked_event_passes_extra_fields():
             direction="input",
             category="jailbreak",
             severity="high",
-            extra={"layer_caught": "substring", "substring_match_count": 3},
+            extra={"layer_caught": "regex", "matched_rules": ["sobrescrita_instrucoes", "mudanca_papel"]},
         )
     event = cap_logs[0]
-    assert event["layer_caught"] == "substring"
-    assert event["substring_match_count"] == 3
+    assert event["layer_caught"] == "regex"
+    assert event["matched_rules"] == ["sobrescrita_instrucoes", "mudanca_papel"]
 
 
 # ---------------------------------------------------------------------------

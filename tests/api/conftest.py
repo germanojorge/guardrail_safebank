@@ -97,6 +97,8 @@ def _build_mock_components(
     mock_compliance = _make_mock_validator(compliance_passes, "compliance", compliance_details)
     mock_compliance.client = MagicMock()
 
+    mock_out_of_scope = _make_mock_validator(True, "out_of_scope")
+
     mock_llm = _make_mock_provider(llm_response)
     mock_embedding = _make_mock_embedding()
     mock_vector_store = _make_mock_vector_store()
@@ -107,6 +109,7 @@ def _build_mock_components(
         pii_output=mock_pii_output,
         jailbreak=mock_jailbreak,
         compliance=mock_compliance,
+        out_of_scope=mock_out_of_scope,
         llm_provider=mock_llm,
         embedding=mock_embedding,
         vector_store=mock_vector_store,
@@ -120,6 +123,7 @@ def _build_mock_components(
         mock_llm,
         mock_embedding,
         mock_vector_store,
+        mock_out_of_scope,
     )
 
 

@@ -11,7 +11,7 @@ Log schema for `log_blocked_event`:
 - `input_hash`: SHA-256 hex digest of first 200 chars
 - `latency_ms`: float | None
 
-Extra keys (via `extra` dict): `layer_caught`, `substring_match_count`, etc.
+Extra keys (via `extra` dict): `layer_caught`, `matched_rules`, etc.
 Log events also include a `snippet` field with the first 100 chars of PII-sanitized
 input for debugging, when `input_text` is provided.
 """
