@@ -150,6 +150,28 @@ python demo/scripts/auto_demo.py
 - Docker Engine ≥ 24 with `docker compose` v2
 - Anthropic API key (`export ANTHROPIC_API_KEY=sk-ant-...`)
 
+### Setup de cache / `.env`
+
+1. Copie o template de variáveis de ambiente:
+   ```bash
+   cp .env.example .env
+   ```
+2. Edite `.env`:
+   - Ajuste `ML_CACHE_ROOT` para o caminho do seu HD externo (ex: `/run/media/germano/Novo volume/Linux/ml-cache`).
+   - Preencha `ANTHROPIC_API_KEY` e `HF_TOKEN` (necessário para repositórios gated).
+
+3. **Scripts Python / pytest:** o `guardrails.env_bootstrap` carrega o `.env` automaticamente ao importar o pacote, e deriva `HF_HOME`, `HF_DATASETS_CACHE`, `TRANSFORMERS_CACHE` e `TMPDIR` a partir de `ML_CACHE_ROOT`.
+
+4. **Shell-level (`uv run`, `docker compose`):** exporte as vars antes de rodar:
+   ```bash
+   set -a; source .env; set +a
+   uv run pytest -m adversarial
+   docker compose up -d
+   ```
+   Isto é necessário porque `UV_CACHE_DIR` e o cache de build do Docker são lidos pelo binário `uv` e pelo daemon Docker, não pelo processo Python.
+
+> ⚠️  `.env` está no `.gitignore` e **nunca deve ser commitado**. Só `.env.example` é versionado.
+
 ### One-command demo
 
 ```bash

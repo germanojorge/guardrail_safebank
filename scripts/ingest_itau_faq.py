@@ -13,6 +13,8 @@ Usage:
 
 from __future__ import annotations
 
+import guardrails.env_bootstrap  # noqa: F401  # redireciona caches HF p/ ML_CACHE_ROOT — DEVE vir antes de importar datasets/transformers
+
 import sys
 import uuid
 

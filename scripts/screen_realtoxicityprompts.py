@@ -14,6 +14,8 @@ pass — stop and re-check the model name or dataset.
 
 from __future__ import annotations
 
+import guardrails.env_bootstrap  # noqa: F401  # redireciona caches HF p/ ML_CACHE_ROOT — DEVE vir antes de importar datasets/transformers
+
 from detoxify import Detoxify
 
 RTP_SUBSET_SIZE = 200

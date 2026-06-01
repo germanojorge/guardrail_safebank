@@ -5,6 +5,7 @@ description = "Bidirectional LLM guardrail proxy for B2C banking chatbots"
 requires-python = ">=3.12"
 dependencies = [
     "anthropic>=0.104.1",
+    "python-dotenv>=1.0",
     "detoxify>=0.5.2",
     "fastapi>=0.115",
     "gliner>=0.2.26",
