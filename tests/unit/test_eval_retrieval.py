@@ -18,6 +18,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
 from scripts.eval_retrieval import (  # noqa: E402
+    apply_prefixes,
     extract_metrics,
     load_frozen,
     render_markdown,
@@ -300,6 +301,164 @@ def test_write_run_json_filename_encodes_model_and_dataset(tmp_path):
     out_path = write_run_json(str(tmp_path), payload)
     assert "faq_bacen" in out_path.name
     assert "intfloat" in out_path.name
+
+
+# ---------------------------------------------------------------------------
+# apply_prefixes (pure function — network-free)
+# ---------------------------------------------------------------------------
+
+
+def test_apply_prefixes_e5_adds_query_prefix():
+    texts = {"q_0": "qual meu saldo?", "q_1": "como faço pix?"}
+    result = apply_prefixes(texts, "query", "e5")
+    assert result["q_0"] == "query: qual meu saldo?"
+    assert result["q_1"] == "query: como faço pix?"
+
+
+def test_apply_prefixes_e5_adds_passage_prefix():
+    texts = {"d_0": "Saldo disponível.", "d_1": "PIX é gratuito."}
+    result = apply_prefixes(texts, "passage", "e5")
+    assert result["d_0"] == "passage: Saldo disponível."
+    assert result["d_1"] == "passage: PIX é gratuito."
+
+
+def test_apply_prefixes_none_does_not_modify_texts():
+    texts = {"q_0": "qual meu saldo?", "q_1": "como faço pix?"}
+    result = apply_prefixes(texts, "query", "none")
+    assert result == texts
+
+
+def test_apply_prefixes_none_returns_new_dict():
+    texts = {"q_0": "text"}
+    result = apply_prefixes(texts, "query", "none")
+    # Should be a copy, not the same object (defensive)
+    assert result is not texts
+
+
+def test_apply_prefixes_does_not_mutate_original():
+    texts = {"q_0": "original"}
+    apply_prefixes(texts, "query", "e5")
+    assert texts["q_0"] == "original"
+
+
+# ---------------------------------------------------------------------------
+# run_eval prefix_style param (mock — network-free)
+# ---------------------------------------------------------------------------
+
+
+def test_run_eval_prefix_style_none_no_prefix(monkeypatch):
+    """run_eval with prefix_style='none' must NOT prepend query:/passage:."""
+    captured: dict[str, object] = {}
+
+    class FakeEval:
+        def __init__(self, *, queries, corpus, **kwargs):
+            captured["queries"] = queries
+            captured["corpus"] = corpus
+
+        def __call__(self, model):
+            return {}
+
+    class FakeModel:
+        pass
+
+    monkeypatch.setattr("scripts.eval_retrieval.SentenceTransformer", lambda *a, **kw: FakeModel())
+    monkeypatch.setattr("scripts.eval_retrieval.InformationRetrievalEvaluator", FakeEval)
+
+    from scripts.eval_retrieval import run_eval
+
+    corpus = {"d_0": "Texto do documento."}
+    queries = {"q_0": "Qual meu saldo?"}
+    run_eval("fake-model", corpus, queries, {"q_0": {"d_0"}}, name="test", prefix_style="none")
+
+    assert captured["corpus"]["d_0"] == "Texto do documento."
+    assert captured["queries"]["q_0"] == "Qual meu saldo?"
+
+
+def test_run_eval_prefix_style_e5_adds_prefixes(monkeypatch):
+    """run_eval with prefix_style='e5' must prepend query:/passage:."""
+    captured: dict[str, object] = {}
+
+    class FakeEval:
+        def __init__(self, *, queries, corpus, **kwargs):
+            captured["queries"] = queries
+            captured["corpus"] = corpus
+
+        def __call__(self, model):
+            return {}
+
+    class FakeModel:
+        pass
+
+    monkeypatch.setattr("scripts.eval_retrieval.SentenceTransformer", lambda *a, **kw: FakeModel())
+    monkeypatch.setattr("scripts.eval_retrieval.InformationRetrievalEvaluator", FakeEval)
+
+    from scripts.eval_retrieval import run_eval
+
+    corpus = {"d_0": "Texto do documento."}
+    queries = {"q_0": "Qual meu saldo?"}
+    run_eval("fake-model", corpus, queries, {"q_0": {"d_0"}}, name="test", prefix_style="e5")
+
+    assert captured["corpus"]["d_0"] == "passage: Texto do documento."
+    assert captured["queries"]["q_0"] == "query: Qual meu saldo?"
+
+
+def test_run_eval_invalid_prefix_style_raises(monkeypatch):
+    """run_eval must raise ValueError for any prefix_style outside {e5, none}."""
+
+    class FakeModel:
+        pass
+
+    monkeypatch.setattr("scripts.eval_retrieval.SentenceTransformer", lambda *a, **kw: FakeModel())
+
+    from scripts.eval_retrieval import run_eval
+
+    with pytest.raises(ValueError, match="prefix_style"):
+        run_eval("fake-model", {}, {}, {}, name="test", prefix_style="bert")
+
+
+# ---------------------------------------------------------------------------
+# write_run_json — prefix_style + latency_ms_per_query fields
+# ---------------------------------------------------------------------------
+
+
+def test_write_run_json_carries_prefix_style_and_latency(tmp_path):
+    payload = {
+        "model": "intfloat/multilingual-e5-small",
+        "dataset": "faq_bacen",
+        "prefix_style": "e5",
+        "prefixes_applied": True,
+        "closed_loop": False,
+        "n_queries": 10,
+        "n_corpus": 100,
+        "timestamp": "2026-06-11T12:00:00Z",
+        "seed": 42,
+        "latency_ms_per_query": 12.345,
+        "metrics": {"recall@5": 0.68},
+    }
+    out_path = write_run_json(str(tmp_path), payload)
+    loaded = json.loads(out_path.read_text(encoding="utf-8"))
+    assert loaded["prefix_style"] == "e5"
+    assert loaded["latency_ms_per_query"] == 12.345
+
+
+def test_write_run_json_prefix_style_none_prefixes_applied_false(tmp_path):
+    payload = {
+        "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "dataset": "faq_bacen",
+        "prefix_style": "none",
+        "prefixes_applied": False,
+        "closed_loop": False,
+        "n_queries": 10,
+        "n_corpus": 100,
+        "timestamp": "2026-06-11T13:00:00Z",
+        "seed": 42,
+        "latency_ms_per_query": 8.5,
+        "metrics": {"recall@5": 0.55},
+    }
+    out_path = write_run_json(str(tmp_path), payload)
+    loaded = json.loads(out_path.read_text(encoding="utf-8"))
+    assert loaded["prefix_style"] == "none"
+    assert loaded["prefixes_applied"] is False
 
 
 # ---------------------------------------------------------------------------
