@@ -18,96 +18,20 @@ import guardrails.env_bootstrap  # noqa: F401  # redireciona caches HF p/ ML_CAC
 
 import argparse
 import os
+import sys
 from datetime import datetime
+from pathlib import Path
 
-from datasets import load_dataset
-from sentence_transformers import (
-    InputExample,
-    SentenceTransformer,
-    losses,
-    evaluation,
-)
+# ensure scripts/ is on sys.path so _faq_data is importable regardless of cwd
+sys.path.insert(0, str(Path(__file__).parent))
+from _faq_data import build_evaluator, load_faq_data  # noqa: E402
+
+from sentence_transformers import SentenceTransformer, losses
 from torch.utils.data import DataLoader
 
 _DEFAULT_BASE_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 _OUTPUT_DIR = "models/itau-embedding-finetuned"
 _EVAL_DIR = "models/itau-embedding-eval"
-
-
-def load_faq_data() -> tuple[list[InputExample], dict[str, str], list[str], list[str]]:
-    """Load Itaú FAQ and prepare train examples + eval corpus/queries.
-
-    Returns:
-        train_examples: List of InputExample(question, answer) for training
-        corpus: Dict mapping doc_id -> answer text (all answers from train+test)
-        queries: List of question texts from test split
-        relevant_docs: List of doc_ids that are correct for each query
-    """
-    print("Loading Itau-Unibanco/FAQ_BACEN ...")
-    ds_train = load_dataset("Itau-Unibanco/FAQ_BACEN", split="train")
-    ds_test = load_dataset("Itau-Unibanco/FAQ_BACEN", split="test")
-
-    # Build training examples: (question, answer)
-    train_examples: list[InputExample] = []
-    for i, row in enumerate(ds_train):
-        q = row["questions"].strip()
-        a = row["answers"].strip()
-        if q and a:
-            train_examples.append(InputExample(texts=[q, a]))
-
-    print(f"Train examples: {len(train_examples)}")
-
-    # Build corpus from ALL answers (train + test) for evaluation
-    corpus: dict[str, str] = {}
-    for i, row in enumerate(ds_train):
-        doc_id = f"train_{i}"
-        corpus[doc_id] = row["answers"].strip()
-    for i, row in enumerate(ds_test):
-        doc_id = f"test_{i}"
-        corpus[doc_id] = row["answers"].strip()
-
-    # Build queries from test split
-    queries: list[str] = []
-    relevant_docs: list[str] = []
-    for i, row in enumerate(ds_test):
-        q = row["questions"].strip()
-        if q:
-            queries.append(q)
-            # The correct answer is in the corpus at test_{i}
-            relevant_docs.append(f"test_{i}")
-
-    print(f"Corpus size: {len(corpus)}")
-    print(f"Test queries: {len(queries)}")
-
-    return train_examples, corpus, queries, relevant_docs
-
-
-def build_evaluator(
-    corpus: dict[str, str],
-    queries: list[str],
-    relevant_docs: list[str],
-) -> evaluation.InformationRetrievalEvaluator:
-    """Build IR evaluator mapping test questions to their correct answers."""
-    # Map query text -> set of relevant doc_ids
-    # Since queries may not be unique, we use the query text as key
-    queries_dict: dict[str, str] = {}
-    relevant_docs_map: dict[str, set[str]] = {}
-
-    for q, doc_id in zip(queries, relevant_docs):
-        # If duplicate query, append doc_id to existing set
-        if q in relevant_docs_map:
-            relevant_docs_map[q].add(doc_id)
-        else:
-            queries_dict[q] = q
-            relevant_docs_map[q] = {doc_id}
-
-    return evaluation.InformationRetrievalEvaluator(
-        queries=queries_dict,
-        corpus=corpus,
-        relevant_docs=relevant_docs_map,
-        name="itau-faq-ir",
-        show_progress_bar=True,
-    )
 
 
 def train(
