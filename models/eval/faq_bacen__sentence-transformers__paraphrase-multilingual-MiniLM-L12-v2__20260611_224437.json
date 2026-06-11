@@ -1,0 +1,21 @@
+{
+  "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "dataset": "faq_bacen",
+  "prefix_style": "none",
+  "prefixes_applied": false,
+  "closed_loop": false,
+  "n_queries": 373,
+  "n_corpus": 1678,
+  "timestamp": "2026-06-11T22:44:37.083673Z",
+  "seed": 42,
+  "latency_ms_per_query": 22.335,
+  "metrics": {
+    "recall@1": 0.2735,
+    "recall@3": 0.4424,
+    "recall@5": 0.496,
+    "recall@10": 0.5818,
+    "mrr@10": 0.3718,
+    "ndcg@10": 0.4222,
+    "map@10": 0.3718
+  }
+}

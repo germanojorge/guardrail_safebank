@@ -1,0 +1,55 @@
+{
+  "dataset": "faq_bacen",
+  "timestamp": "2026-06-11T22:44:37.130722Z",
+  "rows": [
+    {
+      "model_id": "intfloat/multilingual-e5-small",
+      "label": "e5-small (current)",
+      "dim": 384,
+      "prefix_style": "e5",
+      "latency_ms_per_query": 22.732,
+      "metrics": {
+        "recall@1": 0.4316,
+        "recall@3": 0.6086,
+        "recall@5": 0.6836,
+        "recall@10": 0.7587,
+        "mrr@10": 0.5354,
+        "ndcg@10": 0.5891,
+        "map@10": 0.5354
+      }
+    },
+    {
+      "model_id": "intfloat/multilingual-e5-base",
+      "label": "e5-base",
+      "dim": 768,
+      "prefix_style": "e5",
+      "latency_ms_per_query": 55.199,
+      "metrics": {
+        "recall@1": 0.4826,
+        "recall@3": 0.6756,
+        "recall@5": 0.748,
+        "recall@10": 0.7962,
+        "mrr@10": 0.5885,
+        "ndcg@10": 0.639,
+        "map@10": 0.5885
+      }
+    },
+    {
+      "model_id": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "label": "MiniLM-L12-v2",
+      "dim": 384,
+      "prefix_style": "none",
+      "latency_ms_per_query": 22.335,
+      "metrics": {
+        "recall@1": 0.2735,
+        "recall@3": 0.4424,
+        "recall@5": 0.496,
+        "recall@10": 0.5818,
+        "mrr@10": 0.3718,
+        "ndcg@10": 0.4222,
+        "map@10": 0.3718
+      }
+    }
+  ],
+  "winner": "intfloat/multilingual-e5-base"
+}
