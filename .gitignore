@@ -19,7 +19,10 @@ venv/
 # Data / models (examples)
 data/*
 !data/banking_kb/
-models/
+!data/eval/
+models/*
+!models/eval/
+!models/eval/**
 *.pt
 *.bin
 *.ckpt
