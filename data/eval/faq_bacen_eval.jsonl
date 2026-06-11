@@ -1,0 +1,373 @@
+{"query_id": "q_0", "query": "Qual a diferença entre credenciadores e subcredenciadores?", "relevant_doc_ids": ["test_0"]}
+{"query_id": "q_1", "query": "O cliente pode revogar o consentimento anterior?", "relevant_doc_ids": ["test_1"]}
+{"query_id": "q_2", "query": "O que devo fazer se suspeitar que uma cédula pode ser falsa?", "relevant_doc_ids": ["test_2"]}
+{"query_id": "q_3", "query": "Com o Pix, a TED e o DOC vão acabar?", "relevant_doc_ids": ["test_3"]}
+{"query_id": "q_4", "query": "Todas as operações de câmbio de uma instituição compõem a média calculada para classificação?", "relevant_doc_ids": ["test_4"]}
+{"query_id": "q_5", "query": "Como se classificam os recursos do crédito rural?", "relevant_doc_ids": ["test_5"]}
+{"query_id": "q_6", "query": "Quando os recursos livres de clientes em posse da corretora serão liberados?", "relevant_doc_ids": ["test_6"]}
+{"query_id": "q_7", "query": "Quero efetuar o pagamento de uma conta com um cheque, mas o banco se recusa a receber. O procedimento do banco está correto?", "relevant_doc_ids": ["test_7"]}
+{"query_id": "q_8", "query": "Quais dados estão contidos no CCS?", "relevant_doc_ids": ["test_8"]}
+{"query_id": "q_9", "query": "Quais são as condições básicas dos créditos de investimento do Pronaf - Floresta?", "relevant_doc_ids": ["test_9"]}
+{"query_id": "q_10", "query": "Qual o horário de funcionamento das agências bancárias?", "relevant_doc_ids": ["test_10"]}
+{"query_id": "q_11", "query": "Os bancos centrais atuam como garantidores das operações?", "relevant_doc_ids": ["test_11"]}
+{"query_id": "q_12", "query": "Como é calculada a Taxa SML?", "relevant_doc_ids": ["test_12"]}
+{"query_id": "q_13", "query": "Quais as consequências para o correntista que sustar indevidamente o seu pagamento?", "relevant_doc_ids": ["test_13"]}
+{"query_id": "q_14", "query": "O que deve estar previsto no contrato de adesão?", "relevant_doc_ids": ["test_14"]}
+{"query_id": "q_15", "query": "Se eu fizer uma TED em dia útil, mas for feriado ou dia não útil na praça da agência do beneficiário, o que ocorre?", "relevant_doc_ids": ["test_15"]}
+{"query_id": "q_16", "query": "A partir de qual valor as instituições são obrigadas a identificar a operação de crédito no SCR?", "relevant_doc_ids": ["test_16"]}
+{"query_id": "q_17", "query": "Posso pagar boleto usando Pix?", "relevant_doc_ids": ["test_17"]}
+{"query_id": "q_18", "query": "Existe algum fundo de crédito que garanta as operações realizadas pelas corretoras de câmbio,a exemplo do Fundo Garantidor de Crédito (FGC) e do Fundo Garantidor do Crédito Cooperativo (FGCoop)?", "relevant_doc_ids": ["test_18"]}
+{"query_id": "q_19", "query": "Como posso acessar a Calculadora do Cidadão?", "relevant_doc_ids": ["test_19"]}
+{"query_id": "q_20", "query": "Quem são os beneficiários do Pronaf?", "relevant_doc_ids": ["test_20"]}
+{"query_id": "q_21", "query": "Como funciona a distribuição de moedas comemorativas de circulação comum?", "relevant_doc_ids": ["test_21"]}
+{"query_id": "q_22", "query": "As instituições financeiras e as de pagamento podem realizar as operações de antecipação de recebíveis?", "relevant_doc_ids": ["test_22"]}
+{"query_id": "q_23", "query": "O banco é obrigado a fornecer talão de cheques?", "relevant_doc_ids": ["test_23"]}
+{"query_id": "q_24", "query": "Como posso agilizar a aprovação de um financiamento com o banco?", "relevant_doc_ids": ["test_24"]}
+{"query_id": "q_25", "query": "Quando pode ser apresentada a proposta de Termo de Compromisso?", "relevant_doc_ids": ["test_25"]}
+{"query_id": "q_26", "query": "Se um usuário Sisbacen de uma pessoa jurídica possuir apenas o perfil de Mandatário, o que ele pode e não pode fazer?", "relevant_doc_ids": ["test_26"]}
+{"query_id": "q_27", "query": "O que deve ser feito para transferir a dívida para outra instituição financeira?", "relevant_doc_ids": ["test_27"]}
+{"query_id": "q_28", "query": "Os correspondentes podem se negar a receber boletos de pagamento e contas de água, luz, telefone, impostos e outros documentos?", "relevant_doc_ids": ["test_28"]}
+{"query_id": "q_29", "query": "O banco ou outra instituição financeira pode cobrar alguma tarifa?", "relevant_doc_ids": ["test_29"]}
+{"query_id": "q_30", "query": "Quais as finalidades dos créditos de investimento do Pronaf - Mulher?", "relevant_doc_ids": ["test_30"]}
+{"query_id": "q_31", "query": "Quais tarifas podem ser cobradas pelo serviço de cartão de crédito?", "relevant_doc_ids": ["test_31"]}
+{"query_id": "q_32", "query": "Caso eu não pague no vencimento a fatura ou efetue pagamento em valor inferior ao mínimo o que acontece?", "relevant_doc_ids": ["test_32"]}
+{"query_id": "q_33", "query": "Quais as etapas do processo de autorização para constituição e funcionamento da cooperativa de crédito que não integrará sistema cooperativo, de cooperativa central de crédito e de confederação de crédito?", "relevant_doc_ids": ["test_33"]}
+{"query_id": "q_34", "query": "Se tenho uma conta com vencimento em dia não útil e realizo o pagamento com o Pix no dia útil seguinte, terei de pagar juros e multa?", "relevant_doc_ids": ["test_34"]}
+{"query_id": "q_35", "query": "Qual o prazo para as instituições devolverem os valores quando o credor indicar, no Sistema Valores a Receber (SVR), a chave Pix?", "relevant_doc_ids": ["test_35"]}
+{"query_id": "q_36", "query": "Posso obter uma “certidão negativa” do Cadin?", "relevant_doc_ids": ["test_36"]}
+{"query_id": "q_37", "query": "Quais as fases para o processo de autorização para constituição e funcionamento das cooperativas de crédito?", "relevant_doc_ids": ["test_37"]}
+{"query_id": "q_38", "query": "Preciso de autorização do Banco Central para que uma operação de exportação seja financiada?", "relevant_doc_ids": ["test_38"]}
+{"query_id": "q_39", "query": "Quais as etapas para a instrução do processo de autorização para constituição e funcionamento das administradoras de consórcio?", "relevant_doc_ids": ["test_39"]}
+{"query_id": "q_40", "query": "Em caso de saque de nota manchada nos terminais 24 horas, como proceder?", "relevant_doc_ids": ["test_40"]}
+{"query_id": "q_41", "query": "Após o ingresso de recursos (via câmbio ou TIR) no RDE-ROF, alguma outra ação é necessária?", "relevant_doc_ids": ["test_41"]}
+{"query_id": "q_42", "query": "O que devem fazer os aposentados que não têm conta em banco se sacarem uma nota manchada de rosa?", "relevant_doc_ids": ["test_42"]}
+{"query_id": "q_43", "query": "Como faço para solicitar modificação do escopo do projeto durante a execução do ciclo 1?", "relevant_doc_ids": ["test_43"]}
+{"query_id": "q_44", "query": "Como o cidadão poderá saber em que estágio está a análise e uma cédula manchada de rosa enviada ao Banco Central?", "relevant_doc_ids": ["test_44"]}
+{"query_id": "q_45", "query": "O que é microcrédito produtivo orientado?", "relevant_doc_ids": ["test_45"]}
+{"query_id": "q_46", "query": "Qual o papel do Banco Central na apuração dos golpes?", "relevant_doc_ids": ["test_46"]}
+{"query_id": "q_47", "query": "Possuo registros RDE-ROF e ainda consigo visualizá-los no Sisbacen Web. O que devo fazer?", "relevant_doc_ids": ["test_47"]}
+{"query_id": "q_48", "query": "Quais dados e serviços poderão ser compartilhados? E quando isso acontecerá?", "relevant_doc_ids": ["test_48"]}
+{"query_id": "q_49", "query": "Quais as tarifas relacionadas ao Pix?", "relevant_doc_ids": ["test_49"]}
+{"query_id": "q_50", "query": "Posso pagar minha conta de celular pelo Pix?", "relevant_doc_ids": ["test_50"]}
+{"query_id": "q_51", "query": "O banco pode adiar um saque em espécie?", "relevant_doc_ids": ["test_51"]}
+{"query_id": "q_52", "query": "No caso das operações em atraso, até quando elas aparecem no SCR?", "relevant_doc_ids": ["test_52"]}
+{"query_id": "q_53", "query": "Como se dará a interação entre o BC e o participante durante a execução do Sandbox Regulatório?", "relevant_doc_ids": ["test_53"]}
+{"query_id": "q_54", "query": "Qual a diferença entre o PIX e o cartão de débito?", "relevant_doc_ids": ["test_54"]}
+{"query_id": "q_55", "query": "Posso utilizar meu crédito para quitar saldo devedor de outras cotas de consórcio?", "relevant_doc_ids": ["test_55"]}
+{"query_id": "q_56", "query": "Como entro em contato com o liquidante?", "relevant_doc_ids": ["test_56"]}
+{"query_id": "q_57", "query": "É obrigatória a utilização do SML em transações de comércio exterior que envolvam países que utilizam esse sistema?", "relevant_doc_ids": ["test_57"]}
+{"query_id": "q_58", "query": "Como devem ser realizadas as consultas sobre os procedimentos relacionados a um pedido de autorização já enviado ao Deorf?", "relevant_doc_ids": ["test_58"]}
+{"query_id": "q_59", "query": "Como posso saber se estou incluído no Cadin?", "relevant_doc_ids": ["test_59"]}
+{"query_id": "q_60", "query": "Podem ser utilizados os recebíveis em cartão de crédito ou de débito em operações de crédito com garantia de recebíveis ou operações de desconto?", "relevant_doc_ids": ["test_60"]}
+{"query_id": "q_61", "query": "Quais procedimentos não posso realizar para ter acesso à cobertura?", "relevant_doc_ids": ["test_61"]}
+{"query_id": "q_62", "query": "Possuo uma conta fora do país e gostaria de utilizá-la para pagar uma obrigação no exterior. É possível?", "relevant_doc_ids": ["test_62"]}
+{"query_id": "q_63", "query": "É preciso ir a uma agência bancária para abrir uma conta?", "relevant_doc_ids": ["test_63"]}
+{"query_id": "q_64", "query": "Por que houve bloqueio judicial de valores na minha conta? Quem devo procurar?", "relevant_doc_ids": ["test_64"]}
+{"query_id": "q_65", "query": "Como posso compensar um cheque sacado contra uma agência bancária no exterior?", "relevant_doc_ids": ["test_65"]}
+{"query_id": "q_66", "query": "Vou ter que pagar para que meus dados sejam compartilhados?", "relevant_doc_ids": ["test_66"]}
+{"query_id": "q_67", "query": "Qual é o custo da cédula de 200 reais e das outras notas da Segunda Família do Real?", "relevant_doc_ids": ["test_67"]}
+{"query_id": "q_68", "query": "Por que é importante controlar a inflação?", "relevant_doc_ids": ["test_68"]}
+{"query_id": "q_69", "query": "O que acontece se o bem aumentar de preço depois que eu for contemplado?", "relevant_doc_ids": ["test_69"]}
+{"query_id": "q_70", "query": "Como posso acessar a relação de instituições de pagamento autorizadas a funcionar?", "relevant_doc_ids": ["test_70"]}
+{"query_id": "q_71", "query": "O que fazer no caso de ter cheque furtado ou roubado?", "relevant_doc_ids": ["test_71"]}
+{"query_id": "q_72", "query": "Caso, para determinado período de pagamento, haja previsão contratual para escolha de duas ou mais taxas de juros, como o declarante deve proceder na declaração das Condições de pagamento de juros?", "relevant_doc_ids": ["test_72"]}
+{"query_id": "q_73", "query": "Posso abrir uma conta em conjunto com outra(s) pessoa(s)?", "relevant_doc_ids": ["test_73"]}
+{"query_id": "q_74", "query": "Quem possui uma conta poupança social digital tem o registro desse vínculo no CCS?", "relevant_doc_ids": ["test_74"]}
+{"query_id": "q_75", "query": "A qual instituição o cliente deve solicitar o compartilhamento de dados e serviços?", "relevant_doc_ids": ["test_75"]}
+{"query_id": "q_76", "query": "As demais cédulas continuam válidas? Alguma nota vai ser retirada de circulação?", "relevant_doc_ids": ["test_76"]}
+{"query_id": "q_77", "query": "Se sou comerciante e aceito outros meios de pagamento que usam QR Code, vou precisar apresentar QR Codes diferentes para o cliente?", "relevant_doc_ids": ["test_77"]}
+{"query_id": "q_78", "query": "O que é empréstimo consignado?", "relevant_doc_ids": ["test_78"]}
+{"query_id": "q_79", "query": "Em que hipótese é possível firmar Termo de Compromisso?", "relevant_doc_ids": ["test_79"]}
+{"query_id": "q_80", "query": "Qual a diferença entre o PIX e o cartão de crédito?", "relevant_doc_ids": ["test_80"]}
+{"query_id": "q_81", "query": "Posso usar o meu saldo de FGTS como garantia de um empréstimo consignado?", "relevant_doc_ids": ["test_81"]}
+{"query_id": "q_82", "query": "Qual o limite máximo do valor do imóvel a ser financiado pelo SFH?", "relevant_doc_ids": ["test_82"]}
+{"query_id": "q_83", "query": "O que é uma operação de câmbio ilegítima ou não autorizada?", "relevant_doc_ids": ["test_83"]}
+{"query_id": "q_84", "query": "A instituição financeira pode fazer um parcelamento do saldo do crédito rotativo (parcelamento de fatura)?", "relevant_doc_ids": ["test_84"]}
+{"query_id": "q_85", "query": "O que as instituições devem considerar ao utilizar a marca do Pix?", "relevant_doc_ids": ["test_85"]}
+{"query_id": "q_86", "query": "O banco pode fornecer talão para cliente no cadastro de cheque sem fundo?", "relevant_doc_ids": ["test_86"]}
+{"query_id": "q_87", "query": "Possuo um registro no SCR com valor inferior a R$0,50, porém não consigo identificar a instituição quando emito o relatório. Como faço para obter essa informação?", "relevant_doc_ids": ["test_87"]}
+{"query_id": "q_88", "query": "Qual o prazo para defesa?", "relevant_doc_ids": ["test_88"]}
+{"query_id": "q_89", "query": "Meu banco ou instituição onde tenho conta pode me cobrar tarifa pelo recebimento de um pagamento via QR Code estático ou dinâmico?", "relevant_doc_ids": ["test_89"]}
+{"query_id": "q_90", "query": "Pessoas jurídicas são isentas de tarifas do Pix?", "relevant_doc_ids": ["test_90"]}
+{"query_id": "q_91", "query": "Quais os tipos de fundos de investimento financeiro?", "relevant_doc_ids": ["test_91"]}
+{"query_id": "q_92", "query": "O que é arrendamento mercantil (leasing)?", "relevant_doc_ids": ["test_92"]}
+{"query_id": "q_93", "query": "Qual a base legal do Registro Declaratório Eletrônico?", "relevant_doc_ids": ["test_93"]}
+{"query_id": "q_94", "query": "Quais são os prazos máximos de entrega, ao depositante, de cheque devolvido?", "relevant_doc_ids": ["test_94"]}
+{"query_id": "q_95", "query": "Quais são as principais características de um financiamento?", "relevant_doc_ids": ["test_95"]}
+{"query_id": "q_96", "query": "Qual a quantidade de cédulas de 200 reais que será impressa este ano?", "relevant_doc_ids": ["test_96"]}
+{"query_id": "q_97", "query": "O que é Endereço Virtual de Pagamento?", "relevant_doc_ids": ["test_97"]}
+{"query_id": "q_98", "query": "O que é FGC?", "relevant_doc_ids": ["test_98"]}
+{"query_id": "q_99", "query": "O que é a portabilidade de crédito?", "relevant_doc_ids": ["test_99"]}
+{"query_id": "q_100", "query": "Excluí um registro RDE-ROF por engano. Há a possibilidade de recuperar o registro?", "relevant_doc_ids": ["test_100"]}
+{"query_id": "q_101", "query": "Qual é a obrigação do consorciado que compra uma cota vaga na administradora?", "relevant_doc_ids": ["test_101"]}
+{"query_id": "q_102", "query": "Como faço para enviar recursos para o exterior ou para receber recursos do exterior em moeda estrangeira?", "relevant_doc_ids": ["test_102"]}
+{"query_id": "q_103", "query": "Como fico sabendo do CET de uma operação?", "relevant_doc_ids": ["test_103"]}
+{"query_id": "q_104", "query": "Quais os cuidados que devo tomar antes de abrir uma conta?", "relevant_doc_ids": ["test_104"]}
+{"query_id": "q_105", "query": "Quando será divulgado o resultado final?", "relevant_doc_ids": ["test_105"]}
+{"query_id": "q_106", "query": "Se eu digitei errado os dados do beneficiário, quando o recurso é devolvido para minha conta?", "relevant_doc_ids": ["test_106"]}
+{"query_id": "q_107", "query": "O cliente das instituições participantes deve consentir com o compartilhamento de seus dados?", "relevant_doc_ids": ["test_107"]}
+{"query_id": "q_108", "query": "Existe alguma possibilidade de a SCD obter recursos sem ser pela emissão de ações?", "relevant_doc_ids": ["test_108"]}
+{"query_id": "q_109", "query": "Quais fatores afetam a taxa de câmbio?", "relevant_doc_ids": ["test_109"]}
+{"query_id": "q_110", "query": "É possível verificar na lista de contatos do meu celular quem possui uma chave Pix?", "relevant_doc_ids": ["test_110"]}
+{"query_id": "q_111", "query": "Fui cadastrar uma chave e fui informado de que ela já pertence a outro usuário do PIX. O que devo fazer?", "relevant_doc_ids": ["test_111"]}
+{"query_id": "q_112", "query": "Posso registrar uma reclamação contra uma instituição autorizada a funcionar pelo Banco Central?", "relevant_doc_ids": ["test_112"]}
+{"query_id": "q_113", "query": "O banco é obrigado a fornecer talão de cheques a todo correntista?", "relevant_doc_ids": ["test_113"]}
+{"query_id": "q_114", "query": "O SML é uma ferramenta de cobertura de risco cambial?", "relevant_doc_ids": ["test_114"]}
+{"query_id": "q_115", "query": "Como os órgãos do Poder Judiciário podem acessar o Bacen jud?", "relevant_doc_ids": ["test_115"]}
+{"query_id": "q_116", "query": "O que é um arranjo de pagamento aberto?", "relevant_doc_ids": ["test_116"]}
+{"query_id": "q_117", "query": "Quais dados e serviços serão objeto de compartilhamento?", "relevant_doc_ids": ["test_117"]}
+{"query_id": "q_118", "query": "O que acontece quando se decreta a liquidação extrajudicial de uma instituição?", "relevant_doc_ids": ["test_118"]}
+{"query_id": "q_119", "query": "Quais penalidades podem ser aplicadas pelo BCB?", "relevant_doc_ids": ["test_119"]}
+{"query_id": "q_120", "query": "Qual a vantagem de ser cliente de uma instituição de pagamento?", "relevant_doc_ids": ["test_120"]}
+{"query_id": "q_121", "query": "Quem está obrigado a fazer a declaração CBE?", "relevant_doc_ids": ["test_121"]}
+{"query_id": "q_122", "query": "O contrato de câmbio é sempre necessário?", "relevant_doc_ids": ["test_122"]}
+{"query_id": "q_123", "query": "O que é liquidação extrajudicial?", "relevant_doc_ids": ["test_123"]}
+{"query_id": "q_124", "query": "O que é taxa de compra e taxa de venda?", "relevant_doc_ids": ["test_124"]}
+{"query_id": "q_125", "query": "Ficam a cargo de quem as despesas adicionais?", "relevant_doc_ids": ["test_125"]}
+{"query_id": "q_126", "query": "Qual o custo de produção de cédulas e moedas?", "relevant_doc_ids": ["test_126"]}
+{"query_id": "q_127", "query": "O Banco Central regula os cartões emitidos por lojas?", "relevant_doc_ids": ["test_127"]}
+{"query_id": "q_128", "query": "Despesas bancárias podem ser pagas por meio do SML?", "relevant_doc_ids": ["test_128"]}
+{"query_id": "q_129", "query": "O participante precisa informar o CET ao cliente que queira contratar empréstimos ou financiamentos?", "relevant_doc_ids": ["test_129"]}
+{"query_id": "q_130", "query": "O que é o Cheque Especial?", "relevant_doc_ids": ["test_130"]}
+{"query_id": "q_131", "query": "O Banco Central do Brasil autoriza o funcionamento das empresas que negociam “moedas virtuais” e/ou guardam chaves, senhas ou outras informações cadastrais dos usuários, empresas conhecidas como “exchanges”?", "relevant_doc_ids": ["test_131"]}
+{"query_id": "q_132", "query": "O que é necessário para encerrar a conta?", "relevant_doc_ids": ["test_132"]}
+{"query_id": "q_133", "query": "Como o cidadão deve proceder ao receber dinheiro suspeito de falsificação?", "relevant_doc_ids": ["test_133"]}
+{"query_id": "q_134", "query": "A instituição proponente registrou o pedido de portabilidade na CIP, mas o pedido foi recusado. O que eu faço?", "relevant_doc_ids": ["test_134"]}
+{"query_id": "q_135", "query": "Posso saber quem consultou o meu cadastro?", "relevant_doc_ids": ["test_135"]}
+{"query_id": "q_136", "query": "Quais cédulas são consideradas sem valor?", "relevant_doc_ids": ["test_136"]}
+{"query_id": "q_137", "query": "O que é o Pronaf?", "relevant_doc_ids": ["test_137"]}
+{"query_id": "q_138", "query": "Se houver decretação da liquidação extrajudicial da cooperativa, o cooperado perderá seus investimentos?", "relevant_doc_ids": ["test_138"]}
+{"query_id": "q_139", "query": "O que é o BR Code?", "relevant_doc_ids": ["test_139"]}
+{"query_id": "q_140", "query": "Qual a base legal para a decretação de regimes de administração especial e liquidação extrajudicial em administradoras de consórcios pelo Banco Central?", "relevant_doc_ids": ["test_140"]}
+{"query_id": "q_141", "query": "Meu pedido de refúgio foi aprovado e já tenho conta aberta. O que devo fazer nesse caso?", "relevant_doc_ids": ["test_141"]}
+{"query_id": "q_142", "query": "O que acontecerá com as operações contratadas antes da data da liquidação e ainda não liquidadas?", "relevant_doc_ids": ["test_142"]}
+{"query_id": "q_143", "query": "Quais os procedimentos necessários para autorização para funcionamento das instituições de pagamento?", "relevant_doc_ids": ["test_143"]}
+{"query_id": "q_144", "query": "O banco é obrigado a aceitar pagamento de contas com cheque?", "relevant_doc_ids": ["test_144"]}
+{"query_id": "q_145", "query": "É possível ao acusado anexar mais informações ao processo, depois de ter entregado sua defesa?", "relevant_doc_ids": ["test_145"]}
+{"query_id": "q_146", "query": "Como as instituições devem divulgar as tarifas?", "relevant_doc_ids": ["test_146"]}
+{"query_id": "q_147", "query": "As instituições financeiras podem aderir aos arranjos de pagamento?", "relevant_doc_ids": ["test_147"]}
+{"query_id": "q_148", "query": "Quais instituições financeiras estão dispensadas de solicitar autorização do Banco Central para a prestação de serviços de pagamento?", "relevant_doc_ids": ["test_148"]}
+{"query_id": "q_149", "query": "Alguém pode utilizar a minha chave para sacar dinheiro da minha conta ou praticar outro tipo de golpe?", "relevant_doc_ids": ["test_149"]}
+{"query_id": "q_150", "query": "É necessário consolidar os dados contábeis para declaração?", "relevant_doc_ids": ["test_150"]}
+{"query_id": "q_151", "query": "Por que foram escolhidas as cores cinza e sépia como cores predominantes da nova cédula?", "relevant_doc_ids": ["test_151"]}
+{"query_id": "q_152", "query": "O Imposto de Renda é descontado no cálculo de correção de valores?", "relevant_doc_ids": ["test_152"]}
+{"query_id": "q_153", "query": "Como saber qual código devo usar para classificar a operação de câmbio?", "relevant_doc_ids": ["test_153"]}
+{"query_id": "q_154", "query": "Quais canais de atendimento podem ser utilizados, para tirar dúvidas e/ou obter outras informações sobre o CCS?", "relevant_doc_ids": ["test_154"]}
+{"query_id": "q_155", "query": "Como uma pessoa é identificada no Bacen Jud?", "relevant_doc_ids": ["test_155"]}
+{"query_id": "q_156", "query": "Em qual situação é vedada a concessão de crédito do Pronaf?", "relevant_doc_ids": ["test_156"]}
+{"query_id": "q_157", "query": "O Banco Central dispõe de estatísticas referentes ao processo administrativo sancionador?", "relevant_doc_ids": ["test_157"]}
+{"query_id": "q_158", "query": "O que é o Termo de Compromisso no âmbito do Banco Central do Brasil?", "relevant_doc_ids": ["test_158"]}
+{"query_id": "q_159", "query": "Apenas as instituições já autorizadas a funcionar pelo BC podem se candidatar ao Sandbox Regulatório?", "relevant_doc_ids": ["test_159"]}
+{"query_id": "q_160", "query": "O valor pago a título de integralização de cota parte poderá ser devolvido na liquidação extrajudicial?", "relevant_doc_ids": ["test_160"]}
+{"query_id": "q_161", "query": "E se houver registro em nome de uma instituição financeira que eu não conheço?", "relevant_doc_ids": ["test_161"]}
+{"query_id": "q_162", "query": "Quais são as condições da Linha de Crédito de Investimento para Convivência com o Semiárido (Pronaf Semiárido)?", "relevant_doc_ids": ["test_162"]}
+{"query_id": "q_163", "query": "Como obter mais informações sobre multas e penalidades", "relevant_doc_ids": ["test_163"]}
+{"query_id": "q_164", "query": "Por que o BC decidiu lançar uma cédula nova?", "relevant_doc_ids": ["test_164"]}
+{"query_id": "q_165", "query": "É possível conduzir operações back-to-back via SML?", "relevant_doc_ids": ["test_165"]}
+{"query_id": "q_166", "query": "Caso eu financie apenas uma parte do imóvel, o seu valor poderá ser maior que o limite máximo estabelecido para bens financiados pelo SFH?", "relevant_doc_ids": ["test_166"]}
+{"query_id": "q_167", "query": "Como faço para solicitar substituição de administrador ou de controlador da empresa durante a execução do ciclo 1?", "relevant_doc_ids": ["test_167"]}
+{"query_id": "q_168", "query": "As informações de todas as instituições participantes do Pix constam no relatório de contas em bancos e outros relacionamentos (CCS)?", "relevant_doc_ids": ["test_168"]}
+{"query_id": "q_169", "query": "É permitido realizar transferência internacional utilizando “moedas virtuais”?", "relevant_doc_ids": ["test_169"]}
+{"query_id": "q_170", "query": "Após a visita do técnico, quanto tempo o agente tem para dar o resultado da perícia?", "relevant_doc_ids": ["test_170"]}
+{"query_id": "q_171", "query": "Os cálculos resultantes da calculadora do cidadão devem ser iguais aos calculados pelas instituições financeiras?", "relevant_doc_ids": ["test_171"]}
+{"query_id": "q_172", "query": "O que é Custo Efetivo Total (CET) de uma operação?", "relevant_doc_ids": ["test_172"]}
+{"query_id": "q_173", "query": "Onde acesso o protocolo de entrega?", "relevant_doc_ids": ["test_173"]}
+{"query_id": "q_174", "query": "Qual o prazo para disponibilização de recursos nas operações de empréstimos e financiamento entre pessoas?", "relevant_doc_ids": ["test_174"]}
+{"query_id": "q_175", "query": "Como o BC trata a questão da interoperabilidade entre arranjos?", "relevant_doc_ids": ["test_175"]}
+{"query_id": "q_176", "query": "Qual é a diferença entre conta bancária e conta de pagamento pré-paga?", "relevant_doc_ids": ["test_176"]}
+{"query_id": "q_177", "query": "Quais as formas de transferir dinheiro da minha conta para outra conta?", "relevant_doc_ids": ["test_177"]}
+{"query_id": "q_178", "query": "Qual o prazo mínimo para aplicação e resgate de CDB e RDB?", "relevant_doc_ids": ["test_178"]}
+{"query_id": "q_179", "query": "Perdi a minha senha, como faço para acessar a declaração?", "relevant_doc_ids": ["test_179"]}
+{"query_id": "q_180", "query": "Quando quero transferir recursos para uma conta no mesmo banco ou instituição, os valores são creditados no mesmo dia?", "relevant_doc_ids": ["test_180"]}
+{"query_id": "q_181", "query": "Como faço para ter vistas do processo?", "relevant_doc_ids": ["test_181"]}
+{"query_id": "q_182", "query": "O que é o Pix?", "relevant_doc_ids": ["test_182"]}
+{"query_id": "q_183", "query": "Qual é a lógica da numeração usada nas notas?", "relevant_doc_ids": ["test_183"]}
+{"query_id": "q_184", "query": "A SCD pode contratar serviços de correspondentes no país?", "relevant_doc_ids": ["test_184"]}
+{"query_id": "q_185", "query": "O que é contribuição pecuniária e quais são os parâmetros para estabelecê-la?", "relevant_doc_ids": ["test_185"]}
+{"query_id": "q_186", "query": "Quantas chaves eu posso ter?", "relevant_doc_ids": ["test_186"]}
+{"query_id": "q_187", "query": "Quais cuidados devo tomar para ter a cobertura da indenização de recursos próprios?", "relevant_doc_ids": ["test_187"]}
+{"query_id": "q_188", "query": "Quais são as partes envolvidas no Open Banking?", "relevant_doc_ids": ["test_188"]}
+{"query_id": "q_189", "query": "Existe alguma situação no qual é dispensada a documentação?", "relevant_doc_ids": ["test_189"]}
+{"query_id": "q_190", "query": "Existe um limite mínimo ou máximo de valor para fazer um Pix?", "relevant_doc_ids": ["test_190"]}
+{"query_id": "q_191", "query": "Caso possua uma conta de depósitos à vista, uma conta de poupança ou uma conta de pagamento pré-paga, na mesma ou em outra instituição, eu posso realizar transferência dos recursos para esta conta?", "relevant_doc_ids": ["test_191"]}
+{"query_id": "q_192", "query": "Se um não residente quiser pagar imóvel adquirido no País, como ele poderá fazer?", "relevant_doc_ids": ["test_192"]}
+{"query_id": "q_193", "query": "Quais informações o corretor de crédito deve me repassar quando me ofertar a portabilidade?", "relevant_doc_ids": ["test_193"]}
+{"query_id": "q_194", "query": "A administradora pode garantir minha contemplação imediata?", "relevant_doc_ids": ["test_194"]}
+{"query_id": "q_195", "query": "Quais são as consequências do Inquérito realizado pelo Banco Central?", "relevant_doc_ids": ["test_195"]}
+{"query_id": "q_196", "query": "Quem pode ofertar PIX?", "relevant_doc_ids": ["test_196"]}
+{"query_id": "q_197", "query": "O que é contemplação?", "relevant_doc_ids": ["test_197"]}
+{"query_id": "q_198", "query": "Onde encontro informações sobre quais instituições ofertam o PIX?", "relevant_doc_ids": ["test_198"]}
+{"query_id": "q_199", "query": "Posso antecipar o pagamento de uma importação?", "relevant_doc_ids": ["test_199"]}
+{"query_id": "q_200", "query": "Essa forma de liberação dos recursos prevista por conta da pandemia, valiam para quais consórcios?", "relevant_doc_ids": ["test_200"]}
+{"query_id": "q_201", "query": "Posso cancelar a autorização para débito automático?", "relevant_doc_ids": ["test_201"]}
+{"query_id": "q_202", "query": "Registrei um RDE-ROF que não será efetivado, por erro ou por outro motivo qualquer. Devo excluir o registro? Ou o sistema excluirá automaticamente o registro após determinado prazo?", "relevant_doc_ids": ["test_202"]}
+{"query_id": "q_203", "query": "Como o banco garante que os recebíveis dados em garantia não serão antecipados?", "relevant_doc_ids": ["test_203"]}
+{"query_id": "q_204", "query": "As cooperativas de crédito podem admitir entes públicos como cooperados?", "relevant_doc_ids": ["test_204"]}
+{"query_id": "q_205", "query": "Por que o Banco Central intervém no mercado de câmbio?", "relevant_doc_ids": ["test_205"]}
+{"query_id": "q_206", "query": "O Banco Central pode intervir em instituições financeiras e demais autorizadas?", "relevant_doc_ids": ["test_206"]}
+{"query_id": "q_207", "query": "As instituições emissoras de cartão de crédito são obrigadas a fornecer extrato ou fatura mensal aos clientes?", "relevant_doc_ids": ["test_207"]}
+{"query_id": "q_208", "query": "Posso realizar um DOC em um banco ou instituição onde não possuo conta?", "relevant_doc_ids": ["test_208"]}
+{"query_id": "q_209", "query": "Como o cidadão deve proceder ao receber dinheiro manchado de rosa?", "relevant_doc_ids": ["test_209"]}
+{"query_id": "q_210", "query": "Como foi a escolha das cores da cédula de 200 reais?", "relevant_doc_ids": ["test_210"]}
+{"query_id": "q_211", "query": "3.10\tQuais situações podem acarretar o cancelamento de ofício pelo BC?", "relevant_doc_ids": ["test_211"]}
+{"query_id": "q_212", "query": "O emitente pode impedir o pagamento de um cheque já emitido?", "relevant_doc_ids": ["test_212"]}
+{"query_id": "q_213", "query": "Qual o valor das multas?", "relevant_doc_ids": ["test_213"]}
+{"query_id": "q_214", "query": "O Pix é um meio de pagamento?", "relevant_doc_ids": ["test_214"]}
+{"query_id": "q_215", "query": "O que devo fazer se houver compras on-line não reconhecidas?", "relevant_doc_ids": ["test_215"]}
+{"query_id": "q_216", "query": "Validei minha frase de segurança. Por que não consigo finalizar o autocadastramento?", "relevant_doc_ids": ["test_216"]}
+{"query_id": "q_217", "query": "Todos os motivos de devolução dos cheques geram inclusão do nome no CCF?", "relevant_doc_ids": ["test_217"]}
+{"query_id": "q_218", "query": "O que é o Cadastro de Emitentes de Cheques sem Fundos (CCF)?", "relevant_doc_ids": ["test_218"]}
+{"query_id": "q_219", "query": "Como ocorre o processo de resolução de disputa entre participantes Pix?", "relevant_doc_ids": ["test_219"]}
+{"query_id": "q_220", "query": "Para que servem as reservas internacionais?", "relevant_doc_ids": ["test_220"]}
+{"query_id": "q_221", "query": "Como posso acessar os balancetes e balanços patrimoniais das instituições de pagamentos (IP’s)?", "relevant_doc_ids": ["test_221"]}
+{"query_id": "q_222", "query": "Quais as atribuições do Banco Central em relação ao CCS?", "relevant_doc_ids": ["test_222"]}
+{"query_id": "q_223", "query": "O menor de idade pode ser titular de conta?", "relevant_doc_ids": ["test_223"]}
+{"query_id": "q_224", "query": "O que são arranjos de pagamentos?", "relevant_doc_ids": ["test_224"]}
+{"query_id": "q_225", "query": "Se eu financiar meu imóvel conforme as regras do SFH, sou obrigado a contratar o seguro?", "relevant_doc_ids": ["test_225"]}
+{"query_id": "q_226", "query": "Em qual moeda deve ser feito o pagamento da importação?", "relevant_doc_ids": ["test_226"]}
+{"query_id": "q_227", "query": "A quem cabe cumprir as decisões judiciais que determinam a baixa ou suspensão de registros no Cadin?", "relevant_doc_ids": ["test_227"]}
+{"query_id": "q_228", "query": "Os recursos de um grupo de consórcio são separados dos recursos da administradora e dos de outros grupos?", "relevant_doc_ids": ["test_228"]}
+{"query_id": "q_229", "query": "Posso contratar mais de uma operação de MPO?", "relevant_doc_ids": ["test_229"]}
+{"query_id": "q_230", "query": "O correspondente pode utilizar a expressão \"banco\" em seu nome?", "relevant_doc_ids": ["test_230"]}
+{"query_id": "q_231", "query": "Tenho uma dívida de uma operação de crédito rural, como posso renegociá-la?", "relevant_doc_ids": ["test_231"]}
+{"query_id": "q_232", "query": "Sou Pessoa Física e, ao acessar o Registrato, o sistema está exibindo a mensagem “ID de usuário ou senha incorreta”. Como resolver?", "relevant_doc_ids": ["test_232"]}
+{"query_id": "q_233", "query": "A que tipo de despesas está sujeito o crédito rural?", "relevant_doc_ids": ["test_233"]}
+{"query_id": "q_234", "query": "É possível consultar a relação daqueles considerados inabilitados após a decisão do processo administrativo sancionador?", "relevant_doc_ids": ["test_234"]}
+{"query_id": "q_235", "query": "Quais as modalidades de arrendamento mercantil (leasing)?", "relevant_doc_ids": ["test_235"]}
+{"query_id": "q_236", "query": "Quais são as vantagens e desvantagens da constituição de uma cooperativa de crédito?", "relevant_doc_ids": ["test_236"]}
+{"query_id": "q_237", "query": "Onde posso consultar as instituições autorizadas a funcionar pelo BC ?", "relevant_doc_ids": ["test_237"]}
+{"query_id": "q_238", "query": "Por que o Banco não fez uma cédula com o mesmo tamanho da cédula de 100 reais?", "relevant_doc_ids": ["test_238"]}
+{"query_id": "q_239", "query": "Se eu fizer um PIX, mas digitar o valor errado, é possível fazer o estorno ou o cancelamento da operação?", "relevant_doc_ids": ["test_239"]}
+{"query_id": "q_240", "query": "Onde posso acessar as declarações dos anos anteriores?", "relevant_doc_ids": ["test_240"]}
+{"query_id": "q_241", "query": "As contas de pagamento são mantidas somente pelas instituições de pagamento?", "relevant_doc_ids": ["test_241"]}
+{"query_id": "q_242", "query": "Quais esclarecimentos a instituição deve me fornecer?", "relevant_doc_ids": ["test_242"]}
+{"query_id": "q_243", "query": "Se o celular/chip for clonado, furtado ou roubado, outra pessoa poderá fazer um Pix a partir da minha conta ou desviar transferências que viriam para minha conta?", "relevant_doc_ids": ["test_243"]}
+{"query_id": "q_244", "query": "Sou Pessoa Jurídica e minha empresa possui filiais. Preciso realizar vários cadastros no Registrato para acessar o SCR?", "relevant_doc_ids": ["test_244"]}
+{"query_id": "q_245", "query": "A contratação de assistência técnica é obrigatória para obter o crédito?", "relevant_doc_ids": ["test_245"]}
+{"query_id": "q_246", "query": "Posso agregar informações do mesmo ativo ou preciso declarar item a item, mesmo que a categoria de ativo seja a mesma?", "relevant_doc_ids": ["test_246"]}
+{"query_id": "q_247", "query": "Como posso fazer a inscrição do meu projeto inovador?", "relevant_doc_ids": ["test_247"]}
+{"query_id": "q_248", "query": "Quais recursos são cobertos por garantia especial do FGC?", "relevant_doc_ids": ["test_248"]}
+{"query_id": "q_249", "query": "Preciso saber qual é o ISPB de uma instituição financeira para poder realizar a portabilidade. Onde eu encontro esse código?", "relevant_doc_ids": ["test_249"]}
+{"query_id": "q_250", "query": "Se eu realizar uma TED em feriado ou outro dia não útil, quando o recurso é creditado na conta do beneficiário?", "relevant_doc_ids": ["test_250"]}
+{"query_id": "q_251", "query": "No caso da questão 8 acima, posso acompanhar a análise no Banco Central?", "relevant_doc_ids": ["test_251"]}
+{"query_id": "q_252", "query": "Se eu fizer um Pix, mas digitar o valor errado, é possível fazer o estorno ou o cancelamento da operação?", "relevant_doc_ids": ["test_252"]}
+{"query_id": "q_253", "query": "Quais são os tipos de instituições de pagamento?", "relevant_doc_ids": ["test_253"]}
+{"query_id": "q_254", "query": "Existe uma quantidade máxima de Pix que posso realizar em um mês?", "relevant_doc_ids": ["test_254"]}
+{"query_id": "q_255", "query": "O que é o Sistema de Consórcios?", "relevant_doc_ids": ["test_255"]}
+{"query_id": "q_256", "query": "Os bancos são obrigados a abrir conta-salário?", "relevant_doc_ids": ["test_256"]}
+{"query_id": "q_257", "query": "Como a política monetária influencia a taxa de câmbio?", "relevant_doc_ids": ["test_257"]}
+{"query_id": "q_258", "query": "Como o cidadão poderá saber em que estágio como está a análise da cédula suspeita enviada ao Banco Central?", "relevant_doc_ids": ["test_258"]}
+{"query_id": "q_259", "query": "O Banco Central representa a administradora de consórcios agora?", "relevant_doc_ids": ["test_259"]}
+{"query_id": "q_260", "query": "Quem pode solicitar acesso a relatórios com dados sigilosos de pessoa falecida?", "relevant_doc_ids": ["test_260"]}
+{"query_id": "q_261", "query": "Quais os requisitos do consentimento?", "relevant_doc_ids": ["test_261"]}
+{"query_id": "q_262", "query": "Como ocorre o processo de inscrição dos interessados?", "relevant_doc_ids": ["test_262"]}
+{"query_id": "q_263", "query": "Quem pode acessar?", "relevant_doc_ids": ["test_263"]}
+{"query_id": "q_264", "query": "Por que os órgãos e entidades da Administração Pública federal, direta e indireta, consultam o Cadin?", "relevant_doc_ids": ["test_264"]}
+{"query_id": "q_265", "query": "É possível incluir um Garantidor ou Outro Participante no RDE-ROF após o registro passar para a situação Efetivado?", "relevant_doc_ids": ["test_265"]}
+{"query_id": "q_266", "query": "Quais são as modalidades de taxas de juros aplicáveis às operações de crédito rural?", "relevant_doc_ids": ["test_266"]}
+{"query_id": "q_267", "query": "O que é margem negativa?", "relevant_doc_ids": ["test_267"]}
+{"query_id": "q_268", "query": "O Pix usa blockchain?", "relevant_doc_ids": ["test_268"]}
+{"query_id": "q_269", "query": "Os relatórios do CCS abrangem dados de co-titulares?", "relevant_doc_ids": ["test_269"]}
+{"query_id": "q_270", "query": "A instituição é obrigada a oferecer os pacotes de serviços prioritários padronizados pela regulamentação?", "relevant_doc_ids": ["test_270"]}
+{"query_id": "q_271", "query": "Como funciona as alterações nos limites de valores estabelecidos pela instituição?", "relevant_doc_ids": ["test_271"]}
+{"query_id": "q_272", "query": "Como o acusado pode apresentar defesa?", "relevant_doc_ids": ["test_272"]}
+{"query_id": "q_273", "query": "Qual a finalidade do monitoramento e a fiscalização das operações de crédito rural?", "relevant_doc_ids": ["test_273"]}
+{"query_id": "q_274", "query": "Como obter extrato da conta e dos investimentos?", "relevant_doc_ids": ["test_274"]}
+{"query_id": "q_275", "query": "O valor de face 200 reais facilita a lavagem de dinheiro?", "relevant_doc_ids": ["test_275"]}
+{"query_id": "q_276", "query": "O lançamento da cédula de R$200,00 significa que a inflação está subindo?", "relevant_doc_ids": ["test_276"]}
+{"query_id": "q_277", "query": "Quando poderei utilizar o PIX?", "relevant_doc_ids": ["test_277"]}
+{"query_id": "q_278", "query": "Como obtenho informações sobre o Programa de Garantia da Atividade Agropecuária (Proagro)?", "relevant_doc_ids": ["test_278"]}
+{"query_id": "q_279", "query": "Houve mudanças no sistema da declaração CBE?", "relevant_doc_ids": ["test_279"]}
+{"query_id": "q_280", "query": "Qual o meio eletrônico utilizado pelo BC para o trâmite de processos eletrônicos?", "relevant_doc_ids": ["test_280"]}
+{"query_id": "q_281", "query": "Depois que pedi a portabilidade salarial, qual o prazo para que o salário seja depositado na conta indicada?", "relevant_doc_ids": ["test_281"]}
+{"query_id": "q_282", "query": "Empresas e instituições financeiras privadas podem efetuar inscrições no Cadin?", "relevant_doc_ids": ["test_282"]}
+{"query_id": "q_283", "query": "É possível uma pessoa jurídica se cadastrar no Sistema Registrato utilizando as facilidades da validação por Internet Banking?", "relevant_doc_ids": ["test_283"]}
+{"query_id": "q_284", "query": "A decretação de regime de liquidação extrajudicial significa que a administradora de consórcio faliu?", "relevant_doc_ids": ["test_284"]}
+{"query_id": "q_285", "query": "Como será a garantia de créditos em caso de intervenção ou liquidação?", "relevant_doc_ids": ["test_285"]}
+{"query_id": "q_286", "query": "Há uma informação errada em meu cadastro. Como faço para corrigi-la?", "relevant_doc_ids": ["test_286"]}
+{"query_id": "q_287", "query": "O banco é obrigado a comunicar ao emitente a devolução de cheques sem fundos?", "relevant_doc_ids": ["test_287"]}
+{"query_id": "q_288", "query": "Os leitores de cartões e estabelecimentos comerciais são obrigados a aceitar todas as bandeiras de cartões?", "relevant_doc_ids": ["test_288"]}
+{"query_id": "q_289", "query": "Quais são as formas de emissão do cheque?", "relevant_doc_ids": ["test_289"]}
+{"query_id": "q_290", "query": "Quais são os serviços gratuitos?", "relevant_doc_ids": ["test_290"]}
+{"query_id": "q_291", "query": "O que é uma instituição de pagamento?", "relevant_doc_ids": ["test_291"]}
+{"query_id": "q_292", "query": "O que é Documento de Crédito (DOC)?", "relevant_doc_ids": ["test_292"]}
+{"query_id": "q_293", "query": "Qual a diferença entre o Pix e a TED?", "relevant_doc_ids": ["test_293"]}
+{"query_id": "q_294", "query": "A instituição financeira que concedeu o crédito rotativo é obrigada a me oferecer o parcelamento do saldo devedor da fatura?", "relevant_doc_ids": ["test_294"]}
+{"query_id": "q_295", "query": "Além da taxa média de juros, o que pode me ajudar a encontrar taxas de juros menores?", "relevant_doc_ids": ["test_295"]}
+{"query_id": "q_296", "query": "Além de decretar e acompanhar o regime de resolução, qual o papel do Banco Central?", "relevant_doc_ids": ["test_296"]}
+{"query_id": "q_297", "query": "O banco pode reter meus recebíveis desde o momento em que eu contratar a operação de crédito e der os recebíveis em garantia?", "relevant_doc_ids": ["test_297"]}
+{"query_id": "q_298", "query": "O que eu ganho com o Open Banking?", "relevant_doc_ids": ["test_298"]}
+{"query_id": "q_299", "query": "O que são cédulas danificadas?", "relevant_doc_ids": ["test_299"]}
+{"query_id": "q_300", "query": "Após o envio, é gerado algum número que me permite acompanhar o processo de solicitação?", "relevant_doc_ids": ["test_300"]}
+{"query_id": "q_301", "query": "O que é o Valores a Receber?", "relevant_doc_ids": ["test_301"]}
+{"query_id": "q_302", "query": "O que é agenda de recebíveis?", "relevant_doc_ids": ["test_302"]}
+{"query_id": "q_303", "query": "Quais são os pré-requisitos para acessar o RDE-ROF?", "relevant_doc_ids": ["test_303"]}
+{"query_id": "q_304", "query": "O que devem fazer os beneficiários do Bolsa Família que não têm conta em banco se sacarem dinheiro suspeito de falsificação?", "relevant_doc_ids": ["test_304"]}
+{"query_id": "q_305", "query": "As notas da Segunda Família duram mais do que as da Primeira Família?", "relevant_doc_ids": ["test_305"]}
+{"query_id": "q_306", "query": "Quais são os prazos máximos de bloqueio e de entrega de cheque devolvido no caso de depósito de cheques em outra dependência do mesmo banco?", "relevant_doc_ids": ["test_306"]}
+{"query_id": "q_307", "query": "A SCD e a SEP podem vender ou ceder os créditos relativos a suas operações?", "relevant_doc_ids": ["test_307"]}
+{"query_id": "q_308", "query": "O que é aval solidário?", "relevant_doc_ids": ["test_308"]}
+{"query_id": "q_309", "query": "Onde posso consultar as principais informações sobre os processos de autorização do BC?", "relevant_doc_ids": ["test_309"]}
+{"query_id": "q_310", "query": "O PIN possui validade?", "relevant_doc_ids": ["test_310"]}
+{"query_id": "q_311", "query": "Vou perder meu dinheiro?", "relevant_doc_ids": ["test_311"]}
+{"query_id": "q_312", "query": "Qual a diferença entre federações de cooperativas e cooperativas centrais de crédito?", "relevant_doc_ids": ["test_312"]}
+{"query_id": "q_313", "query": "Terei algum comprovante da realização de um PIX?", "relevant_doc_ids": ["test_313"]}
+{"query_id": "q_314", "query": "O que é o contrato de adesão?", "relevant_doc_ids": ["test_314"]}
+{"query_id": "q_315", "query": "A SCD e a SEP podem captar recursos do público?", "relevant_doc_ids": ["test_315"]}
+{"query_id": "q_316", "query": "Quais são os dados vinculados à chave Pix que os usuários podem alterar?", "relevant_doc_ids": ["test_316"]}
+{"query_id": "q_317", "query": "O que é a Calculadora do Cidadão?", "relevant_doc_ids": ["test_317"]}
+{"query_id": "q_318", "query": "Deve ser realizado contrato de câmbio para as operações cursadas no SML?", "relevant_doc_ids": ["test_318"]}
+{"query_id": "q_319", "query": "As instituições podem se recusar a abrir ou manter uma conta de depósitos?", "relevant_doc_ids": ["test_319"]}
+{"query_id": "q_320", "query": "É possível obter uma certidão negativa para comprovar que não se possui condenação no Banco Central?", "relevant_doc_ids": ["test_320"]}
+{"query_id": "q_321", "query": "As cédulas em circulação são todas da mesma família?", "relevant_doc_ids": ["test_321"]}
+{"query_id": "q_322", "query": "Por que não consigo gerar minha frase de segurança?", "relevant_doc_ids": ["test_322"]}
+{"query_id": "q_323", "query": "Os bancos são obrigados a receber moedas metálicas até que limite?", "relevant_doc_ids": ["test_323"]}
+{"query_id": "q_324", "query": "A SCD e a SEP podem participar do capital de instituições financeiras?", "relevant_doc_ids": ["test_324"]}
+{"query_id": "q_325", "query": "Declarei CBE do período anterior e não adquiri novos ativos no exterior. Devo prestar a declaração do CBE do período atual?", "relevant_doc_ids": ["test_325"]}
+{"query_id": "q_326", "query": "As instituições autorizadas a funcionar precisam de autorização do BC para ofertar produtos?", "relevant_doc_ids": ["test_326"]}
+{"query_id": "q_327", "query": "Quais documentos devo apresentar no ato da contratação ao agente?", "relevant_doc_ids": ["test_327"]}
+{"query_id": "q_328", "query": "Como faço um PIX?", "relevant_doc_ids": ["test_328"]}
+{"query_id": "q_329", "query": "Onde declarar Trust?", "relevant_doc_ids": ["test_329"]}
+{"query_id": "q_330", "query": "O BCB pode deixar de instaurar processo administrativo sancionador?", "relevant_doc_ids": ["test_330"]}
+{"query_id": "q_331", "query": "O participante pode manter a conta em moeda estrangeira no Brasil após cancelamento de autorização para participar do projeto?", "relevant_doc_ids": ["test_331"]}
+{"query_id": "q_332", "query": "A que pode se destinar o crédito de custeio?", "relevant_doc_ids": ["test_332"]}
+{"query_id": "q_333", "query": "Os bancos são obrigados a disponibilizar meios alternativos, como terminais eletrônicos e internet, para a realização de transações bancárias?", "relevant_doc_ids": ["test_333"]}
+{"query_id": "q_334", "query": "O que é e como funciona a antecipação de recebíveis?", "relevant_doc_ids": ["test_334"]}
+{"query_id": "q_335", "query": "As instituições autorizadas a operar com câmbio podem realizar quais operações?", "relevant_doc_ids": ["test_335"]}
+{"query_id": "q_336", "query": "Como faço para pagar uma encomenda internacional? Pode ser com cartão de crédito?", "relevant_doc_ids": ["test_336"]}
+{"query_id": "q_337", "query": "É possível que os recursos de empréstimo e financiamento intermediados pela SEP sejam encaminhados do credor ao devedor sem trâmite pela instituição?", "relevant_doc_ids": ["test_337"]}
+{"query_id": "q_338", "query": "Se eu tenho mais de uma conta, posso incluir todas no Pix?", "relevant_doc_ids": ["test_338"]}
+{"query_id": "q_339", "query": "O que é necessário para que a instituição de pagamento realize um serviço de pagamento?", "relevant_doc_ids": ["test_339"]}
+{"query_id": "q_340", "query": "O que posso comprar ou pagar por meio do PIX?", "relevant_doc_ids": ["test_340"]}
+{"query_id": "q_341", "query": "Há mudança do endereço da administradora de consórcios?", "relevant_doc_ids": ["test_341"]}
+{"query_id": "q_342", "query": "Quando o VET deve ser informado ao cliente?", "relevant_doc_ids": ["test_342"]}
+{"query_id": "q_343", "query": "Há limites para a cobrança de juros?", "relevant_doc_ids": ["test_343"]}
+{"query_id": "q_344", "query": "O que fazer se receber sem perceber dinheiro suspeito de falsificação em outras circunstâncias?", "relevant_doc_ids": ["test_344"]}
+{"query_id": "q_345", "query": "O que devem fazer os aposentados que não têm conta em banco se sacarem dinheiro suspeito de falsificação?", "relevant_doc_ids": ["test_345"]}
+{"query_id": "q_346", "query": "Quais os benefícios gerados pelo Bacen Jud?", "relevant_doc_ids": ["test_346"]}
+{"query_id": "q_347", "query": "A instituição pode impedir que eu faça a portabilidade da minha chave para uma outra instituição?", "relevant_doc_ids": ["test_347"]}
+{"query_id": "q_348", "query": "Quando os valores depositados ficam disponíveis?", "relevant_doc_ids": ["test_348"]}
+{"query_id": "q_349", "query": "Qual é o prazo mínimo de contrato de arrendamento mercantil (leasing)?", "relevant_doc_ids": ["test_349"]}
+{"query_id": "q_350", "query": "O que significa sistema de registro?", "relevant_doc_ids": ["test_350"]}
+{"query_id": "q_351", "query": "Onde encontro informações sobre quais instituições ofertam o Pix?", "relevant_doc_ids": ["test_351"]}
+{"query_id": "q_352", "query": "Qual metodologia utilizada para atualização com base no CDI?", "relevant_doc_ids": ["test_352"]}
+{"query_id": "q_353", "query": "O contrato de câmbio pode ser celebrado por pessoa diferente do importador?", "relevant_doc_ids": ["test_353"]}
+{"query_id": "q_354", "query": "Qual o prazo para o BC avaliar os pedidos de autorização para constituição e autorização para funcionamento das instituições?", "relevant_doc_ids": ["test_354"]}
+{"query_id": "q_355", "query": "Existe um modelo único de interoperabilidade entre arranjos?", "relevant_doc_ids": ["test_355"]}
+{"query_id": "q_356", "query": "Quem representa a administradora de consórcio agora?", "relevant_doc_ids": ["test_356"]}
+{"query_id": "q_357", "query": "Cheque Especial é o mesmo que cheque?", "relevant_doc_ids": ["test_357"]}
+{"query_id": "q_358", "query": "Qual a idade mínima para eu receber talão de cheques?", "relevant_doc_ids": ["test_358"]}
+{"query_id": "q_359", "query": "O que devem fazer os beneficiários do Bolsa Família que não têm conta em banco se sacarem uma nota manchada de rosa?", "relevant_doc_ids": ["test_359"]}
+{"query_id": "q_360", "query": "Quem pode participar?", "relevant_doc_ids": ["test_360"]}
+{"query_id": "q_361", "query": "Posso registrar ou fazer alguma alteração na minha chave Pix a qualquer hora?", "relevant_doc_ids": ["test_361"]}
+{"query_id": "q_362", "query": "O que é instituição domicílio?", "relevant_doc_ids": ["test_362"]}
+{"query_id": "q_363", "query": "Como posso sacar os recursos de minha conta-salário?", "relevant_doc_ids": ["test_363"]}
+{"query_id": "q_364", "query": "Como um estrangeiro faz para obter o visto permanente de investidor?", "relevant_doc_ids": ["test_364"]}
+{"query_id": "q_365", "query": "O que é cartão de crédito consignado?", "relevant_doc_ids": ["test_365"]}
+{"query_id": "q_366", "query": "Qual o requisito para a constituição do grupo?", "relevant_doc_ids": ["test_366"]}
+{"query_id": "q_367", "query": "Posso obter um empréstimo ou um financiamento no Banco Central?", "relevant_doc_ids": ["test_367"]}
+{"query_id": "q_368", "query": "Como são remunerados os depósitos da poupança?", "relevant_doc_ids": ["test_368"]}
+{"query_id": "q_369", "query": "Em que casos o investidor assume o prejuízo?", "relevant_doc_ids": ["test_369"]}
+{"query_id": "q_370", "query": "Quais bens e serviços podem ser adquiridos por meio de consórcio?", "relevant_doc_ids": ["test_370"]}
+{"query_id": "q_371", "query": "O que fazer quando se recebe sem perceber uma nota manchada de rosa em outras circunstâncias?", "relevant_doc_ids": ["test_371"]}
+{"query_id": "q_372", "query": "Quais são os tipos de conta de pagamento?", "relevant_doc_ids": ["test_372"]}

@@ -1,0 +1,20 @@
+# CLOSED-LOOP eval set — queries hand-crafted from the same banking_kb corpus.
+# Per building-rigorously.md §1: tautological by construction.
+# Use for plumbing / anti-regression checks ONLY — not as headline metrics.
+# See LIMITATIONS.md (SCRUM-40) for full disclosure.
+{"query_id": "bk_q0", "query": "Qual a diferença entre PIX e DOC em termos de prazo de disponibilização para o recebedor?", "relevant_doc_ids": ["a66bb3c7-64ad-559f-8914-9b1c9bb89cfc"]}
+{"query_id": "bk_q1", "query": "Quando o DOC fica disponível para quem recebe a transferência?", "relevant_doc_ids": ["a66bb3c7-64ad-559f-8914-9b1c9bb89cfc"]}
+{"query_id": "bk_q2", "query": "Quais são as aplicações financeiras mais comuns no mercado?", "relevant_doc_ids": ["0386888b-4aaa-56f3-9a0b-39d19eee5aa4"]}
+{"query_id": "bk_q3", "query": "O que é CDB e RDB no mercado financeiro?", "relevant_doc_ids": ["0386888b-4aaa-56f3-9a0b-39d19eee5aa4"]}
+{"query_id": "bk_q4", "query": "Quais são os principais tipos de operações de crédito?", "relevant_doc_ids": ["bf7db063-b1d1-56a1-b53f-fe4830fabf67"]}
+{"query_id": "bk_q5", "query": "Empréstimo tem finalidade específica de uso?", "relevant_doc_ids": ["3598c6cb-af24-5e66-810f-d473633ed3cb"]}
+{"query_id": "bk_q6", "query": "Em um financiamento, o dinheiro pode ser usado para qualquer coisa?", "relevant_doc_ids": ["66e15702-e448-5cb4-ab1b-53d1e8fecc1e"]}
+{"query_id": "bk_q7", "query": "Como funciona o arrendamento mercantil e quem é o proprietário do bem?", "relevant_doc_ids": ["4d579b5f-ff71-56f9-8e30-d01863fb6736"]}
+{"query_id": "bk_q8", "query": "Por que o crédito rotativo do cartão não pode durar mais de 30 dias desde 2017?", "relevant_doc_ids": ["faa46622-416e-5cdc-bf09-782663b92a1f"]}
+{"query_id": "bk_q9", "query": "Qual legislação rege o empréstimo consignado para servidores públicos federais?", "relevant_doc_ids": ["45549528-43b9-56cd-8676-e800aaf32f4c"]}
+{"query_id": "bk_q10", "query": "O Banco Central tem norma específica sobre crédito consignado?", "relevant_doc_ids": ["354e3f06-0ad8-51db-a8e8-3963b21da4d9"]}
+{"query_id": "bk_q11", "query": "Quais os principais sistemas de financiamento imobiliário no Brasil?", "relevant_doc_ids": ["dc1c410f-18da-58e7-a053-f9e15bc5ada3"]}
+{"query_id": "bk_q12", "query": "Quais modalidades de financiamento imobiliário existem além da compra de imóvel?", "relevant_doc_ids": ["86d81b02-7276-5081-80b3-1f1fdfa8e9b8"]}
+{"query_id": "bk_q13", "query": "Quando um banco pode cobrar tarifa por um serviço prestado?", "relevant_doc_ids": ["c9acd0fc-3eda-5fba-a9df-ed1385583a3d"]}
+{"query_id": "bk_q14", "query": "Quem tem direito a atendimento preferencial em agências bancárias?", "relevant_doc_ids": ["64a622fe-eb14-5318-a199-992d69f379cf"]}
+{"query_id": "bk_q15", "query": "Juízes e promotores podem acessar dados das transações realizadas pelo PIX?", "relevant_doc_ids": ["ab65f817-aaa2-5ce0-9396-e33837e98400"]}
