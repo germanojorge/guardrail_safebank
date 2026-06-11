@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """Retrieval eval harness for the banking RAG pipeline.
 
-Reads frozen JSONL splits (data/eval/), applies E5 prefixes, runs
-InformationRetrievalEvaluator, and emits recall@{1,3,5,10}, MRR@10,
+Reads frozen JSONL splits (data/eval/), optionally applies E5 prefixes,
+runs InformationRetrievalEvaluator, and emits recall@{1,3,5,10}, MRR@10,
 nDCG@10, MAP@10 as a markdown table (stdout) + JSON run record.
 
 Usage:
     # Freeze FAQ_BACEN splits from HuggingFace (run once, then commit):
     uv run python scripts/eval_retrieval.py --freeze
 
-    # Eval e5-small baseline on FAQ_BACEN (default):
+    # Eval e5-small baseline on FAQ_BACEN (default, E5 prefixes applied):
     uv run python scripts/eval_retrieval.py
+
+    # Eval a prefix-free model (MiniLM, fine-tune):
+    uv run python scripts/eval_retrieval.py --model paraphrase-multilingual-MiniLM-L12-v2 --prefix-style none
 
     # Eval on banking_kb smoke set (closed-loop, fast):
     uv run python scripts/eval_retrieval.py --dataset banking_kb
@@ -26,6 +29,7 @@ import guardrails.env_bootstrap  # noqa: F401  # redireciona caches HF p/ ML_CAC
 import argparse
 import json
 import sys
+import time
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -140,8 +144,23 @@ def load_frozen(
 
 
 # ---------------------------------------------------------------------------
-# Eval: apply E5 prefixes + run InformationRetrievalEvaluator
+# Eval: optionally apply E5 prefixes + run InformationRetrievalEvaluator
 # ---------------------------------------------------------------------------
+
+_VALID_PREFIX_STYLES = {"e5", "none"}
+
+
+def apply_prefixes(texts: dict[str, str], role: str, style: str) -> dict[str, str]:
+    """Conditionally prepend E5 role prefix to each text in a dict.
+
+    Args:
+        texts: {id: text}
+        role: "query" or "passage" (used only when style == "e5")
+        style: "e5" applies "<role>: " prefix; "none" returns texts unchanged.
+    """
+    if style == "e5":
+        return {k: f"{role}: {v}" for k, v in texts.items()}
+    return dict(texts)
 
 
 def run_eval(
@@ -150,21 +169,32 @@ def run_eval(
     queries: dict[str, str],
     relevant_docs: dict[str, set[str]],
     name: str,
+    prefix_style: str = "e5",
 ) -> dict[str, float]:
-    """Run IR eval with E5 prefixes baked in (D3 — mirrors embedding.py:63-71).
+    """Run IR eval with optional E5 prefixes (mirrors embedding.py:63-71).
 
-    The legacy fine-tune evaluator (finetune_itau_embedding.py:104) ran WITHOUT
-    prefixes — do NOT compare these numbers directly (D4).
+    Args:
+        prefix_style: "e5" applies query:/passage: prefixes (correct for E5 models);
+            "none" passes texts unmodified (correct for MiniLM and fine-tuned BERT models
+            whose config_sentence_transformers.json has empty prompts). Raises ValueError
+            for any other value.
+
+    Note:
+        E5-vs-MiniLM is not perfectly apples-to-apples (different pretraining recipes).
+        The fine-tune was trained on FAQ_BACEN train split — strong FAQ_BACEN scores may
+        be train-distribution overfit; always gate with banking_kb anti-regression (SCRUM-38).
     """
-    # Bake E5 prefixes into corpus and query texts
-    prefixed_corpus = {k: f"passage: {v}" for k, v in corpus.items()}
-    prefixed_queries = {k: f"query: {v}" for k, v in queries.items()}
+    if prefix_style not in _VALID_PREFIX_STYLES:
+        raise ValueError(f"prefix_style must be one of {_VALID_PREFIX_STYLES!r}, got {prefix_style!r}")
+
+    eval_corpus = apply_prefixes(corpus, "passage", prefix_style)
+    eval_queries = apply_prefixes(queries, "query", prefix_style)
 
     model = SentenceTransformer(model_name, device="cpu")
 
     ev = InformationRetrievalEvaluator(
-        queries=prefixed_queries,
-        corpus=prefixed_corpus,
+        queries=eval_queries,
+        corpus=eval_corpus,
         relevant_docs=relevant_docs,
         name=name,
         accuracy_at_k=[1, 3, 5, 10],
@@ -175,6 +205,43 @@ def run_eval(
         show_progress_bar=True,
     )
     return ev(model)
+
+
+def measure_latency_ms_per_query(
+    model_name: str,
+    queries: dict[str, str],
+    prefix_style: str = "e5",
+    warmup: int = 3,
+) -> float:
+    """Measure mean CPU encode latency in ms per single query.
+
+    Warms up the model first (first encode triggers JIT / weight load), then
+    times single-query encodes over all eval queries and returns the mean ms.
+
+    Uses batch_size=1 + normalize_embeddings=True to mirror production
+    embed_queries (embedding.py:55-71). Latency numbers are indicative and
+    machine-dependent — treat as relative, not absolute benchmarks.
+    """
+    if prefix_style not in _VALID_PREFIX_STYLES:
+        raise ValueError(f"prefix_style must be one of {_VALID_PREFIX_STYLES!r}, got {prefix_style!r}")
+
+    model = SentenceTransformer(model_name, device="cpu")
+    query_list = list(queries.values())
+
+    prefix = "query: " if prefix_style == "e5" else ""
+
+    # Warm-up passes — discard
+    for q in (query_list * warmup)[:warmup]:
+        model.encode([prefix + q], batch_size=1, normalize_embeddings=True)
+
+    # Timed passes — one query at a time
+    times: list[float] = []
+    for q in query_list:
+        t0 = time.perf_counter()
+        model.encode([prefix + q], batch_size=1, normalize_embeddings=True)
+        times.append((time.perf_counter() - t0) * 1000.0)
+
+    return round(sum(times) / len(times), 3)
 
 
 # ---------------------------------------------------------------------------
@@ -247,7 +314,14 @@ def main() -> int:
         default="data/eval",
         help="Where frozen JSONL lives (default: data/eval)",
     )
-    # Reserved for SCRUM-38/39 — not yet implemented
+    parser.add_argument(
+        "--prefix-style",
+        default="e5",
+        choices=["e5", "none"],
+        dest="prefix_style",
+        help="Prefix strategy: 'e5' applies query:/passage: (default); 'none' for MiniLM/fine-tuned BERT",
+    )
+    # Reserved for SCRUM-39 — not yet implemented
     parser.add_argument("--reranker", help=argparse.SUPPRESS)
     parser.add_argument("--threshold", type=float, help=argparse.SUPPRESS)
     parser.add_argument("--hybrid", action="store_true", help=argparse.SUPPRESS)
@@ -261,21 +335,26 @@ def main() -> int:
     corpus, queries, relevant_docs = load_frozen(args.dataset, args.data_dir)
     print(f"Corpus: {len(corpus)}  Queries: {len(queries)}")
 
-    print(f"\nRunning eval — model: {args.model} ...")
-    results = run_eval(args.model, corpus, queries, relevant_docs, name=args.dataset)
+    print(f"\nRunning eval — model: {args.model}  prefix_style: {args.prefix_style} ...")
+    results = run_eval(args.model, corpus, queries, relevant_docs, name=args.dataset, prefix_style=args.prefix_style)
 
     metrics = extract_metrics(results, args.dataset)
+
+    print("\nMeasuring latency ...")
+    latency = measure_latency_ms_per_query(args.model, queries, prefix_style=args.prefix_style)
 
     closed_loop = args.dataset == "banking_kb"
     payload = {
         "model": args.model,
         "dataset": args.dataset,
-        "prefixes_applied": True,
+        "prefix_style": args.prefix_style,
+        "prefixes_applied": args.prefix_style == "e5",
         "closed_loop": closed_loop,
         "n_queries": len(queries),
         "n_corpus": len(corpus),
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "seed": 42,
+        "latency_ms_per_query": latency,
         "metrics": metrics,
     }
 
