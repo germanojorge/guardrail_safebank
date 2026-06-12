@@ -33,6 +33,7 @@ def _create_components(cfg: dict[str, Any]):
     v_cfg = cfg.get("validators", {})
     emb_cfg = cfg.get("embedding", {})
     qd_cfg = cfg.get("qdrant", {})
+    ret_cfg = cfg.get("retrieval", {})
 
     from guardrails.adapters import (
         AnthropicProvider,
@@ -81,6 +82,19 @@ def _create_components(cfg: dict[str, Any]):
         collection=os.environ.get("QDRANT_COLLECTION") or qd_cfg.get("collection", "banking_kb"),
     )
 
+    reranker = None
+    reranker_cfg = ret_cfg.get("reranker", {})
+    if reranker_cfg.get("enabled", False):
+        from guardrails.adapters import CrossEncoderReranker
+
+        reranker = CrossEncoderReranker(
+            model_name=reranker_cfg.get("model", "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"),
+            device="cpu",
+        )
+
+    score_threshold: float | None = ret_cfg.get("score_threshold") or None
+    retrieve_top_n: int = ret_cfg.get("top_n", 20)
+
     graph = build_graph(
         toxic=toxic,
         pii_input=pii_input,
@@ -91,6 +105,9 @@ def _create_components(cfg: dict[str, Any]):
         llm_provider=llm,
         embedding=embedding,
         vector_store=vector_store,
+        reranker=reranker,
+        score_threshold=score_threshold,
+        retrieve_top_n=retrieve_top_n,
     )
     return graph, toxic, pii_input, jailbreak, compliance, llm, embedding, vector_store, out_of_scope
 
@@ -144,6 +161,7 @@ def create_app() -> FastAPI:
         latency = LatencyBreakdown(
             input_guard=diag.get("input_guard_ms"),
             retrieve=diag.get("retrieve_ms"),
+            rerank=diag.get("retrieve_rerank_ms"),
             generate=diag.get("generate_ms"),
             output_guard=diag.get("output_guard_ms"),
             total=sum(v for v in diag.values() if isinstance(v, (int, float))),

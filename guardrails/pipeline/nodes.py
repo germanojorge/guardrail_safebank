@@ -27,6 +27,7 @@ Se não souber a resposta, diga que não tem essa informação e sugira falar co
 FALLBACK_RESPONSE = "Sua mensagem não pôde ser processada porque viola nossas políticas de segurança. Por favor, reformule sua pergunta."
 
 RETRIEVE_TOP_K = 3
+RETRIEVE_TOP_N = 20
 
 
 def build_nodes(
@@ -39,6 +40,9 @@ def build_nodes(
     embedding: Any = None,
     vector_store: Any = None,
     out_of_scope: Any = None,
+    reranker: Any = None,
+    score_threshold: float | None = None,
+    retrieve_top_n: int = RETRIEVE_TOP_N,
 ) -> dict[str, Callable[[GraphState], dict]]:
     """Return a dict of node functions with injected validator/provider instances."""
 
@@ -94,6 +98,7 @@ def build_nodes(
         chunks: list[str] = []
         embed_ms: float = 0.0
         search_ms: float = 0.0
+        rerank_ms: float = 0.0
 
         if embedding is not None and vector_store is not None:
             t_embed = time.perf_counter()
@@ -104,23 +109,39 @@ def build_nodes(
             embed_ms = (time.perf_counter() - t_embed) * 1000
 
             if query_vec is not None:
+                # Fetch top_n candidates when reranker is active; top_k otherwise
+                fetch_k = retrieve_top_n if reranker is not None else RETRIEVE_TOP_K
                 t_search = time.perf_counter()
                 try:
-                    hits = vector_store.search(query_vec, top_k=RETRIEVE_TOP_K)
+                    hits = vector_store.search(query_vec, top_k=fetch_k, score_threshold=score_threshold)
                 except Exception:
                     hits = []
                 search_ms = (time.perf_counter() - t_search) * 1000
+
+                if reranker is not None and hits:
+                    t_rerank = time.perf_counter()
+                    try:
+                        hits = reranker.rerank(state["message"], hits, top_k=RETRIEVE_TOP_K)
+                    except Exception:
+                        hits = hits[:RETRIEVE_TOP_K]
+                    rerank_ms = (time.perf_counter() - t_rerank) * 1000
+                else:
+                    hits = hits[:RETRIEVE_TOP_K]
+
                 chunks = [h.text for h in hits if h.text]
 
         elapsed = (time.perf_counter() - t0) * 1000
+        diag: dict = {
+            **state.get("diagnostics", {}),
+            "retrieve_ms": elapsed,
+            "retrieve_embed_ms": embed_ms,
+            "retrieve_search_ms": search_ms,
+        }
+        if reranker is not None:
+            diag["retrieve_rerank_ms"] = rerank_ms
         return {
             "retrieved_chunks": chunks,
-            "diagnostics": {
-                **state.get("diagnostics", {}),
-                "retrieve_ms": elapsed,
-                "retrieve_embed_ms": embed_ms,
-                "retrieve_search_ms": search_ms,
-            },
+            "diagnostics": diag,
         }
 
     def generate(state: GraphState) -> dict:

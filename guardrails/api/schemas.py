@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 class LatencyBreakdown(BaseModel):
     input_guard: float | None = None
     retrieve: float | None = None
+    rerank: float | None = None
     generate: float | None = None
     output_guard: float | None = None
     total: float

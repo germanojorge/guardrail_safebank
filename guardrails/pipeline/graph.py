@@ -28,6 +28,9 @@ def build_graph(
     llm_provider: Any = None,
     embedding: Any = None,
     vector_store: Any = None,
+    reranker: Any = None,
+    score_threshold: float | None = None,
+    retrieve_top_n: int | None = None,
     config: dict | None = None,
 ):
     """Build and compile the guardrail StateGraph.
@@ -71,7 +74,9 @@ def build_graph(
 
         llm_provider = AnthropicProvider(model=cfg.get("model", "claude-sonnet-4-6-20251105"))
 
-    nodes = build_nodes(
+    from guardrails.pipeline.nodes import RETRIEVE_TOP_N
+
+    nodes_kwargs: dict[str, Any] = dict(
         toxic=toxic,
         pii_input=pii_input,
         pii_output=pii_output,
@@ -81,7 +86,11 @@ def build_graph(
         embedding=embedding,
         vector_store=vector_store,
         out_of_scope=out_of_scope,
+        reranker=reranker,
+        score_threshold=score_threshold,
+        retrieve_top_n=retrieve_top_n if retrieve_top_n is not None else RETRIEVE_TOP_N,
     )
+    nodes = build_nodes(**nodes_kwargs)
 
     graph = StateGraph(GraphState)
 
