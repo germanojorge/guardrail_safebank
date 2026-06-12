@@ -13,12 +13,25 @@ validators:
   jailbreak:
     enabled: true
     threshold: 0.85
+    pos_threshold: 0.55
+    semantic_threshold: 0.80
+    use_pos_tagger: true
+    use_semantic: true
+    use_prompt_guard: true
+    semantic_index_path: "data/jailbreak_index.npz"
     applies_to: [input]
   compliance:
     enabled: true
     model: "claude-haiku-4-5-20251001"
     timeout: 5.0
     applies_to: [output]
+  out_of_scope:
+    enabled: true
+    threshold_in: 0.40
+    threshold_out: 0.50
+    margin: 0.15
+    seeds_path: "data/out_of_scope_seeds.json"
+    applies_to: [input]
 
 qdrant:
   host: "${QDRANT_HOST}"
@@ -26,9 +39,17 @@ qdrant:
   collection: "banking_kb"
 
 embedding:
-  model: "intfloat/multilingual-e5-small"
+  model: "intfloat/multilingual-e5-base"  # SCRUM-38 bake-off winner (recall@5 0.6836→0.7480 on faq_bacen)
   device: "cpu"
   batch_size: 32
+
+retrieval:
+  top_k: 3       # final chunks passed to the LLM
+  top_n: 20      # dense candidates retrieved before reranking (only used when reranker.enabled=true)
+  score_threshold: 0.82  # SCRUM-39: 65% off-topic rejection, zero recall@3 cost (see models/eval/retrieval_before_after.md)
+  reranker:
+    enabled: true   # SCRUM-39: +1.2pp recall@3, +10.3pp mrr@10 vs dense-only (see models/eval/retrieval_before_after.md)
+    model: "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
 
 logging:
   format: "json"
