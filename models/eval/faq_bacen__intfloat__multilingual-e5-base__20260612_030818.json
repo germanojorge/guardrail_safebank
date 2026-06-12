@@ -1,0 +1,24 @@
+{
+  "model": "intfloat/multilingual-e5-base",
+  "dataset": "faq_bacen",
+  "prefix_style": "e5",
+  "prefixes_applied": true,
+  "reranker": null,
+  "score_threshold": null,
+  "top_n": 20,
+  "closed_loop": false,
+  "n_queries": 373,
+  "n_corpus": 1678,
+  "timestamp": "2026-06-12T03:08:18.007336Z",
+  "seed": 42,
+  "latency_ms_per_query": 38.24,
+  "metrics": {
+    "recall@1": 0.4826,
+    "recall@3": 0.6756,
+    "recall@5": 0.748,
+    "recall@10": 0.7962,
+    "mrr@10": 0.5885,
+    "ndcg@10": 0.639,
+    "map@10": 0.5885
+  }
+}

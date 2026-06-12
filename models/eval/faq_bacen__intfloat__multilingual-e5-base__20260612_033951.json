@@ -1,0 +1,24 @@
+{
+  "model": "intfloat/multilingual-e5-base",
+  "dataset": "faq_bacen",
+  "prefix_style": "e5",
+  "prefixes_applied": true,
+  "reranker": "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1",
+  "score_threshold": null,
+  "top_n": 20,
+  "closed_loop": false,
+  "n_queries": 373,
+  "n_corpus": 1678,
+  "timestamp": "2026-06-12T03:39:51.230194Z",
+  "seed": 42,
+  "latency_ms_per_query": 0.0,
+  "metrics": {
+    "recall@1": 0.5308,
+    "recall@3": 0.6836,
+    "recall@5": 0.7426,
+    "recall@10": 0.8043,
+    "mrr@10": 0.623,
+    "ndcg@10": 0.6668,
+    "map@10": 0.623
+  }
+}
