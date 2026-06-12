@@ -140,3 +140,71 @@ def test_in_memory_empty_returns_empty():
     store = InMemoryVectorStore()
     store.start_collection(dim=4)
     assert store.search([1.0, 0.0, 0.0, 0.0], top_k=3) == []
+
+
+# ---------------------------------------------------------------------------
+# score_threshold — InMemoryVectorStore
+# ---------------------------------------------------------------------------
+
+
+def test_in_memory_score_threshold_drops_low_scores():
+    store = InMemoryVectorStore()
+    store.start_collection(dim=4)
+    store.upsert(
+        [
+            ("high", [1.0, 0.0, 0.0, 0.0], {"text": "high score"}),
+            ("low", [0.0, 0.0, 1.0, 0.0], {"text": "low score"}),  # orthogonal to query → score ≈ 0
+        ]
+    )
+    hits = store.search([1.0, 0.0, 0.0, 0.0], top_k=3, score_threshold=0.5)
+    ids = [h.id for h in hits]
+    assert "high" in ids
+    assert "low" not in ids
+
+
+def test_in_memory_score_threshold_none_returns_all():
+    store = InMemoryVectorStore()
+    store.start_collection(dim=4)
+    store.upsert(
+        [
+            ("a", [1.0, 0.0, 0.0, 0.0], {"text": "a"}),
+            ("b", [0.1, 0.0, 0.0, 0.0], {"text": "b"}),
+        ]
+    )
+    hits = store.search([1.0, 0.0, 0.0, 0.0], top_k=3, score_threshold=None)
+    assert len(hits) == 2
+
+
+def test_in_memory_high_threshold_returns_empty():
+    store = InMemoryVectorStore()
+    store.start_collection(dim=4)
+    store.upsert([("a", [0.5, 0.5, 0.0, 0.0], {"text": "a"})])
+    hits = store.search([1.0, 0.0, 0.0, 0.0], top_k=3, score_threshold=0.99)
+    assert hits == []
+
+
+# ---------------------------------------------------------------------------
+# score_threshold — QdrantStore (mocked client)
+# ---------------------------------------------------------------------------
+
+
+def test_qdrant_passes_score_threshold_to_query_points():
+    store = _make_qdrant_store()
+    mock_result = MagicMock()
+    mock_result.points = []
+    store._client.query_points.return_value = mock_result
+
+    store.search([0.1, 0.2, 0.3], top_k=5, score_threshold=0.75)
+    kwargs = store._client.query_points.call_args[1]
+    assert kwargs.get("score_threshold") == 0.75
+
+
+def test_qdrant_no_score_threshold_kwarg_when_none():
+    store = _make_qdrant_store()
+    mock_result = MagicMock()
+    mock_result.points = []
+    store._client.query_points.return_value = mock_result
+
+    store.search([0.1, 0.2, 0.3], top_k=5, score_threshold=None)
+    kwargs = store._client.query_points.call_args[1]
+    assert "score_threshold" not in kwargs

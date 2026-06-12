@@ -483,3 +483,285 @@ def test_real_faq_bacen_recall_monotone():
     assert metrics["recall@1"] <= metrics["recall@3"] <= metrics["recall@5"] <= metrics["recall@10"]
     # Not absurdly high (§3 building-rigorously: >0.95 at recall@1 would suggest leakage)
     assert metrics["recall@1"] < 0.95
+
+
+# ---------------------------------------------------------------------------
+# Pure IR metric helpers
+# ---------------------------------------------------------------------------
+
+
+from scripts.eval_retrieval import (  # noqa: E402
+    average_precision,
+    ndcg_at_k,
+    rank_metrics,
+    recall_at_k,
+    reciprocal_rank,
+)
+
+
+# recall_at_k
+
+
+def test_recall_at_k_hit_in_top_1():
+    assert recall_at_k(["doc_0", "doc_1"], {"doc_0"}, k=1) == 1.0
+
+
+def test_recall_at_k_miss_in_top_1():
+    assert recall_at_k(["doc_1", "doc_0"], {"doc_0"}, k=1) == 0.0
+
+
+def test_recall_at_k_hit_at_rank_2():
+    assert recall_at_k(["doc_1", "doc_0"], {"doc_0"}, k=3) == 1.0
+
+
+def test_recall_at_k_partial():
+    """Two relevant docs, only one in top-3 → 0.5."""
+    assert recall_at_k(["a", "x", "y"], {"a", "b"}, k=3) == 0.5
+
+
+def test_recall_at_k_empty_relevant():
+    assert recall_at_k(["a"], set(), k=3) == 0.0
+
+
+def test_recall_at_k_empty_ranked():
+    assert recall_at_k([], {"a"}, k=3) == 0.0
+
+
+# reciprocal_rank
+
+
+def test_reciprocal_rank_at_rank_1():
+    assert reciprocal_rank(["doc_0"], {"doc_0"}, k=10) == 1.0
+
+
+def test_reciprocal_rank_at_rank_2():
+    assert abs(reciprocal_rank(["x", "doc_0"], {"doc_0"}, k=10) - 0.5) < 1e-9
+
+
+def test_reciprocal_rank_miss():
+    assert reciprocal_rank(["x", "y", "z"], {"doc_0"}, k=10) == 0.0
+
+
+def test_reciprocal_rank_beyond_k():
+    """Relevant doc outside top-k window → 0."""
+    ranked = [f"x{i}" for i in range(10)] + ["doc_0"]
+    assert reciprocal_rank(ranked, {"doc_0"}, k=10) == 0.0
+
+
+# ndcg_at_k
+
+
+def test_ndcg_at_k_perfect():
+    """Relevant doc at rank 1 → nDCG = 1.0."""
+    assert abs(ndcg_at_k(["doc_0"], {"doc_0"}, k=10) - 1.0) < 1e-9
+
+
+def test_ndcg_at_k_miss():
+    assert ndcg_at_k(["x", "y"], {"doc_0"}, k=10) == 0.0
+
+
+def test_ndcg_at_k_rank_2_less_than_rank_1():
+    ndcg_r1 = ndcg_at_k(["doc_0", "x"], {"doc_0"}, k=10)
+    ndcg_r2 = ndcg_at_k(["x", "doc_0"], {"doc_0"}, k=10)
+    assert ndcg_r1 > ndcg_r2
+
+
+# average_precision
+
+
+def test_ap_single_relevant_rank_1():
+    assert abs(average_precision(["doc_0"], {"doc_0"}, k=10) - 1.0) < 1e-9
+
+
+def test_ap_single_relevant_rank_2():
+    """doc at rank 2: precision at hit = 1/2; AP = (1/2) / min(1, k) = 0.5."""
+    assert abs(average_precision(["x", "doc_0"], {"doc_0"}, k=10) - 0.5) < 1e-9
+
+
+def test_ap_no_relevant():
+    assert average_precision(["x"], set(), k=10) == 0.0
+
+
+# rank_metrics
+
+
+def test_rank_metrics_single_query_perfect():
+    rankings = {"q0": ["doc_0", "doc_1"]}
+    rels = {"q0": {"doc_0"}}
+    m = rank_metrics(rankings, rels)
+    assert m["recall@1"] == 1.0
+    assert m["mrr@10"] == 1.0
+
+
+def test_rank_metrics_empty():
+    assert rank_metrics({}, {}) == {}
+
+
+def test_rank_metrics_keys_match_extract_metrics():
+    """rank_metrics must emit exactly the same keys as extract_metrics."""
+    from scripts.eval_retrieval import extract_metrics  # noqa: F401 — imported for key-shape reference
+
+    rankings = {"q0": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]}
+    rels = {"q0": {"a"}}
+    m = rank_metrics(rankings, rels)
+    expected_keys = {"recall@1", "recall@3", "recall@5", "recall@10", "mrr@10", "ndcg@10", "map@10"}
+    assert set(m.keys()) == expected_keys
+
+
+def test_rank_metrics_averages_across_queries():
+    rankings = {"q0": ["doc_0", "x"], "q1": ["x", "doc_1"]}
+    rels = {"q0": {"doc_0"}, "q1": {"doc_1"}}
+    m = rank_metrics(rankings, rels)
+    # q0: mrr=1.0, q1: mrr=0.5 → avg=0.75
+    assert abs(m["mrr@10"] - 0.75) < 1e-4
+
+
+def test_rank_metrics_values_rounded_4dp():
+    rankings = {"q0": ["x", "y", "z"]}
+    rels = {"q0": {"z"}}
+    m = rank_metrics(rankings, rels)
+    for k, v in m.items():
+        assert v == round(v, 4), f"{k}={v} not rounded to 4dp"
+
+
+# ---------------------------------------------------------------------------
+# run_eval_manual — pure plumbing (mock model, no network)
+# ---------------------------------------------------------------------------
+
+
+def test_run_eval_manual_prefix_none_does_not_prefix(monkeypatch):
+    """With prefix_style='none', no query:/passage: prefix should appear in encoded texts."""
+    captured: dict = {}
+
+    class FakeModel:
+        def encode(self, texts, **kwargs):
+            captured["last_texts"] = list(texts)
+            import numpy as np
+
+            return np.zeros((len(texts), 4))
+
+    monkeypatch.setattr("scripts.eval_retrieval.SentenceTransformer", lambda *a, **kw: FakeModel())
+
+    from scripts.eval_retrieval import run_eval_manual
+
+    corpus = {"d0": "Texto."}
+    queries = {"q0": "Pergunta?"}
+    run_eval_manual("fake-model", corpus, queries, {"q0": {"d0"}}, prefix_style="none", show_progress=False)
+
+    all_texts = captured.get("last_texts", [])
+    assert not any(t.startswith("query: ") or t.startswith("passage: ") for t in all_texts)
+
+
+def test_run_eval_manual_prefix_e5_applies_prefixes(monkeypatch):
+    captured: dict = {}
+
+    class FakeModel:
+        def encode(self, texts, **kwargs):
+            captured.setdefault("calls", []).append(list(texts))
+            import numpy as np
+
+            return np.zeros((len(texts), 4))
+
+    monkeypatch.setattr("scripts.eval_retrieval.SentenceTransformer", lambda *a, **kw: FakeModel())
+
+    from scripts.eval_retrieval import run_eval_manual
+
+    corpus = {"d0": "Texto."}
+    queries = {"q0": "Pergunta?"}
+    run_eval_manual("fake-model", corpus, queries, {"q0": {"d0"}}, prefix_style="e5", show_progress=False)
+
+    all_texts = [t for call in captured["calls"] for t in call]
+    assert any(t.startswith("query: ") for t in all_texts)
+    assert any(t.startswith("passage: ") for t in all_texts)
+
+
+def test_run_eval_manual_invalid_prefix_raises(monkeypatch):
+    monkeypatch.setattr("scripts.eval_retrieval.SentenceTransformer", lambda *a, **kw: None)
+    from scripts.eval_retrieval import run_eval_manual
+
+    with pytest.raises(ValueError, match="prefix_style"):
+        run_eval_manual("fake", {}, {}, {}, prefix_style="bert", show_progress=False)
+
+
+def test_run_eval_manual_score_threshold_drops_hits(monkeypatch):
+    """A high score_threshold should result in empty rankings → zero recall."""
+    import numpy as np
+
+    class FakeModel:
+        call_count = 0
+
+        def encode(self, texts, **kwargs):
+            self.call_count += 1
+            # First call is corpus (1 doc), second is query (1 query)
+            return np.array([[1.0, 0.0, 0.0, 0.0]] * len(texts))
+
+    monkeypatch.setattr("scripts.eval_retrieval.SentenceTransformer", lambda *a, **kw: FakeModel())
+
+    from scripts.eval_retrieval import run_eval_manual
+
+    corpus = {"d0": "text"}
+    queries = {"q0": "query"}
+    # cosine(same vec, same vec) = 1.0, but threshold > 1.0 → always empty
+    m = run_eval_manual("fake", corpus, queries, {"q0": {"d0"}}, prefix_style="none", score_threshold=1.5, show_progress=False)
+    assert m["recall@1"] == 0.0
+
+
+def test_run_eval_manual_with_identity_reranker(monkeypatch):
+    """With IdentityReranker the rankings are the same as dense-only."""
+    import numpy as np
+    from guardrails.adapters import IdentityReranker
+
+    class FakeModel:
+        def encode(self, texts, **kwargs):
+            return np.array([[float(i), 0.0, 0.0, 0.0] for i in range(len(texts))])
+
+    monkeypatch.setattr("scripts.eval_retrieval.SentenceTransformer", lambda *a, **kw: FakeModel())
+
+    from scripts.eval_retrieval import run_eval_manual
+
+    corpus = {"d0": "t0", "d1": "t1"}
+    queries = {"q0": "q"}
+    rels = {"q0": {"d0"}}
+    m_plain = run_eval_manual("fake", corpus, queries, rels, prefix_style="none", show_progress=False)
+    m_reranked = run_eval_manual("fake", corpus, queries, rels, prefix_style="none", reranker=IdentityReranker(), show_progress=False)
+    # IdentityReranker preserves order → same recall
+    assert m_plain["recall@1"] == m_reranked["recall@1"]
+
+
+# ---------------------------------------------------------------------------
+# Slow: dense-only manual path must reproduce InformationRetrievalEvaluator
+# (anti-tautology gate — building-rigorously §1/§3)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.slow
+def test_manual_dense_reproduces_evaluator():
+    """Dense-only run_eval_manual on frozen faq_bacen must match InformationRetrievalEvaluator.
+
+    Baseline from models/eval/faq_bacen__*e5-base*.json:
+      recall@5 = 0.7480  (±0.005 tolerance)
+      mrr@10   = 0.5885  (±0.005)
+
+    If this fails, the manual metric code cannot be trusted for reranker deltas.
+    """
+    from scripts.eval_retrieval import load_frozen, run_eval_manual
+
+    corpus, queries, relevant_docs = load_frozen("faq_bacen")
+    m = run_eval_manual(
+        "intfloat/multilingual-e5-base",
+        corpus,
+        queries,
+        relevant_docs,
+        prefix_style="e5",
+        reranker=None,
+        score_threshold=None,
+        top_n=len(corpus),  # no truncation — full ranking for recall@10
+        show_progress=True,
+    )
+
+    tol = 0.005
+    assert abs(m["recall@5"] - 0.7480) <= tol, f"recall@5={m['recall@5']:.4f} outside tolerance (expected ~0.7480)"
+    assert abs(m["mrr@10"] - 0.5885) <= tol, f"mrr@10={m['mrr@10']:.4f} outside tolerance (expected ~0.5885)"
+
+    # Sanity: recall monotone
+    assert m["recall@1"] <= m["recall@3"] <= m["recall@5"] <= m["recall@10"]
