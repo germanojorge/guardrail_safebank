@@ -210,6 +210,55 @@ the gap — do not lower the threshold.
 
 ---
 
+## Retrieval System (RAG) — `guardrails/pipeline/nodes.py`, `guardrails/adapters/`
+
+### What it does
+
+Dense semantic retrieval: `intfloat/multilingual-e5-base` encodes the query → Qdrant cosine search → optional score threshold filter → optional cross-encoder reranker → top-3 chunks passed to the LLM. Optional components are configured in `config.yaml` under `retrieval.*`.
+
+### SCRUM-39 measurements (faq_bacen split, 373 queries, 1678 corpus docs)
+
+Anti-tautology gate: `run_eval_manual` dense-only recall@3 = 0.6756 matches `InformationRetrievalEvaluator` recall@3 = 0.6756 exactly — confirming the manual eval path is not tautological.
+
+**Before/after table — see `models/eval/retrieval_before_after.md` for full data.**
+
+<!-- BEGIN: retrieval-before-after -->
+<!-- Measured: 2026-06-12 (SCRUM-39) -->
+| Configuration | recall@3 | mrr@10 | ndcg@10 | Note |
+|---------------|----------|--------|---------|------|
+| Dense only (e5-base, top-3) | 0.6756 | 0.5648 | 0.5932 | baseline |
+| Dense-20 + CE reranker (top-3) | **0.6836** | **0.6230** | **0.6668** | +1.2pp / +10.3pp / +12.4pp |
+<!-- END: retrieval-before-after -->
+
+<!-- BEGIN: threshold-sweep -->
+<!-- Measured: 2026-06-12 (SCRUM-39) -->
+| Threshold | recall@3 (in-scope) | off-topic rejection % | Note |
+|-----------|--------------------|-----------------------|------|
+| 0.70 | 0.6756 | 0.0% | — |
+| 0.78 | 0.6756 | 10.0% | — |
+| **0.82** | **0.6756** | **65.0%** | selected |
+| 0.84 | 0.6729 | 100.0% | — |
+| 0.88 | 0.4263 | 100.0% | recall cliff |
+<!-- END: threshold-sweep -->
+
+### Config decisions (SCRUM-39)
+
+**Score threshold**: `retrieval.score_threshold: 0.82` — 65% off-topic rejection with zero recall@3 cost. See sweep table above.
+
+**Reranker**: `retrieval.reranker.enabled: true` — +1.2pp recall@3, +10.3pp mrr@10, +12.4pp ndcg@10. Model: `cross-encoder/mmarco-mMiniLMv2-L12-H384-v1`. Full before/after in `models/eval/retrieval_before_after.md`.
+
+### Confirmed gaps
+
+| Gap | Impact |
+|-----|--------|
+| **Score threshold applies only to dense cosine score** | A document that barely clears the threshold due to vocabulary overlap may still be irrelevant. Threshold prevents out-of-domain retrievals but does not guarantee relevance. |
+| **Cross-encoder is English/multilingual but not fine-tuned on PT-BR banking** | `mmarco-mMiniLMv2-L12-H384-v1` was trained on MS MARCO. Banking-specific terminology may not rerank optimally. |
+| **Single-hop retrieval only** | Multi-hop questions ("qual a taxa do produto que mencionou no mês passado?") require multi-hop RAG, not implemented. |
+| **No groundedness judge** | Retrieved chunks are passed to the LLM but not verified post-generation for hallucination. Groundedness judge is listed in Extras (CLAUDE.md). |
+| **In-memory eval vs Qdrant production** | `run_eval_manual` uses numpy cosine directly; production goes through Qdrant. Minor score differences due to HNSW approximation may exist but are not currently measured. |
+
+---
+
 ## Infrastructure & Scaling
 
 ### What it is
