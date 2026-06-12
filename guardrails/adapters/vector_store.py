@@ -31,7 +31,7 @@ class VectorStore(Protocol):
 
     def upsert(self, items: list[tuple[str | int, list[float], dict[str, Any]]]) -> None: ...
 
-    def search(self, query_vector: list[float], top_k: int = 3) -> list[SearchHit]: ...
+    def search(self, query_vector: list[float], top_k: int = 3, score_threshold: float | None = None) -> list[SearchHit]: ...
 
     def is_reachable(self) -> bool: ...
 
@@ -94,14 +94,17 @@ class QdrantStore:
         points = [PointStruct(id=item_id, vector=vector, payload=payload) for item_id, vector, payload in items]
         self._ensure_client().upsert(collection_name=self.collection, points=points)
 
-    def search(self, query_vector: list[float], top_k: int = 3) -> list[SearchHit]:
+    def search(self, query_vector: list[float], top_k: int = 3, score_threshold: float | None = None) -> list[SearchHit]:
         try:
-            result = self._ensure_client().query_points(
+            kwargs: dict[str, Any] = dict(
                 collection_name=self.collection,
                 query=query_vector,
                 limit=top_k,
                 with_payload=True,
             )
+            if score_threshold is not None:
+                kwargs["score_threshold"] = score_threshold
+            result = self._ensure_client().query_points(**kwargs)
         except Exception:
             return []
         hits: list[SearchHit] = []
@@ -136,7 +139,7 @@ class InMemoryVectorStore:
         for item_id, vector, payload in items:
             self._points[item_id] = (vector, payload)
 
-    def search(self, query_vector: list[float], top_k: int = 3) -> list[SearchHit]:
+    def search(self, query_vector: list[float], top_k: int = 3, score_threshold: float | None = None) -> list[SearchHit]:
         if not self._points:
             return []
         q_norm = math.sqrt(sum(x * x for x in query_vector)) or 1.0
@@ -155,4 +158,5 @@ class InMemoryVectorStore:
                 metadata=payload,
             )
             for score, pid, _vec, payload in scored[:top_k]
+            if score_threshold is None or score >= score_threshold
         ]
