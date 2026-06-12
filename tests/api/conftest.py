@@ -68,8 +68,8 @@ def _make_mock_vector_store(reachable: bool = True) -> MagicMock:
     s = MagicMock()
     s.is_reachable.return_value = reachable
     s.search.return_value = [
-        SearchHit(id="m1", score=0.9, text="mock chunk 1", metadata={}),
-        SearchHit(id="m2", score=0.8, text="mock chunk 2", metadata={}),
+        SearchHit(id="m1", score=0.9, text="mock chunk 1", metadata={"source": "01_pix_doc.md"}),
+        SearchHit(id="m2", score=0.8, text="mock chunk 2", metadata={"source": "02_aplicacoes_financeiras.md"}),
     ]
     return s
 

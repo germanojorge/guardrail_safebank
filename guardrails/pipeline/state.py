@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import Any, TypedDict
 
 
 class GraphState(TypedDict):
     message: str
-    retrieved_chunks: list[str]
+    retrieved_chunks: list[dict[str, Any]]
     llm_response: str
     blocked: bool
     block_category: str | None

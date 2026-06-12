@@ -25,6 +25,8 @@ def test_chat_benign_returns_response_and_diagnostics(client: TestClient):
     diag = body["diagnostics"]
     assert diag["retrieved_chunks"] is not None
     assert len(diag["retrieved_chunks"]) > 0
+    first_chunk = diag["retrieved_chunks"][0]
+    assert "text" in first_chunk
 
     lat = diag["latency_ms"]
     assert lat["input_guard"] is not None

@@ -14,13 +14,19 @@ class LatencyBreakdown(BaseModel):
     total: float
 
 
+class RetrievedChunk(BaseModel):
+    text: str
+    score: float | None = None
+    source: str | None = None
+
+
 class Diagnostics(BaseModel):
     request_id: str
     validator: str | None = None
     rule_violated: str | None = None
     severity: str | None = None
     latency_ms: LatencyBreakdown
-    retrieved_chunks: list[str] | None = None
+    retrieved_chunks: list[RetrievedChunk] | None = None
     block_details: dict[str, Any] | None = None
 
 

@@ -30,6 +30,29 @@ RETRIEVE_TOP_K = 3
 RETRIEVE_TOP_N = 20
 
 
+def _chunk_text(chunk: str | dict[str, Any]) -> str:
+    if isinstance(chunk, dict):
+        return str(chunk.get("text") or "")
+    return chunk
+
+
+def _hits_to_chunks(hits: list[Any]) -> list[dict[str, Any]]:
+    chunks: list[dict[str, Any]] = []
+    for hit in hits:
+        if not hit.text:
+            continue
+        metadata = hit.metadata or {}
+        source = metadata.get("source") or metadata.get("title")
+        chunks.append(
+            {
+                "text": hit.text,
+                "score": float(hit.score),
+                "source": str(source) if source else None,
+            }
+        )
+    return chunks
+
+
 def build_nodes(
     toxic: Any,
     pii_input: Any,
@@ -128,7 +151,7 @@ def build_nodes(
                 else:
                     hits = hits[:RETRIEVE_TOP_K]
 
-                chunks = [h.text for h in hits if h.text]
+                chunks = _hits_to_chunks(hits)
 
         elapsed = (time.perf_counter() - t0) * 1000
         diag: dict = {
@@ -147,7 +170,7 @@ def build_nodes(
     def generate(state: GraphState) -> dict:
         t0 = time.perf_counter()
         chunks = state.get("retrieved_chunks", [])
-        context_block = "\n".join(f"- {c}" for c in chunks)
+        context_block = "\n".join(f"- {_chunk_text(c)}" for c in chunks)
         messages = [
             {
                 "role": "user",
