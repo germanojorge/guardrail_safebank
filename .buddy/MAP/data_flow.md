@@ -11,7 +11,7 @@
 1. Cliente manda `POST /chat {"message": "Como funciona o cartão Gold?"}`.
 2. FastAPI gera `request_id` (UUID4), liga no contexto structlog.
 3. **`input_guard`** roda em ordem: `toxic` → `pii_input` → `out_of_scope` → `jailbreak`. Todos retornam `blocked=False`.
-4. **`retrieve`** consulta Qdrant (`itau_faq` ou `banking_kb`) com embedding da mensagem (e5-small). Retorna top-k chunks.
+4. **`retrieve`** consulta Qdrant (`itau_faq`) com embedding da mensagem (e5-base). Retorna top-k chunks.
 5. **`generate`** chama Anthropic (`claude-sonnet-4-6`) com system prompt + chunks + mensagem.
 6. **`output_guard`** roda `toxic` → `pii_output` → `compliance` (Haiku judge). Todos passam.
 7. Responde HTTP 200 com `{"blocked": false, "response": "...", "diagnostics": {...}}`.
@@ -46,9 +46,9 @@ Quando `LLM_PROVIDER=mock`:
 
 ## Fluxo 5 — Ingestão do RAG (offline, via perfil compose)
 
-1. `docker compose run --rm ingest` invoca `scripts/ingest_banking_kb.py`.
-2. Script lê `data/banking_kb/*.md`, chunka, gera embeddings com sentence-transformers, e cria/popula a coleção no Qdrant.
-3. Alternativa: `docker compose run --rm ingest_itau` consome `Itau-Unibanco/FAQ_BACEN` do HuggingFace e popula a coleção `itau_faq`.
+1. `docker compose run --rm ingest` invoca `scripts/ingest_itau_faq.py`.
+2. Script carrega `Itau-Unibanco/FAQ_BACEN` (split train), embeda com sentence-transformers, e popula a coleção `itau_faq` no Qdrant.
+3. Split test fica em `data/eval/faq_bacen_eval.jsonl` para avaliação de retrieval.
 
 ## Fluxo 6 — Observabilidade
 

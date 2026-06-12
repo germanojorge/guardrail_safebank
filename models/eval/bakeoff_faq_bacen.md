@@ -2,7 +2,7 @@
 
 Generated: 2026-06-11T22:44:37.130431Z
 
-**Caveat:** E5-vs-MiniLM comparison is not perfectly apples-to-apples (different pretraining recipes). The fine-tune was trained on FAQ_BACEN train split — a strong FAQ_BACEN score may reflect train-distribution overfit. Gate with `banking_kb` anti-regression before shipping any model change.
+**Caveat:** E5-vs-MiniLM comparison is not perfectly apples-to-apples (different pretraining recipes). The fine-tune was trained on FAQ_BACEN train split — a strong FAQ_BACEN score may reflect train-distribution overfit.
 
 Latency numbers are indicative CPU latency on the run machine, not a benchmark guarantee.
 

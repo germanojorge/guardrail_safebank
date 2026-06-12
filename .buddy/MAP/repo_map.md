@@ -12,8 +12,8 @@
 |---|---|---|
 | `guardrails/` | Pacote Python principal (API, pipeline, validators, adapters) | **Sim** |
 | `tests/` | Testes pytest: `unit/`, `adversarial/`, `api/`, `fixtures/` | Depois de `guardrails/` |
-| `scripts/` | Ingestão (banking_kb, Itaú FAQ), build de índices, screening de fixtures, medição de camadas | Quando for popular dados |
-| `data/` | Knowledge base PT-BR (`banking_kb/`) + índices/seeds (gerados) | Pra entender o RAG |
+| `scripts/` | Ingestão (FAQ Itaú), build de índices, screening de fixtures, medição de camadas | Quando for popular dados |
+| `data/` | Splits congelados de eval (`data/eval/`) + índices/seeds (gerados) | Pra entender o RAG |
 | `demo/` | Roteiro da demo de 8 min: `.http`, `.sh`, robô auto, `WALKTHROUGH.md` | Pra ver o produto rodando |
 | `docker/` | 3 Dockerfiles: `Dockerfile.api`, `Dockerfile.ui`, `Dockerfile.models` (base com modelos) | Pra mudar build |
 | `adr/` | 6 Architecture Decision Records (001–006) | Pra entender *por que* decisões |

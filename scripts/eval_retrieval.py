@@ -15,9 +15,6 @@ Usage:
     # Eval a prefix-free model (MiniLM, fine-tune):
     uv run python scripts/eval_retrieval.py --model paraphrase-multilingual-MiniLM-L12-v2 --prefix-style none
 
-    # Eval on banking_kb smoke set (closed-loop, fast):
-    uv run python scripts/eval_retrieval.py --dataset banking_kb
-
     # Eval a different model:
     uv run python scripts/eval_retrieval.py --model intfloat/multilingual-e5-base
 """
@@ -30,7 +27,6 @@ import argparse
 import json
 import sys
 import time
-import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -86,7 +82,6 @@ def freeze_faq_bacen(out_dir: str = "data/eval") -> None:
 def load_frozen(
     dataset: str,
     data_dir: str = "data/eval",
-    kb_dir: str = "data/banking_kb",
 ) -> tuple[dict[str, str], dict[str, str], dict[str, set[str]]]:
     """Load a frozen eval split from disk.
 
@@ -113,34 +108,7 @@ def load_frozen(
 
         return corpus, queries, relevant_docs
 
-    elif dataset == "banking_kb":
-        # Import lazily to avoid pulling QdrantStore/SentenceTransformerProvider at module load
-        from ingest_banking_kb import NAMESPACE, _split_paragraphs  # noqa: PLC0415
-
-        corpus = {}
-        for path in sorted(Path(kb_dir).glob("*.md")):
-            content = path.read_text(encoding="utf-8")
-            for idx, para in enumerate(_split_paragraphs(content)):
-                doc_id = str(uuid.uuid5(NAMESPACE, f"{path.name}:{idx}"))
-                corpus[doc_id] = para
-
-        queries = {}
-        relevant_docs = {}
-        eval_path = Path(data_dir) / "banking_kb_eval.jsonl"
-        with open(eval_path, encoding="utf-8") as f:
-            for line in f:
-                stripped = line.strip()
-                if not stripped or stripped.startswith("#"):
-                    continue
-                row = json.loads(stripped)
-                qid = row["query_id"]
-                queries[qid] = row["query"]
-                relevant_docs[qid] = set(row["relevant_doc_ids"])
-
-        return corpus, queries, relevant_docs
-
-    else:
-        raise ValueError(f"Unknown dataset: {dataset!r}. Choose 'faq_bacen' or 'banking_kb'.")
+    raise ValueError(f"Unknown dataset: {dataset!r}. Choose 'faq_bacen'.")
 
 
 # ---------------------------------------------------------------------------
@@ -182,7 +150,7 @@ def run_eval(
     Note:
         E5-vs-MiniLM is not perfectly apples-to-apples (different pretraining recipes).
         The fine-tune was trained on FAQ_BACEN train split — strong FAQ_BACEN scores may
-        be train-distribution overfit; always gate with banking_kb anti-regression (SCRUM-38).
+        be train-distribution overfit on FAQ_BACEN.
     """
     if prefix_style not in _VALID_PREFIX_STYLES:
         raise ValueError(f"prefix_style must be one of {_VALID_PREFIX_STYLES!r}, got {prefix_style!r}")
@@ -587,7 +555,7 @@ def main() -> int:
     parser.add_argument(
         "--dataset",
         default="faq_bacen",
-        choices=["faq_bacen", "banking_kb"],
+        choices=["faq_bacen"],
         help="Which frozen split to evaluate (default: faq_bacen)",
     )
     parser.add_argument(
@@ -683,7 +651,6 @@ def main() -> int:
         print("\nMeasuring latency ...")
         latency = measure_latency_ms_per_query(args.model, queries, prefix_style=args.prefix_style)
 
-    closed_loop = args.dataset == "banking_kb"
     payload = {
         "model": args.model,
         "dataset": args.dataset,
@@ -692,7 +659,7 @@ def main() -> int:
         "reranker": args.reranker,
         "score_threshold": args.threshold,
         "top_n": args.top_n,
-        "closed_loop": closed_loop,
+        "closed_loop": False,
         "n_queries": len(queries),
         "n_corpus": len(corpus),
         "timestamp": datetime.utcnow().isoformat() + "Z",
@@ -704,10 +671,6 @@ def main() -> int:
     out_path = write_run_json(args.out_dir, payload)
     print(f"\nRun saved: {out_path}")
     print("\n" + render_markdown(metrics))
-
-    if closed_loop:
-        print("\nWARNING: banking_kb is a closed-loop eval set — queries hand-crafted from same corpus.")
-        print("  Numbers confirm plumbing only, NOT generalizable retrieval quality.")
 
     return 0
 

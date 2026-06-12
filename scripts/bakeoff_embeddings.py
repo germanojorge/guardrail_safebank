@@ -8,9 +8,6 @@ Usage:
     # Full bake-off on FAQ_BACEN (downloads models on first run, slow):
     uv run python scripts/bakeoff_embeddings.py
 
-    # Anti-regression gate: run winner + e5-small on banking_kb before shipping:
-    uv run python scripts/bakeoff_embeddings.py --dataset banking_kb
-
     # Specify output directory:
     uv run python scripts/bakeoff_embeddings.py --out-dir models/eval
 """
@@ -86,12 +83,6 @@ def pick_winner(rows: list[dict]) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Embedding model bake-off across 4 models on a frozen eval split.")
     parser.add_argument(
-        "--dataset",
-        default="faq_bacen",
-        choices=["faq_bacen", "banking_kb"],
-        help="Which frozen split to evaluate (default: faq_bacen)",
-    )
-    parser.add_argument(
         "--out-dir",
         default="models/eval",
         help="Where to write run JSONs and the markdown table (default: models/eval)",
@@ -104,12 +95,13 @@ def main() -> int:
     parser.add_argument(
         "--skip-missing",
         action="store_true",
-        help="Skip models whose local path does not exist (useful for banking_kb anti-regression with fewer models)",
+        help="Skip models whose local path does not exist",
     )
     args = parser.parse_args()
 
-    print(f"Loading frozen split: {args.dataset} ...")
-    corpus, queries, relevant_docs = load_frozen(args.dataset, args.data_dir)
+    dataset = "faq_bacen"
+    print(f"Loading frozen split: {dataset} ...")
+    corpus, queries, relevant_docs = load_frozen(dataset, args.data_dir)
     print(f"Corpus: {len(corpus)}  Queries: {len(queries)}\n")
 
     rows: list[dict] = []
@@ -120,19 +112,17 @@ def main() -> int:
         prefix_style = spec["prefix_style"]
         dim = spec["dim"]
 
-        # Skip local models that don't exist yet (e.g. fine-tune not trained)
         if model_id.startswith("models/") and not Path(model_id).exists():
             if args.skip_missing:
                 print(f"SKIP {label} — path {model_id!r} not found (--skip-missing)\n")
                 continue
-            else:
-                print(f"WARNING: {label} — path {model_id!r} not found, skipping\n")
-                continue
+            print(f"WARNING: {label} — path {model_id!r} not found, skipping\n")
+            continue
 
         print(f"[{label}] Running eval  prefix_style={prefix_style!r} ...")
         try:
-            results = run_eval(model_id, corpus, queries, relevant_docs, name=args.dataset, prefix_style=prefix_style)
-            metrics = extract_metrics(results, args.dataset)
+            results = run_eval(model_id, corpus, queries, relevant_docs, name=dataset, prefix_style=prefix_style)
+            metrics = extract_metrics(results, dataset)
         except Exception as exc:
             print(f"  ERROR during eval: {exc}")
             continue
@@ -156,19 +146,15 @@ def main() -> int:
 
         payload = {
             "model": model_id,
-            "dataset": args.dataset,
+            "dataset": dataset,
             "prefix_style": prefix_style,
             "prefixes_applied": prefix_style == "e5",
-            "closed_loop": args.dataset == "banking_kb",
+            "closed_loop": False,
             "n_queries": len(queries),
             "n_corpus": len(corpus),
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "seed": 42,
             "latency_ms_per_query": latency,
-            # Honesty note: latency is indicative CPU latency on the run machine,
-            # not a benchmark guarantee. E5-vs-MiniLM comparison is not perfectly
-            # apples-to-apples (different pretraining). Fine-tune score on FAQ_BACEN
-            # may reflect train-distribution overfit — gate with banking_kb.
             "metrics": metrics,
         }
         out_path = write_run_json(args.out_dir, payload)
@@ -182,20 +168,14 @@ def main() -> int:
     print("\n=== Bake-off Results ===\n")
     print(table_md)
 
-    # Write the committed F-2 artifact
-    if args.dataset == "faq_bacen":
-        artifact_path = Path(args.out_dir) / "bakeoff_faq_bacen.md"
-    else:
-        artifact_path = Path(args.out_dir) / f"bakeoff_{args.dataset}.md"
-
+    artifact_path = Path(args.out_dir) / "bakeoff_faq_bacen.md"
     Path(args.out_dir).mkdir(parents=True, exist_ok=True)
     artifact_path.write_text(
-        f"# Embedding Model Bake-off — {args.dataset}\n\n"
+        f"# Embedding Model Bake-off — {dataset}\n\n"
         f"Generated: {datetime.utcnow().isoformat()}Z\n\n"
         f"**Caveat:** E5-vs-MiniLM comparison is not perfectly apples-to-apples "
         f"(different pretraining recipes). The fine-tune was trained on FAQ_BACEN "
-        f"train split — a strong FAQ_BACEN score may reflect train-distribution overfit. "
-        f"Gate with `banking_kb` anti-regression before shipping any model change.\n\n"
+        f"train split — a strong FAQ_BACEN score may reflect train-distribution overfit.\n\n"
         f"Latency numbers are indicative CPU latency on the run machine, not a benchmark guarantee.\n\n" + table_md + "\n",
         encoding="utf-8",
     )
@@ -204,15 +184,12 @@ def main() -> int:
     winner = pick_winner(rows)
     print("\n=== Winner suggestion (highest recall@5, tie-break MRR@10) ===")
     print(f"  {winner['label']}  recall@5={winner['metrics'].get('recall@5', 'N/A')}  mrr@10={winner['metrics'].get('mrr@10', 'N/A')}")
-    print("\nNOTE: Do NOT update config.yaml until banking_kb anti-regression gate passes.")
-    print("      Run: uv run python scripts/bakeoff_embeddings.py --dataset banking_kb")
 
-    # Serialize rows summary to JSON for programmatic consumption
-    summary_path = Path(args.out_dir) / f"bakeoff_{args.dataset}_summary.json"
+    summary_path = Path(args.out_dir) / f"bakeoff_{dataset}_summary.json"
     with open(summary_path, "w", encoding="utf-8") as f:
         json.dump(
             {
-                "dataset": args.dataset,
+                "dataset": dataset,
                 "timestamp": datetime.utcnow().isoformat() + "Z",
                 "rows": [
                     {

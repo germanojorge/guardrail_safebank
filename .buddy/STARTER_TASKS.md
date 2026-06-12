@@ -17,7 +17,7 @@
 ## Primeira mudança real (≈ 1–2 h)
 
 - **Adicionar uma regra ao detector de fraude** (`guardrails/detectors/fraud.py`) e cobrir com um teste em `tests/unit/test_detectors_fraud.py`.
-- **Adicionar um doc PT-BR ao `data/banking_kb/`** sobre um produto bancário novo, re-rodar `ingest`, e validar que o RAG recupera no Beat 1.
+- **Testar uma pergunta nova no Streamlit** que exista no FAQ BACEN (ex.: Pix, tarifas) e validar chunks com `source: itau_faq_bacen` nos diagnósticos.
 - **Reduzir o `threshold` do jailbreak no `config.yaml`** e medir o impacto no `tests/adversarial/test_jailbreak_pipeline.py` (block rate sobe? falsos positivos sobem?).
 - **Trocar a mensagem de bloqueio padrão** (procura por "<mensagem padronizada>" ou similar em `guardrails/pipeline/nodes.py`) pra algo mais útil ao cliente do banco.
 - **Acrescentar um teste de fail-closed** em `tests/api/test_fail_closed.py` pra um cenário novo (ex: Qdrant fora do ar).

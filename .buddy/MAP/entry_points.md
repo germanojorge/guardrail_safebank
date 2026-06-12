@@ -28,15 +28,13 @@
 | `qdrant` | `qdrant/qdrant:latest` | Vector store (porta 6333) |
 | `api` | uvicorn via `docker/Dockerfile.api` | API principal (porta 8000) |
 | `ui` | streamlit via `docker/Dockerfile.ui` | Cliente (porta 8501) |
-| `ingest` | `python scripts/ingest_banking_kb.py` (perfil `ingest`) | Popular Qdrant com `data/banking_kb/` |
-| `ingest_itau` | `python scripts/ingest_itau_faq.py` (perfil `ingest`) | Popular Qdrant com FAQ Itaú do HF |
+| `ingest` | `python scripts/ingest_itau_faq.py` (perfil `ingest`) | Popular Qdrant com FAQ Itaú (`FAQ_BACEN` train split) |
 
 ## CLIs / scripts úteis
 
 | Script | Pra que |
 |---|---|
-| `scripts/ingest_banking_kb.py` | Ingestão do KB sintético (8 docs MD) |
-| `scripts/ingest_itau_faq.py` | Ingestão do dataset `Itau-Unibanco/FAQ_BACEN` |
+| `scripts/ingest_itau_faq.py` | Ingestão do dataset `Itau-Unibanco/FAQ_BACEN` (train → Qdrant) |
 | `scripts/build_jailbreak_index.py` | Constrói `data/jailbreak_index.npz` (seeds semânticas) |
 | `scripts/build_outofscope_seeds.py` | Gera `data/out_of_scope_seeds.json` |
 | `scripts/measure_jailbreak_layers.py` | Mede contribuição de cada camada do jailbreak validator |

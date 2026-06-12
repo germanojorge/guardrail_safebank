@@ -23,7 +23,7 @@ export HF_TOKEN=hf_...
 # 2. Sobe API + Qdrant + Streamlit UI
 docker compose up -d
 
-# 3. Popula o vector store (8 docs PT-BR do banking_kb)
+# 3. Popula o vector store (FAQ BACEN Itaú — split train)
 docker compose run --rm ingest
 
 # 4. Abre a UI
@@ -105,7 +105,7 @@ Ou rode o robô que executa todos: `python demo/scripts/auto_demo.py`.
 | Container `api` morre por OOM | <2.5 GB livres pro Docker | Aumentar memória do Docker Desktop, ou usar `LLM_PROVIDER=mock` |
 | `ANTHROPIC_API_KEY not set` em `docker compose up` | Variável não exportada antes do compose | `export ANTHROPIC_API_KEY=...` ou criar `.env` na raiz |
 | Modelos baixando a cada `docker compose up` | Volume de cache ML não montado | Conferir `ML_CACHE_ROOT` no `docker-compose.yml`; default é `/run/media/germano/Novo volume/Linux/ml-cache` (HD externo do dono do projeto — você provavelmente quer trocar) |
-| `RuntimeError: collection itau_faq not found` | Ingestão não rodou | `docker compose run --rm ingest` (ou `ingest_itau` pra coleção alternativa) |
+| `RuntimeError: collection itau_faq not found` | Ingestão não rodou | `docker compose run --rm ingest` |
 
 ## Onde mora cada coisa
 

@@ -261,8 +261,8 @@ tests/
 ├── unit/           # test_toxic.py · test_pii.py · test_jailbreak.py · test_compliance.py
 ├── fixtures/       # adversarial samples (pii, jailbreak, compliance, hatebr)
 data/
-└── banking_kb/     # 8 PT-BR markdown docs ingested into Qdrant
-scripts/            # ingest_banking_kb.py · utilities
+└── eval/           # frozen FAQ_BACEN splits for retrieval eval
+scripts/            # ingest_itau_faq.py · eval_retrieval.py · utilities
 docker-compose.yml
 pyproject.toml
 ```

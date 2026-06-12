@@ -6,25 +6,25 @@ _Last updated: 2026-06-12 (SCRUM-40). All numbers trace to `models/eval/` — se
 
 ## 1. Chunking Strategy
 
-**Implementation**: `scripts/ingest_banking_kb.py` — `_split_paragraphs` (lines 27–43).
+**Implementation**: `scripts/ingest_itau_faq.py` + `scripts/_faq_data.py`.
 
-Banking KB documents are split by blank lines (`text.split("\n\n")`). Heading-only paragraphs (single line beginning with `#`) are dropped because they carry no retrievable content. Multi-line blocks that open with a heading are kept — the heading provides context for the body that follows. Each chunk gets a `chunk_idx` metadata field; point IDs are deterministic UUIDs keyed on `{filename}:{chunk_idx}`.
+Each row of `Itau-Unibanco/FAQ_BACEN` (train split) becomes one chunk: `Pergunta: …\nResposta: …`. The HF `test` split is held out for eval (`data/eval/faq_bacen_eval.jsonl`). Point IDs are deterministic UUID5 keys on `itau_faq:{doc_id}`; metadata includes `doc_id` (`train_{i}`), `source: itau_faq_bacen`, and `chunk_idx`.
 
-The corpus is 8 PT-BR markdown documents ingested into Qdrant collection `banking_kb`.
+Production corpus: **1305 chunks** in Qdrant collection `itau_faq` (train split only).
 
 ### Rejected alternatives
 
 | Alternative | Why rejected for this corpus |
 |-------------|------------------------------|
-| **Fixed-size + overlap** (e.g. 512 tokens, 50-token stride) | Banking KB docs are short FAQ-style paragraphs; fixed splits would bisect logically complete answers. Overlap creates duplicate near-identical chunks that inflate cosine scores. |
-| **Semantic chunking** (split at embedding similarity drops) | Requires a first-pass embedding over the full document before ingestion; adds complexity without measurable benefit on short, already-paragraph-structured docs. |
-| **Parent-document / small-to-big** | Useful when fine-grained retrieval + coarse-grained context are both needed. Banking KB paragraphs are already at the right granularity; the extra indirection adds code surface area for no measured gain. |
+| **Fixed-size + overlap** | FAQ rows are already atomic Q/A pairs; splitting would break answer completeness. |
+| **Semantic chunking** | Unnecessary on pre-segmented FAQ data. |
+| **Parent-document / small-to-big** | Each FAQ row is already the right retrieval unit for this use case. |
 
 ---
 
 ## 2. Vector Store — Qdrant
 
-Collection `banking_kb`, cosine distance. Qdrant was chosen over in-memory FAISS or ChromaDB because:
+Collection `itau_faq`, cosine distance. Qdrant was chosen over in-memory FAISS or ChromaDB because:
 
 - **Open-source and self-hosted** — no external API, no data leaves the Docker network.
 - **Native metadata filters** — enables future filtering by document category, date, or product without a post-retrieval step.
@@ -48,13 +48,9 @@ See also ADR-002 (LangGraph standalone) and ADR-006 (local embeddings).
 
 [^bakeoff]: Source: `models/eval/bakeoff_faq_bacen_summary.json` + `bakeoff_faq_bacen.md` (2026-06-11).
 
-Anti-regression gate (banking_kb, 8 docs): e5-small recall@5 **0.875** / MRR@10 0.8125 → e5-base recall@5 **0.9375** / MRR@10 0.8281 — gate **PASSES** (+6.25pp recall@5). [^banking_kb]
-
-[^banking_kb]: Source: `models/eval/banking_kb__intfloat__multilingual-e5-base__20260611_224524.json` and `banking_kb__intfloat__multilingual-e5-small__20260611_220713.json`.
-
 ### Dimension trade-off
 
-`intfloat/multilingual-e5-base` (768-dim) gains **+6.4pp recall@5** on faq_bacen (0.6836 → 0.7480) and **+6.25pp** on banking_kb (0.875 → 0.9375) at the cost of ~300MB extra model weight (~120MB → ~420MB) and ~32ms extra CPU encoding latency per query (22.7 ms → 55.2 ms). The recall gain is material; the latency cost is acceptable for a single-query chatbot flow.
+`intfloat/multilingual-e5-base` (768-dim) gains **+6.4pp recall@5** on faq_bacen (0.6836 → 0.7480) at the cost of ~300MB extra model weight (~120MB → ~420MB) and ~32ms extra CPU encoding latency per query (22.7 ms → 55.2 ms). The recall gain is material; the latency cost is acceptable for a single-query chatbot flow.
 
 **E5 prefix convention**: the adapter (`guardrails/adapters/embedding.py`) transparently prepends `query:` to user queries and `passage:` to ingested chunks. Callers are unaware of this convention; it is encapsulated in `apply_prefixes`.
 
@@ -118,12 +114,11 @@ Off-topic seeds are also used by the `out_of_scope` validator (which runs before
 
 ## 5. Eval Methodology and Leakage Declaration
 
-### Two datasets, two roles
+### Primary eval dataset
 
 | Dataset | Source | Role | Leakage status |
 |---------|--------|------|----------------|
-| **faq_bacen** | FAQ_BACEN (Hugging Face) — frozen JSONL snapshots in `data/eval/` | Primary bake-off + retrieval eval; 373 queries, 1678 corpus docs | Low leakage: HF public dataset, frozen before any model selection. Eval split is independent of corpus Q/A pairs. Classified as "external-ish". |
-| **banking_kb** | 8 PT-BR synthetic docs authored by the same agent as the eval queries | Anti-regression gate only; confirms no recall regression when switching models | **Closed-loop (SCRUM-40 leakage declaration)**: corpus and eval queries share an author. Measures pattern coverage, not real-world recall. Absolute numbers do not transfer to production. |
+| **faq_bacen** | FAQ_BACEN (Hugging Face) — frozen JSONL in `data/eval/` | Bake-off + retrieval eval; 373 test queries, 1678 corpus docs (train+test answers) | Low leakage: public HF dataset; **train** ingested into Qdrant, **test** held out for eval. Classified as "external-ish". |
 
 ### Anti-tautology gate
 
@@ -145,27 +140,24 @@ set -a; source .env; set +a
 uv run python scripts/eval_retrieval.py --freeze
 
 # Bake-off across models → models/eval/bakeoff_faq_bacen.md
-uv run python scripts/bakeoff_embeddings.py --dataset faq_bacen
+uv run python scripts/bakeoff_embeddings.py
 
 # Single-model eval (e5-base default)
-uv run python scripts/eval_retrieval.py --dataset faq_bacen
+uv run python scripts/eval_retrieval.py
 
 # With reranker
-uv run python scripts/eval_retrieval.py --dataset faq_bacen \
+uv run python scripts/eval_retrieval.py \
     --reranker cross-encoder/mmarco-mMiniLMv2-L12-H384-v1 --top-n 20
 
 # Threshold sweep
-uv run python scripts/eval_retrieval.py --dataset faq_bacen --threshold-sweep
-
-# Anti-regression smoke (banking_kb)
-uv run python scripts/eval_retrieval.py --dataset banking_kb
+uv run python scripts/eval_retrieval.py --threshold-sweep
 
 # Re-ingest after a dim change (384→768 requires dropping/recreating Qdrant collection)
 docker compose run --rm ingest
 ```
 
 Flag reference (from `scripts/eval_retrieval.py` argparse):
-- `--dataset` — `faq_bacen` (default) or `banking_kb`
+- `--dataset` — `faq_bacen` (default, only option)
 - `--reranker` — HF cross-encoder model id
 - `--top-n` — dense candidate count before reranking (default: 20)
 - `--threshold` — minimum cosine score (default: None)

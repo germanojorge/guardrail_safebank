@@ -36,7 +36,7 @@ A orquestração é um `StateGraph` do LangGraph com 5 nós e arestas condiciona
 3. Pipeline entra no nó **`input_guard`**:
    - Roda em ordem: `toxic`, `pii_input`, `out_of_scope`, `jailbreak`.
    - Se algum bloquear, `state["blocked"] = True` e a aresta condicional manda pro `block_log`.
-4. Senão, **`retrieve`** consulta Qdrant (top-k chunks do `banking_kb` ou `itau_faq`).
+4. Senão, **`retrieve`** consulta Qdrant (coleção `itau_faq`, FAQ BACEN Itaú).
 5. **`generate`** chama `AnthropicProvider.chat()` (Claude Sonnet 4.6) com system prompt + chunks RAG + mensagem.
 6. **`output_guard`** roda em ordem: `toxic`, `pii_output`, `compliance` (Haiku judge — só este nó é assíncrono e custa rede).
 7. Se algum guard de saída bloquear → `block_log`. Senão → `END` e a resposta volta com `blocked=false`.

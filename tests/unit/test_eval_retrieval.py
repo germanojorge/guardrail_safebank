@@ -88,16 +88,15 @@ def test_extract_metrics_missing_keys_are_skipped():
 
 
 def test_extract_metrics_respects_name_param():
-    results = _make_ir_results("banking_kb")
-    metrics = extract_metrics(results, "banking_kb")
+    results = _make_ir_results("faq_bacen")
+    metrics = extract_metrics(results, "faq_bacen")
     assert metrics["recall@1"] == 0.50
 
 
 def test_extract_metrics_different_name_not_cross_picked():
     """Keys named with a different name prefix should not match."""
-    results = _make_ir_results("banking_kb")
-    metrics = extract_metrics(results, "faq_bacen")
-    # All keys are 'banking_kb_*', so nothing should match 'faq_bacen_*'
+    results = _make_ir_results("faq_bacen")
+    metrics = extract_metrics(results, "other")
     assert len(metrics) == 0
 
 
@@ -177,47 +176,6 @@ def test_load_frozen_faq_bacen_multiple_relevant_docs(tmp_path):
 def test_load_frozen_unknown_dataset_raises(tmp_path):
     with pytest.raises(ValueError, match="Unknown dataset"):
         load_frozen("unknown_dataset", data_dir=str(tmp_path))
-
-
-# ---------------------------------------------------------------------------
-# load_frozen — banking_kb path (uses real data/banking_kb + data/eval)
-# ---------------------------------------------------------------------------
-
-
-def test_load_frozen_banking_kb_no_orphan_ids():
-    """All relevant_doc_ids in banking_kb_eval.jsonl must exist in the derived corpus."""
-    corpus, queries, relevant_docs = load_frozen("banking_kb")
-    orphans = [(qid, did) for qid, doc_ids in relevant_docs.items() for did in doc_ids if did not in corpus]
-    assert len(orphans) == 0, f"Orphan ids found: {orphans}"
-
-
-def test_load_frozen_banking_kb_skips_comment_lines(tmp_path):
-    """Comment lines starting with # must be skipped."""
-    (tmp_path / "banking_kb_eval.jsonl").write_text(
-        '# this is a comment\n{"query_id": "bk_q0", "query": "test?", "relevant_doc_ids": ["fake-id"]}\n',
-        encoding="utf-8",
-    )
-    # Also need a corpus — patch _split_paragraphs to return something with the fake-id
-    # instead of importing from ingest_banking_kb, monkeypatch at module level
-    import uuid
-
-    NAMESPACE = uuid.UUID("6ba7b810-9dad-11d1-80b4-00c04fd430c8")
-    fake_id = str(uuid.uuid5(NAMESPACE, "fake.md:0"))
-
-    eval_path = tmp_path / "banking_kb_eval.jsonl"
-    eval_path.write_text(
-        f'# this is a comment\n{{"query_id": "bk_q0", "query": "test?", "relevant_doc_ids": ["{fake_id}"]}}\n',
-        encoding="utf-8",
-    )
-
-    # Create a minimal .md file so the corpus contains the fake_id
-    kb_dir = tmp_path / "kb"
-    kb_dir.mkdir()
-    (kb_dir / "fake.md").write_text("Some paragraph content here.", encoding="utf-8")
-
-    corpus, queries, relevant_docs = load_frozen("banking_kb", data_dir=str(tmp_path), kb_dir=str(kb_dir))
-    assert "bk_q0" in queries
-    assert len(queries) == 1
 
 
 # ---------------------------------------------------------------------------

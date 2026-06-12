@@ -14,10 +14,10 @@ Use `sentence-transformers` locally (CPU). Prefix handling (`query:` for questio
 
 **Model history (SCRUM-38 bake-off, 2026-06-11):**
 
-| Model | Size | faq_bacen recall@5 | banking_kb recall@5 | Decision |
-|-------|------|--------------------|---------------------|----------|
-| `intfloat/multilingual-e5-small` | ~120MB | 0.6836 | 0.8750 | superseded |
-| `intfloat/multilingual-e5-base` | ~420MB | **0.7480** | **0.9375** | **current** |
+| Model | Size | faq_bacen recall@5 | Decision |
+|-------|------|--------------------|----------|
+| `intfloat/multilingual-e5-small` | ~120MB | 0.6836 | superseded |
+| `intfloat/multilingual-e5-base` | ~420MB | **0.7480** | **current** |
 
 e5-base improved recall@5 by +6.4pp on faq_bacen (0.6836 → 0.7480, `models/eval/bakeoff_faq_bacen_summary.json`) at the cost of ~300MB extra model weight and ~32ms extra CPU encoding latency per query (22.7 → 55.2 ms).
 

@@ -8,13 +8,13 @@ _Quick Q&A for the 5 core technical questions + common follow-ups. Each answer g
 
 ### 1. Why e5-base over e5-small or MiniLM?
 
-The bake-off on faq_bacen (373 queries, 1678 corpus docs) showed e5-base at **recall@5 = 0.7480** vs e5-small at 0.6836 (+6.4pp) and MiniLM-L12-v2 at 0.4960 (+25.2pp). e5-base also passes the banking_kb anti-regression gate (+6.25pp recall@5, 0.875 → 0.9375). MiniLM has no prefix convention, which hurts PT-BR FAQ retrieval significantly. e5-small was the previous model; e5-base is a direct upgrade within the same E5 family (same prefix convention, same API surface in the adapter).
+The bake-off on faq_bacen (373 queries, 1678 corpus docs) showed e5-base at **recall@5 = 0.7480** vs e5-small at 0.6836 (+6.4pp) and MiniLM-L12-v2 at 0.4960 (+25.2pp). MiniLM has no prefix convention, which hurts PT-BR FAQ retrieval significantly. e5-small was the previous model; e5-base is a direct upgrade within the same E5 family (same prefix convention, same API surface in the adapter).
 
 → Full bake-off table: [docs/RAG.md §3](RAG.md#3-embedding-model-selection)
 
 ### 2. Why 768 dims? Memory / latency trade-off?
 
-768 dims cost ~300MB extra model weight (~120MB → ~420MB) and ~32ms extra CPU latency per query (22.7 → 55.2 ms). For a single-query chatbot, the +32ms is absorbed into the total LLM latency (hundreds of ms). The recall gain (+6.4pp on faq_bacen, +6.25pp on banking_kb) is material and one-time. The weight increase matters at scale — for AWS Bedrock/ECS deployment, Titan Embeddings v2 (1536-dim) at 0 marginal cost would be the migration path (see Extras in CLAUDE.md).
+768 dims cost ~300MB extra model weight (~120MB → ~420MB) and ~32ms extra CPU latency per query (22.7 → 55.2 ms). For a single-query chatbot, the +32ms is absorbed into the total LLM latency (hundreds of ms). The recall gain (+6.4pp on faq_bacen) is material and one-time. The weight increase matters at scale — for AWS Bedrock/ECS deployment, Titan Embeddings v2 (1536-dim) at 0 marginal cost would be the migration path (see Extras in CLAUDE.md).
 
 → [docs/RAG.md §3 — Dimension trade-off](RAG.md#dimension-trade-off)
 
@@ -26,7 +26,7 @@ Four reasons: (1) native metadata filters for future filtering by product/catego
 
 ### 4. How are documents chunked?
 
-Banking KB uses blank-line paragraph splitting (`text.split("\n\n")`). Heading-only paragraphs (single `#` line) are dropped as content-free. The corpus is 8 PT-BR markdown documents — already structured as FAQ-style short paragraphs, so fixed-size chunking would split logically complete answers and create noisy overlap. Each chunk carries `chunk_idx` metadata and a deterministic UUID keyed on `{filename}:{chunk_idx}` for reproducible ingest. Ingestion script: `scripts/ingest_banking_kb.py` — `_split_paragraphs` (lines 27–43).
+Each row of `Itau-Unibanco/FAQ_BACEN` (train split, 1305 pairs) becomes one chunk: `Pergunta: …\nResposta: …`. The HF test split is held out in `data/eval/` for retrieval eval. Ingestion: `scripts/ingest_itau_faq.py`.
 
 → [docs/RAG.md §1 — Chunking Strategy](RAG.md#1-chunking-strategy)
 
@@ -52,11 +52,7 @@ The honest answer: +1.2pp recall@3 alone would not justify the latency cost. The
 
 ### How did you evaluate? What's the leakage story?
 
-Two datasets with different leakage profiles:
-
-**faq_bacen** (373 queries, 1678 docs) — a frozen Hugging Face public FAQ; eval split is independent of corpus Q/A pairs. Classified as "external-ish." This is where the bake-off and retrieval numbers come from.
-
-**banking_kb** (8 docs) — synthetic, closed-loop: the corpus and its eval queries were authored by the same agent. Used only as an anti-regression gate (did model swap break anything?), not as a primary eval. Absolute recall numbers from banking_kb do not transfer to production — stated explicitly in `LIMITATIONS.md`.
+**faq_bacen** (373 test queries, 1678 corpus docs) — frozen Hugging Face public FAQ; train split is ingested into Qdrant, test split is held out for eval. Classified as "external-ish."
 
 **Anti-tautology gate**: `run_eval_manual` (numpy cosine, independent code path) and `InformationRetrievalEvaluator` (sentence-transformers) produce identical recall@3 = 0.6756 on the faq_bacen dense baseline. This rules out the manual eval path being self-referential (building-rigorously §3).
 
