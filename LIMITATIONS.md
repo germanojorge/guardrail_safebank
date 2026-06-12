@@ -251,11 +251,14 @@ Anti-tautology gate: `run_eval_manual` dense-only recall@3 = 0.6756 matches `Inf
 
 | Gap | Impact |
 |-----|--------|
+| **Synthetic closed-loop corpus (banking_kb)** | The 8 banking_kb documents and their eval queries were authored by the same agent (building-rigorously §1). The anti-regression gate measures internal pattern coverage, not real-world recall. Absolute recall numbers from banking_kb (e.g. 0.9375) do not transfer to a production knowledge base authored by domain experts. |
+| **Small corpus** | banking_kb is 8 synthetic PT-BR docs; faq_bacen is a public BACEN FAQ, not this bank's actual production KB. The corpus is too small to cover long-tail queries, product-specific terminology, or regulatory edge cases. |
+| **Ingest/eval mismatch** | `run_eval_manual` uses numpy cosine directly; production queries go through Qdrant's HNSW index. Minor score differences due to HNSW approximation may exist but are not currently quantified. This is the "in-memory eval vs Qdrant production" gap. |
+| **Cut features: hybrid retrieval (BM25 + dense)** | Dense-only retrieval misses exact-keyword / out-of-vocabulary terms (account numbers, product codes, regulatory identifiers). BM25 + dense fusion would improve OOV recall. `--hybrid` is stubbed in `scripts/eval_retrieval.py` and deferred to post-MVP (see CLAUDE.md Extras). |
 | **Score threshold applies only to dense cosine score** | A document that barely clears the threshold due to vocabulary overlap may still be irrelevant. Threshold prevents out-of-domain retrievals but does not guarantee relevance. |
 | **Cross-encoder is English/multilingual but not fine-tuned on PT-BR banking** | `mmarco-mMiniLMv2-L12-H384-v1` was trained on MS MARCO. Banking-specific terminology may not rerank optimally. |
 | **Single-hop retrieval only** | Multi-hop questions ("qual a taxa do produto que mencionou no mês passado?") require multi-hop RAG, not implemented. |
 | **No groundedness judge** | Retrieved chunks are passed to the LLM but not verified post-generation for hallucination. Groundedness judge is listed in Extras (CLAUDE.md). |
-| **In-memory eval vs Qdrant production** | `run_eval_manual` uses numpy cosine directly; production goes through Qdrant. Minor score differences due to HNSW approximation may exist but are not currently measured. |
 
 ---
 
