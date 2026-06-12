@@ -25,6 +25,31 @@ Se algum beat falhar no smoke test → ver "Fallbacks" abaixo antes de abrir pro
 
 ---
 
+## Demo RAG only (~3–4 min, Streamlit)
+
+Use quando a apresentação for **só retrieval + resposta grounded** (sem jailbreak/PII/compliance).
+
+```bash
+# Boot (10 min antes)
+set -a; source .env; set +a
+# Confirmar: QDRANT_COLLECTION=itau_faq (default no compose alinhado com config.yaml)
+docker compose up -d
+docker compose run --rm ingest   # FAQ BACEN Itaú (split train); test fica em data/eval/
+curl -s http://localhost:8000/health | jq '.models_loaded.qdrant_reachable'
+# UI: http://localhost:8501
+```
+
+**Roteiro na UI:**
+
+1. Sidebar 🟢 Online → clicar preset **PIX vs DOC**
+2. Expandir **Diagnósticos** → mostrar chunks + scores + latência `retrieve`/`rerank`/`generate`
+3. Segunda pergunta ao vivo: `"PIX cai na hora?"` — chunks mudam
+4. Backup terminal: `bash demo/01-happy.sh`
+
+**Fala:** "O proxy recupera contexto no Qdrant (e5-base + reranker), passa 3 chunks pro Sonnet, e a UI mostra exatamente o que entrou no prompt."
+
+---
+
 ## 1. Roteiro 8min (executar ao vivo)
 
 ### Beat 1 — Happy Path (90s)

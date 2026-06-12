@@ -43,7 +43,7 @@ class SentenceTransformerProvider:
         self.model_name = model_name
         self.device = device
         self.batch_size = batch_size
-        self.dim = dim
+        self.dim = self.model.get_sentence_embedding_dimension() if self.model is not None else dim
 
     @staticmethod
     def _create_model(model_name: str, device: str) -> Any:

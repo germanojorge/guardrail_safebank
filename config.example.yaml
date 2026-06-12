@@ -36,7 +36,7 @@ validators:
 qdrant:
   host: "${QDRANT_HOST}"
   port: 6333
-  collection: "banking_kb"
+  collection: "itau_faq"
 
 embedding:
   model: "intfloat/multilingual-e5-base"  # SCRUM-38 bake-off winner (recall@5 0.6836→0.7480 on faq_bacen)

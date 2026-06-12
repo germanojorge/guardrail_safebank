@@ -34,33 +34,19 @@ services:
 
   ingest:
     image: guardrail-safebank-api:latest
-    entrypoint: ["uv", "run", "--no-dev", "python", "scripts/ingest_banking_kb.py"]
-    environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - QDRANT_HOST=qdrant
-    volumes:
-      - ./data:/app/data:ro
-      - ./config.yaml:/app/config.yaml:ro
-    depends_on:
-      qdrant:
-        condition: service_started
-    profiles: ["ingest"]
-
-  ingest_itau:
-    image: guardrail-safebank-api:latest
     entrypoint: ["uv", "run", "--no-dev", "--with", "datasets", "python", "scripts/ingest_itau_faq.py"]
     environment:
       - QDRANT_HOST=qdrant
       - HF_TOKEN=${HF_TOKEN}
     volumes:
       - ./scripts:/app/scripts:ro
+      - ./guardrails:/app/guardrails:ro
       - ./config.yaml:/app/config.yaml:ro
       - ${ML_CACHE_ROOT:-/run/media/germano/Novo volume/Linux/ml-cache}/huggingface:/root/.cache/huggingface:rw
     depends_on:
       qdrant:
         condition: service_started
     profiles: ["ingest"]
-
   ui:
     build:
       context: .

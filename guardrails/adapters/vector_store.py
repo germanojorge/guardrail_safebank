@@ -14,7 +14,7 @@ from typing import Any, Protocol, runtime_checkable
 
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 6333
-DEFAULT_COLLECTION = "banking_kb"
+DEFAULT_COLLECTION = "itau_faq"
 
 
 @dataclass(frozen=True)
@@ -67,24 +67,55 @@ class QdrantStore:
         except Exception:
             return False
 
-    def start_collection(self, dim: int, distance: str = "cosine") -> None:
+    def collection_vector_size(self) -> int | None:
+        try:
+            info = self._ensure_client().get_collection(self.collection)
+            vectors = info.config.params.vectors
+            if isinstance(vectors, dict):
+                first = next(iter(vectors.values()))
+                return int(first.size)
+            return int(vectors.size)
+        except Exception:
+            return None
+
+    def _create_collection(self, dim: int, distance: str = "cosine") -> None:
         from qdrant_client import models
 
-        client = self._ensure_client()
-        if client.collection_exists(self.collection):
-            return
         distance_map = {
             "cosine": models.Distance.COSINE,
             "dot": models.Distance.DOT,
             "euclid": models.Distance.EUCLID,
         }
-        client.create_collection(
+        self._ensure_client().create_collection(
             collection_name=self.collection,
             vectors_config=models.VectorParams(
                 size=dim,
                 distance=distance_map[distance.lower()],
             ),
         )
+
+    def start_collection(self, dim: int, distance: str = "cosine") -> None:
+        client = self._ensure_client()
+        if client.collection_exists(self.collection):
+            return
+        self._create_collection(dim=dim, distance=distance)
+
+    def ensure_collection(self, dim: int, distance: str = "cosine", recreate_on_dim_mismatch: bool = True) -> None:
+        """Create the collection or recreate it when the vector size changed."""
+        client = self._ensure_client()
+        if not client.collection_exists(self.collection):
+            self._create_collection(dim=dim, distance=distance)
+            return
+
+        existing_dim = self.collection_vector_size()
+        if existing_dim is None or existing_dim == dim:
+            return
+
+        if not recreate_on_dim_mismatch:
+            raise ValueError(f"collection {self.collection!r} has dim {existing_dim}, expected {dim}")
+
+        client.delete_collection(self.collection)
+        self._create_collection(dim=dim, distance=distance)
 
     def upsert(self, items: list[tuple[str | int, list[float], dict[str, Any]]]) -> None:
         if not items:

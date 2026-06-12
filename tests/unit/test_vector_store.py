@@ -49,6 +49,37 @@ def test_start_collection_idempotent():
     store._client.create_collection.assert_not_called()
 
 
+def test_ensure_collection_recreates_on_dim_mismatch():
+    store = _make_qdrant_store()
+    store._client.collection_exists.return_value = True
+    mock_vectors = MagicMock()
+    mock_vectors.size = 384
+    mock_info = MagicMock()
+    mock_info.config.params.vectors = mock_vectors
+    store._client.get_collection.return_value = mock_info
+
+    store.ensure_collection(dim=768, distance="cosine")
+
+    store._client.delete_collection.assert_called_once_with("test_kb")
+    store._client.create_collection.assert_called_once()
+    assert store._client.create_collection.call_args[1]["vectors_config"].size == 768
+
+
+def test_ensure_collection_skips_when_dim_matches():
+    store = _make_qdrant_store()
+    store._client.collection_exists.return_value = True
+    mock_vectors = MagicMock()
+    mock_vectors.size = 768
+    mock_info = MagicMock()
+    mock_info.config.params.vectors = mock_vectors
+    store._client.get_collection.return_value = mock_info
+
+    store.ensure_collection(dim=768, distance="cosine")
+
+    store._client.delete_collection.assert_not_called()
+    store._client.create_collection.assert_not_called()
+
+
 def test_upsert_builds_pointstruct():
     store = _make_qdrant_store()
     items = [

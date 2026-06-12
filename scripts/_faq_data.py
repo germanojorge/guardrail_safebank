@@ -13,6 +13,35 @@ from datasets import load_dataset
 from sentence_transformers import InputExample
 from sentence_transformers.sentence_transformer import evaluation
 
+DATASET_NAME = "Itau-Unibanco/FAQ_BACEN"
+
+
+def load_faq_train_for_ingest() -> list[dict[str, str]]:
+    """Train-split rows for Qdrant ingestion.
+
+    The HF ``test`` split is held out for evaluation — frozen queries live in
+    ``data/eval/faq_bacen_eval.jsonl`` (refresh via ``eval_retrieval.py --freeze``).
+    """
+    print(f"Loading {DATASET_NAME} (train split only; test held out for eval) ...")
+    ds_train = load_dataset(DATASET_NAME, split="train")
+
+    rows: list[dict[str, str]] = []
+    for idx, row in enumerate(ds_train):
+        question = row["questions"].strip()
+        answer = row["answers"].strip()
+        if not question or not answer:
+            continue
+        rows.append(
+            {
+                "doc_id": f"train_{idx}",
+                "question": question,
+                "answer": answer,
+            }
+        )
+
+    print(f"Train rows for ingest: {len(rows)}")
+    return rows
+
 
 def load_faq_data() -> tuple[list[InputExample], dict[str, str], list[str], list[str]]:
     """Load Itaú FAQ and prepare train examples + eval corpus/queries.
@@ -23,9 +52,9 @@ def load_faq_data() -> tuple[list[InputExample], dict[str, str], list[str], list
         queries: List of question texts from test split
         relevant_docs: List of doc_ids that are correct for each query (same index)
     """
-    print("Loading Itau-Unibanco/FAQ_BACEN ...")
-    ds_train = load_dataset("Itau-Unibanco/FAQ_BACEN", split="train")
-    ds_test = load_dataset("Itau-Unibanco/FAQ_BACEN", split="test")
+    print(f"Loading {DATASET_NAME} ...")
+    ds_train = load_dataset(DATASET_NAME, split="train")
+    ds_test = load_dataset(DATASET_NAME, split="test")
 
     train_examples: list[InputExample] = []
     for row in ds_train:
