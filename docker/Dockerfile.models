@@ -1,6 +1,9 @@
-# Pre-built image with all ML model weights.
-# Build once, cache forever. The API Dockerfile copies /root/.cache from this image.
-# Tag and push to registry to avoid re-downloading ~1.5GB of Hugging Face weights.
+# Pre-built image holding all ML model weights — used to POPULATE the runtime
+# model cache (the "Novo volume" SSD at ML_CACHE_ROOT), not baked into the API.
+# As of 2026-06-17, Dockerfile.api no longer copies this cache: the API mounts
+# the weights from ML_CACHE_ROOT at runtime (see docker-compose.yml). This image
+# is the convenient way to seed/refresh that volume without an online first-run.
+# Extract with: docker create + docker cp /root/.cache → $ML_CACHE_ROOT.
 #
 # Usage (the jailbreak model is a gated Meta repo — pass your HF token as a
 # BuildKit secret so it is NOT baked into image layers):
@@ -15,8 +18,8 @@ WORKDIR /models
 # Install base ML stack
 RUN pip install --no-cache-dir sentence-transformers transformers torch --quiet
 
-# Pre-download embedding model
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
+# Pre-download embedding model (e5-base, 768-dim — bake-off winner, SCRUM-38)
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-base')"
 
 # Pre-download jailbreak classifier (gated Meta repo — multilingual, incl. PT-BR).
 # HF token read from BuildKit secret; never persisted in a layer.

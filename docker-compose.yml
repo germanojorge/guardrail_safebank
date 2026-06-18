@@ -34,7 +34,9 @@ services:
 
   ingest:
     image: guardrail-safebank-api:latest
-    entrypoint: ["uv", "run", "--no-dev", "--with", "datasets", "python", "scripts/ingest_itau_faq.py"]
+    # --no-sync --frozen: reuse the prebuilt venv (keeps the Docker CPU-only torch);
+    # do NOT let `uv run` re-sync to the lock, which would reinstall CUDA torch.
+    entrypoint: ["uv", "run", "--no-dev", "--no-sync", "--frozen", "--with", "datasets", "python", "scripts/ingest_itau_faq.py"]
     environment:
       - QDRANT_HOST=qdrant
       - HF_TOKEN=${HF_TOKEN}

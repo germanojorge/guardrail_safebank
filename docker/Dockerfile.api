@@ -1,28 +1,84 @@
-# Incremental build on top of the existing full image.
-# Adds presidio-analyzer + spacy + pt_core_news_sm to the already-built stack.
+# syntax=docker/dockerfile:1.7
 #
-# Fast rebuild workflow (code already live via volume mount):
-#   docker compose build api   # only downloads presidio+spacy (~60MB)
-#   docker compose up -d api
+# Clean multi-stage build for the guardrail API (replaces the old incremental
+# `FROM guardrail-safebank-api:latest` build, which carried ~11GB of dead weight).
 #
-# Full rebuild from scratch (if base image is gone):
-#   Restore the model-download stage from git history and rebuild.
+# Slimming decisions (2026-06-17):
+#   1. torch CPU-only — the project runs everything on `device: cpu`, so the
+#      default CUDA torch wheel (nvidia/* ~2.7GB + triton ~0.7GB) is pure waste.
+#      We skip torch in `uv sync`, install the CPU wheel from PyTorch's CPU index,
+#      and prune any nvidia/triton dirs that slipped in transitively. The HOST
+#      venv is untouched (it keeps CUDA torch for the local GTX 1650) — this is
+#      a Docker-only override, no pyproject/uv.lock change.
+#   2. No build caches in the image — uv's cache is a BuildKit cache mount, and
+#      only the built /app/.venv is copied to the runtime stage. pip/uv caches
+#      (~9.6GB) never land in a layer.
+#   3. ML model weights are NOT baked — they are mounted at runtime from
+#      ML_CACHE_ROOT (the "Novo volume" SSD) per docker-compose.yml, with
+#      HF_HUB_OFFLINE=1 / TRANSFORMERS_OFFLINE=1. Only the spaCy PT-BR models are
+#      baked, because they install into the venv (NOT into the HF cache mount).
+#
+# BUILD (BuildKit required; the jailbreak model is a gated Meta repo handled at
+# runtime via the mounted cache, so no HF token is needed at build time):
+#   DOCKER_BUILDKIT=1 docker compose build api
+#
+# VERIFY AFTER BUILD (cannot be validated without the Novo volume mounted):
+#   - `import torch; torch.__version__` ends in `+cpu`
+#   - no `nvidia` / `triton` dirs under .venv/lib/python3.12/site-packages
+#   - the API boots and a model (e.g. detoxify) loads from the mounted cache
 
-FROM guardrail-safebank-api:latest
+FROM python:3.12-slim AS builder
 WORKDIR /app
 
-# Sync new deps only (uv detects what's already installed; only installs delta)
+ENV UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=never \
+    VIRTUAL_ENV=/app/.venv
+
+RUN pip install --no-cache-dir uv
+
 COPY pyproject.toml uv.lock ./
-RUN uv sync --no-dev --frozen
 
-# PT-BR NER model for Presidio (~12MB)
-RUN uv run --no-dev python -m spacy download pt_core_news_sm
-# PT-BR word vectors for jailbreak semantic layer (~540MB)
-RUN uv run --no-dev python -m spacy download pt_core_news_lg
+# Install everything EXCEPT torch (skips downloading the ~2GB CUDA torch wheel).
+# uv cache is a BuildKit cache mount, so it is never persisted in an image layer.
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev --no-install-package torch
 
-# Bake latest code (volume mount handles this at runtime, but baked for portability)
+# Install CPU-only torch from PyTorch's CPU index (no nvidia/* or triton deps).
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# Belt-and-suspenders: prune any CUDA libs pulled in transitively before the
+# venv is copied to the runtime stage. CPU torch does not reference them.
+RUN rm -rf /app/.venv/lib/python3.12/site-packages/nvidia \
+           /app/.venv/lib/python3.12/site-packages/nvidia_*.dist-info \
+           /app/.venv/lib/python3.12/site-packages/triton \
+           /app/.venv/lib/python3.12/site-packages/triton-*.dist-info \
+           /app/.venv/lib/python3.12/site-packages/cuda \
+           /app/.venv/lib/python3.12/site-packages/cuda_*.dist-info
+
+# spaCy PT-BR models live inside the venv (POS tagger word vectors + NER), NOT in
+# the HF cache mount, so they must be baked. ~600MB (lg) + ~12MB (sm).
+RUN uv run --no-dev --no-sync python -m spacy download pt_core_news_lg \
+ && uv run --no-dev --no-sync python -m spacy download pt_core_news_sm
+
+
+# ---- runtime stage: lean image, no build toolchain, no caches ----
+FROM python:3.12-slim AS runtime
+WORKDIR /app
+
+ENV PATH="/app/.venv/bin:$PATH" \
+    VIRTUAL_ENV=/app/.venv
+
+# uv is needed by the `ingest` service, which reuses this image and runs `uv run`.
+COPY --from=builder /usr/local/bin/uv /usr/local/bin/uv
+# Only the built venv + app code. Models arrive via the runtime volume mount.
+COPY --from=builder /app/.venv /app/.venv
+COPY pyproject.toml uv.lock ./
+COPY config.yaml ./
 COPY guardrails/ guardrails/
 COPY scripts/ scripts/
 
 EXPOSE 8000
-CMD ["uv", "run", "--no-dev", "guardrails-api"]
+# Call the venv console script directly — avoids any uv re-sync that could
+# reinstall CUDA torch over our CPU build.
+CMD ["/app/.venv/bin/guardrails-api"]
